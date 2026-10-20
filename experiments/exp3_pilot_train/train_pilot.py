@@ -18,6 +18,10 @@ Strategies (training views):
   slice   anchor-based slice from exp2 (one view)
   length  control: logistic regression on [log tokens, log lines] - no code content at all
 
+--model swaps the encoder (any RoBERTa-family checkpoint with CodeBERT's special-token ids), e.g.
+neulab/codebert-c (CodeBERT further pretrained on C) or microsoft/unixcoder-base; results go to
+results/<strategy>_<backbone>/.
+
 Runs ON the Colab VM after exp1/setup_vm.py; imports exp1 and exp2 modules from /content/exp1/code.
 """
 import argparse
@@ -74,6 +78,17 @@ def training_views(rows, strategy, max_windows, rng):
 
 
 # ----------------------------------------------------------------------------- model
+def set_backbone(model_name):
+    """Point exp1/exp2 at another RoBERTa-family encoder (same <s>=0, <pad>=1, </s>=2 ids as CodeBERT)."""
+    from transformers import AutoTokenizer
+    t = AutoTokenizer.from_pretrained(model_name)
+    assert (t.cls_token_id, t.pad_token_id, t.sep_token_id) == (0, 1, 2), (model_name, t.cls_token_id, t.pad_token_id, t.sep_token_id)
+    e1.MODEL_NAME = model_name
+    e1.tok = e2.tok = t
+    globals()["tok"] = t
+    log("backbone:", model_name, "| vocab", len(t))
+
+
 def fresh_model():
     cfg = RobertaConfig.from_pretrained(e1.MODEL_NAME)
     cfg._attn_implementation = "eager"
@@ -109,7 +124,7 @@ def eval_with_thresholds(y, p, thr):
 
 # ----------------------------------------------------------------------------- training
 def train(strategy, args):
-    name = strategy
+    name = args.name
     out_dir = f"{ROOT}/results/{name}"
     ckpt_dir = f"{ROOT}/ckpt"
     os.makedirs(out_dir, exist_ok=True); os.makedirs(ckpt_dir, exist_ok=True)
@@ -175,7 +190,7 @@ def evaluate(model, strategy, name, best, out_dir, args):
     pairs = e1.build_pairs(e1.read_jsonl(f"{DATA}/primevul_test_paired.jsonl"))
     y = np.array([r["target"] for r in test])
     thr = best["thresholds"]
-    res = {"experiment": "exp3 pilot retrain", "strategy": strategy, "args": vars(args), "best_epoch": best["epoch"],
+    res = {"experiment": "exp3 pilot retrain", "strategy": strategy, "backbone": args.model, "args": vars(args), "best_epoch": best["epoch"],
            "valid_thresholds": thr}
     _, _, head_vis = e2.score_functions(model, [v["func"] for v, _ in pairs], "head", want_lines=True)
     pv, ls, vis = e2.score_functions(model, [v["func"] for v, _ in pairs], strategy, want_lines=True)
@@ -248,7 +263,13 @@ if __name__ == "__main__":
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--benign_ratio", type=int, default=5)
     ap.add_argument("--max_windows", type=int, default=4)
+    ap.add_argument("--model", default="microsoft/codebert-base", help="RoBERTa-family encoder on the HF hub")
+    ap.add_argument("--name", default=None, help="results/ckpt name; default = strategy[_backbone]")
     a = ap.parse_args()
+    if a.name is None:
+        a.name = a.strategy if a.model == "microsoft/codebert-base" else f"{a.strategy}_{a.model.split('/')[-1]}"
+    if a.model != "microsoft/codebert-base":
+        set_backbone(a.model)
     if a.strategy == "length":
         length_control(a)
     else:
