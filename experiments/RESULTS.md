@@ -10,4 +10,5 @@ Cặp = 564 cặp test của bản PrimeVul gốc; test = 25.911 hàm; Top-10 th
 | exp2/slide_max | codebert-base | Big-Vul (checkpoint gốc) | slide_max | 2 | 149 | 396 | 17 | 47.518 | 0.127 | 0.076 | 0.751 | 0.984 | 50.7 | 45.082 | 28.788 | 100.0 |
 | exp2/slide_mean | codebert-base | Big-Vul (checkpoint gốc) | slide_mean | 5 | 74 | 479 | 6 | 46.986 | 0.082 | 0.064 | 0.74 | 0.988 | 50.7 | 45.082 | 28.788 | 100.0 |
 | exp2/slice | codebert-base | Big-Vul (checkpoint gốc) | slice | 5 | 48 | 495 | 16 | 50.443 | 0.07 | 0.058 | 0.715 | 0.99 | 48.459 | 49.18 | 21.97 | 35.434 |
+| exp3/head | codebert-base | PrimeVul tập con | head | 2 | 94 | 462 | 6 | 43.085 | 0.193 | 0.13 | 0.833 | 0.947 | 44.258 | 57.377 | 0.0 | 43.351 |
 | exp3/length | — | hồi quy logistic trên độ dài | length | 1 | 120 | 441 | 2 | 13.652 | 0.199 | 0.13 | 0.813 | 0.941 |  |  |  |  |
