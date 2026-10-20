@@ -1,0 +1,145 @@
+{
+ "experiment": "exp3 pilot retrain",
+ "strategy": "head",
+ "backbone": "microsoft/unixcoder-base",
+ "args": {
+  "strategy": "head",
+  "epochs": 3,
+  "bs": 16,
+  "lr": 2e-05,
+  "seed": 0,
+  "benign_ratio": 5,
+  "max_windows": 4,
+  "ckpt_every": 1000,
+  "model": "microsoft/unixcoder-base",
+  "name": "head_unixcoder-base"
+ },
+ "best_epoch": 2,
+ "valid_thresholds": {
+  "f1_threshold": 0.10856641829013824,
+  "valid_f1_at_best": 0.5440613026819924,
+  "vds_threshold": 0.9046083688735962
+ },
+ "pairs": {
+  "n_pairs": 564,
+  "P-C": 8,
+  "P-V": 223,
+  "P-B": 319,
+  "P-R": 14,
+  "P-C_pct": 1.4184397163120568,
+  "P-V_pct": 39.53900709219858,
+  "P-B_pct": 56.560283687943254,
+  "P-R_pct": 2.4822695035460995,
+  "net_PC_minus_PR_pct": -1.0638297872340425,
+  "ranking_accuracy_pct": 41.13475177304964,
+  "f1_on_pairs_balanced": 0.4476744186046512,
+  "length_rule_shorter_is_vulnerable_pct": {
+   "chars": 85.46099290780141,
+   "tokens": 82.97872340425532
+  },
+  "pairs_identical_after_truncation_pct": 28.900709219858157,
+  "random_guess_expected_PC_pct": 25.0,
+  "pairs_identical_after_processing_pct": 28.900709219858157,
+  "at_valid_f1_threshold": {
+   "P-C": 1,
+   "P-V": 332,
+   "P-B": 214,
+   "P-R": 17
+  }
+ },
+ "localization": {
+  "ALL (vulnerable members with >=1 flaw line)": {
+   "n": 357,
+   "median_ifa": 12.0,
+   "mean_ifa": 62.036414565826334,
+   "top1_acc_pct": 4.481792717086835,
+   "random_top1_pct": 5.918633195040236,
+   "top5_acc_pct": 31.372549019607842,
+   "random_top5_pct": 22.60531487329123,
+   "top10_acc_pct": 46.21848739495798,
+   "random_top10_pct": 36.6916096025223
+  },
+  "A: fits in 512 tokens": {
+   "n": 131,
+   "median_ifa": 4.0,
+   "mean_ifa": 6.038167938931298,
+   "top1_acc_pct": 6.870229007633588,
+   "random_top1_pct": 9.588782115490936,
+   "top5_acc_pct": 53.43511450381679,
+   "random_top5_pct": 37.019831379228094,
+   "top10_acc_pct": 79.38931297709924,
+   "random_top10_pct": 59.67857930064292
+  },
+  "B: truncated, >=1 flaw line visible": {
+   "n": 120,
+   "median_ifa": 9.0,
+   "mean_ifa": 11.558333333333334,
+   "top1_acc_pct": 5.833333333333333,
+   "random_top1_pct": 5.879487638327863,
+   "top5_acc_pct": 35.0,
+   "random_top5_pct": 20.912652429476264,
+   "top10_acc_pct": 50.83333333333333,
+   "random_top10_pct": 32.95870789151156
+  },
+  "C: truncated, no flaw line visible": {
+   "n": 106,
+   "median_ifa": 103.0,
+   "mean_ifa": 188.38679245283018,
+   "top1_acc_pct": 0.0,
+   "random_top1_pct": 1.427198838685925,
+   "top5_acc_pct": 0.0,
+   "random_top5_pct": 6.7073698825371455,
+   "top10_acc_pct": 0.0,
+   "random_top10_pct": 12.509111252215604
+  },
+  "TP only (pred>0.5), as in LineVul's RQ2": {
+   "n": 136,
+   "median_ifa": 27.5,
+   "mean_ifa": 110.1470588235294,
+   "top1_acc_pct": 2.941176470588235,
+   "random_top1_pct": 4.017947193476266,
+   "top5_acc_pct": 22.058823529411764,
+   "random_top5_pct": 14.942539352818802,
+   "top10_acc_pct": 33.088235294117645,
+   "random_top10_pct": 24.782901121281597
+  },
+  "label_coverage": {
+   "vulnerable_members": 564,
+   "with_at_least_one_flaw_line": 357,
+   "fix_adds_lines_only_no_flaw_line_pct": 36.702127659574465,
+   "flaw_lines_total": 1301,
+   "flaw_lines_visible_in_512_pct": 53.72790161414297,
+   "functions_truncated_pct": 63.829787234042556,
+   "functions_truncated_and_all_flaw_lines_hidden_pct": 18.79432624113475,
+   "mean_lines_per_function": 169.23758865248226
+  },
+  "flaw_lines_visible_under_this_strategy_pct": 53.72790161414297
+ },
+ "full_test": {
+  "n": 25911,
+  "n_vulnerable": 695,
+  "threshold": 0.5,
+  "precision": 0.15412940557601262,
+  "recall": 0.42158273381294964,
+  "f1": 0.22573189522342066,
+  "flag_rate": 0.07336652387017097,
+  "auprc": 0.15067070303692082,
+  "roc_auc": 0.8326463955738962,
+  "vd_s_oracle_threshold": {
+   "vd_s": 0.9165467625899281,
+   "threshold": 0.9061975479125977,
+   "actual_fpr": 0.00491751269035533
+  },
+  "at_valid_f1_threshold": {
+   "threshold": 0.10856641829013824,
+   "f1": 0.1851363236587511,
+   "flag_rate": 0.14870132376210876
+  },
+  "vd_s_valid_threshold": {
+   "threshold": 0.9046083688735962,
+   "vd_s": 0.9165467625899281,
+   "actual_fpr": 0.005036484771573604
+  }
+ },
+ "elapsed_s": 4626.892247915268
+}
