@@ -147,6 +147,8 @@ def score_functions(model, funcs, strategy, want_lines=False, bs=64):
     """Returns {"max": p, "mean": p} per-function probabilities (aggregated over views) and, optionally,
     per-line scores (max over views) plus per-line visibility."""
     make = STRATEGIES[strategy]
+    if want_lines:
+        bs = 8  # output_attentions keeps [bs, heads, 512, 512] for all 12 layers; 64 overflows a T4
     all_views, owner = [], []
     for fi, f in enumerate(funcs):
         vs = make(f)
