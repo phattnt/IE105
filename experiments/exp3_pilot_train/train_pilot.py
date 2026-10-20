@@ -129,7 +129,6 @@ def train(strategy, args):
     ckpt_dir = f"{ROOT}/ckpt"
     os.makedirs(out_dir, exist_ok=True); os.makedirs(ckpt_dir, exist_ok=True)
     random.seed(args.seed); np.random.seed(args.seed); torch.manual_seed(args.seed)
-    rng = random.Random(args.seed)
 
     train_rows = subset(e1.read_jsonl(f"{DATA}/primevul_train.jsonl"), args.benign_ratio, args.seed)
     valid_rows = subset(e1.read_jsonl(f"{DATA}/primevul_valid.jsonl"), args.benign_ratio, args.seed)
@@ -144,12 +143,30 @@ def train(strategy, args):
     scaler = torch.amp.GradScaler("cuda")
     curve, best = [], {"auprc": -1}
     step = 0
-    for ep in range(args.epochs):
-        views = training_views(train_rows, strategy, args.max_windows, rng)
+    # ---- resume (free Colab VMs get recycled every ~40 min): fp16 weights + position, optimizer state is NOT kept
+    ck_last = f"{ckpt_dir}/{name}_last.pt"
+    start_ep, start_step = 0, 0
+    if os.path.exists(ck_last):
+        st = torch.load(ck_last, map_location="cpu")
+        model.load_state_dict({k: v.float() for k, v in st["model"].items()})
+        start_ep, start_step, step, curve, best = st["epoch"], st["step_in_epoch"], st["global_step"], st["curve"], st["best"]
+        for _ in range(step):
+            sched.step()
+        log(f"RESUMED from epoch {start_ep} step {start_step} (global step {step}); optimizer state reset")
+
+    def save_last(ep, step_in_epoch):
+        torch.save({"model": {k: v.half() for k, v in model.state_dict().items()}, "epoch": ep, "step_in_epoch": step_in_epoch,
+                    "global_step": step, "curve": curve, "best": best}, ck_last + ".tmp")
+        os.replace(ck_last + ".tmp", ck_last)
+        log(f"saved checkpoint epoch {ep} step {step_in_epoch}")
+
+    for ep in range(start_ep, args.epochs):
+        views = training_views(train_rows, strategy, args.max_windows, random.Random(args.seed * 1000 + ep))
         log(f"epoch {ep}: {len(views)} training views")
         model.train()
         run_loss, t_ep = 0.0, time.time()
-        for b in range(0, len(views), args.bs):
+        first = start_step * args.bs if ep == start_ep else 0
+        for b in range(first, len(views), args.bs):
             chunk = views[b:b + args.bs]
             ids = torch.tensor([c[0] for c in chunk], device=DEV)
             lab = torch.tensor([c[1] for c in chunk], device=DEV)
@@ -163,8 +180,10 @@ def train(strategy, args):
             scaler.step(opt); scaler.update(); sched.step()
             run_loss += loss.item(); step += 1
             if step % 100 == 0:
-                log(f"  ep {ep} step {step}/{total_steps} loss {run_loss / 100:.4f} | {(b + len(chunk)) / (time.time() - t_ep):.1f} samples/s")
+                log(f"  ep {ep} step {step}/{total_steps} loss {run_loss / 100:.4f} | {(b + len(chunk) - first) / (time.time() - t_ep):.1f} samples/s")
                 run_loss = 0.0
+            if step % args.ckpt_every == 0:
+                save_last(ep, b // args.bs + 1)
         # validation (threshold-free) -> pick epoch
         model.eval()
         pv, _, _ = e2.score_functions(model, [r["func"] for r in valid_rows], strategy)
@@ -175,11 +194,16 @@ def train(strategy, args):
         curve.append(rec); log("valid:", json.dumps(rec))
         if m["auprc"] > best["auprc"]:
             best = {"auprc": m["auprc"], "epoch": ep, "thresholds": thr}
-            torch.save(model.state_dict(), f"{ckpt_dir}/{name}_best.bin")
+            torch.save({k: v.half() for k, v in model.state_dict().items()}, f"{ckpt_dir}/{name}_best.bin")
+            log(f"saved best epoch {ep}")
         with open(f"{out_dir}/valid_curve.json", "w") as fh:
             json.dump(curve, fh, indent=1)
+        save_last(ep + 1, 0)
     log(f"best epoch {best['epoch']} (valid AUPRC {best['auprc']:.4f})")
-    model.load_state_dict(torch.load(f"{ckpt_dir}/{name}_best.bin", map_location=DEV))
+    if os.path.exists(f"{ckpt_dir}/{name}_best.bin"):
+        model.load_state_dict({k: v.float() for k, v in torch.load(f"{ckpt_dir}/{name}_best.bin", map_location="cpu").items()})
+    else:
+        log("WARNING: best checkpoint missing (lost with a recycled VM); evaluating the last weights instead")
     model.eval()
     evaluate(model, strategy, name, best, out_dir, args)
 
@@ -263,6 +287,7 @@ if __name__ == "__main__":
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--benign_ratio", type=int, default=5)
     ap.add_argument("--max_windows", type=int, default=4)
+    ap.add_argument("--ckpt_every", type=int, default=1000, help="save resumable fp16 weights every N steps")
     ap.add_argument("--model", default="microsoft/codebert-base", help="RoBERTa-family encoder on the HF hub")
     ap.add_argument("--name", default=None, help="results/ckpt name; default = strategy[_backbone]")
     a = ap.parse_args()
