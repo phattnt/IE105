@@ -1,0 +1,8 @@
+run,experiment,backbone,training,strategy,P-C,P-V,P-B,P-R,rank_acc_pct,F1_test,F1_valid_thr,AUPRC,ROC_AUC,VDS_oracle,VDS_valid,flag_rate,top10_ALL,top10_B,top10_C,IFA_C_median,flaw_visible_pct,source
+exp1,TN1 LineVul gốc trên PrimeVul,codebert-base,Big-Vul (checkpoint gốc),head,7,106,445,6,47.252,0.11,,0.065,0.73,0.983,,0.069,43.978,56.557,0.0,79.0,43.351,exp1_linevul_on_primevul/results/results.json
+exp2/head,TN2 chiến lược ngữ cảnh (chỉ suy luận),codebert-base,Big-Vul (checkpoint gốc),head,7,106,445,6,47.695,0.11,,0.065,0.73,0.983,,0.069,44.258,57.377,0.0,79.0,43.351,exp2_context_strategies/results/results.json
+exp2/headtail,TN2 chiến lược ngữ cảnh (chỉ suy luận),codebert-base,Big-Vul (checkpoint gốc),headtail,2,96,461,5,51.064,0.102,,0.055,0.679,0.991,,0.065,47.059,43.443,20.455,78.0,42.352,exp2_context_strategies/results/results.json
+exp2/slide_max,TN2 chiến lược ngữ cảnh (chỉ suy luận),codebert-base,Big-Vul (checkpoint gốc),slide_max,2,149,396,17,47.518,0.127,,0.076,0.751,0.984,,0.088,50.7,45.082,28.788,25.5,100.0,exp2_context_strategies/results/results.json
+exp2/slide_mean,TN2 chiến lược ngữ cảnh (chỉ suy luận),codebert-base,Big-Vul (checkpoint gốc),slide_mean,5,74,479,6,46.986,0.082,,0.064,0.74,0.988,,0.059,50.7,45.082,28.788,25.5,100.0,exp2_context_strategies/results/results.json
+exp2/slice,TN2 chiến lược ngữ cảnh (chỉ suy luận),codebert-base,Big-Vul (checkpoint gốc),slice,5,48,495,16,50.443,0.07,,0.058,0.715,0.99,,0.041,48.459,49.18,21.97,69.5,35.434,exp2_context_strategies/results/results.json
+exp3/length,"TN3 pilot train trên PrimeVul (tập con 1:5, 3 epoch)",—,hồi quy logistic trên độ dài,length,1,120,441,2,13.652,0.199,0.172,0.13,0.813,0.941,0.932,0.033,,,,,,exp3_pilot_train/results/length/results.json
