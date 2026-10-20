@@ -1,12 +1,13 @@
-"""Run the exp3 backbone pilots on a Kaggle GPU notebook (no VM recycling, sessions up to ~12 h).
+"""Run the remaining exp3 pilots on a Kaggle GPU notebook (no VM recycling, sessions up to ~12 h):
+two other backbones with strategy head, and CodeBERT with strategies slide and slice.
 
 Notebook settings: Accelerator = GPU T4 (x2 if offered), Internet = On. One cell is enough:
 
     !git clone -q https://github.com/phattnt/IE105.git
     !python IE105/experiments/exp3_pilot_train/kaggle_backbones.py
 
-Same subset, recipe and evaluation as train_pilot.py on Colab (strategy head). With two GPUs the two
-backbones run in parallel, one per GPU. Results end up in the notebook Output under exp3/results/<run>/.
+Same subset, recipe and evaluation as train_pilot.py on Colab. One worker per GPU takes runs from the
+queue, so with T4 x2 two runs go in parallel. Results end up in the notebook Output under exp3/results/<run>/.
 """
 import os
 import subprocess
@@ -17,7 +18,11 @@ REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 EXP = f"{REPO}/experiments"
 WORK = "/kaggle/working"
 TMP = "/kaggle/tmp" if os.path.isdir("/kaggle") else "/tmp/kaggle_tmp"
-RUNS = [("neulab/codebert-c", "head_codebert-c"), ("microsoft/unixcoder-base", "head_unixcoder-base")]
+# (strategy, model, results name); longest first so the two GPUs finish at about the same time
+RUNS = [("slide", "microsoft/codebert-base", "slide"),
+        ("head", "neulab/codebert-c", "head_codebert-c"),
+        ("head", "microsoft/unixcoder-base", "head_unixcoder-base"),
+        ("slice", "microsoft/codebert-base", "slice")]
 PRIMEVUL_FOLDER = "19iLaNDS0z99N8kB_jBRTmDLehwZBolMY"
 
 
@@ -57,25 +62,30 @@ except Exception as exc:  # "no kernel image is available for execution on the d
     sh(f"{sys.executable} -m pip install -q torch==2.5.1 --index-url https://download.pytorch.org/whl/cu121")
 n_gpu = max(1, torch.cuda.device_count())
 
-todo = [(m, n) for m, n in RUNS if not os.path.exists(f"/content/exp3/results/{n}/results.json")]
-procs = []
+todo = [r for r in RUNS if not os.path.exists(f"/content/exp3/results/{r[2]}/results.json")]
+print("runs:", [r[2] for r in todo], "| GPUs:", n_gpu, flush=True)
+queue = list(todo)
+running = {}            # gpu -> (name, Popen)
 T0 = time.time()
-for i, (model, name) in enumerate(todo):
-    gpu = i % n_gpu
-    cmd = (f"cd /content/exp1/code && CUDA_VISIBLE_DEVICES={gpu} {sys.executable} train_pilot.py --strategy head --model {model} "
-           f"> /content/exp3/logs/{name}.log 2>&1")
-    print(f"[gpu {gpu}] {name}", flush=True)
-    procs.append((name, subprocess.Popen(cmd, shell=True)))
-    if n_gpu == 1:           # one GPU: run sequentially
-        procs[-1][1].wait()
-while any(p.poll() is None for _, p in procs):
-    time.sleep(300)
-    for name, _ in procs:
-        tail = subprocess.run(f"tail -1 /content/exp3/logs/{name}.log", shell=True, capture_output=True, text=True).stdout.strip()
-        print(f"[{(time.time() - T0) / 60:6.1f} min] {name}: {tail[:160]}", flush=True)
-for name, p in procs:
-    print(name, "exit", p.returncode, flush=True)
-    sh(f"tail -3 /content/exp3/logs/{name}.log", check=False)
+last_report = 0
+while queue or running:
+    for gpu in range(n_gpu):
+        if gpu in running and running[gpu][1].poll() is not None:
+            name, p = running.pop(gpu)
+            print(f"[{(time.time() - T0) / 60:6.1f} min] {name} finished, exit {p.returncode}", flush=True)
+            sh(f"tail -3 /content/exp3/logs/{name}.log", check=False)
+        if gpu not in running and queue:
+            strategy, model, name = queue.pop(0)
+            cmd = (f"cd /content/exp1/code && CUDA_VISIBLE_DEVICES={gpu} {sys.executable} train_pilot.py "
+                   f"--strategy {strategy} --model {model} --name {name} > /content/exp3/logs/{name}.log 2>&1")
+            print(f"[{(time.time() - T0) / 60:6.1f} min] gpu {gpu} <- {name}", flush=True)
+            running[gpu] = (name, subprocess.Popen(cmd, shell=True))
+    if time.time() - last_report > 300:
+        last_report = time.time()
+        for gpu, (name, _) in running.items():
+            tail = subprocess.run(f"tail -1 /content/exp3/logs/{name}.log", shell=True, capture_output=True, text=True).stdout.strip()
+            print(f"[{(time.time() - T0) / 60:6.1f} min] gpu {gpu} {name}: {tail[:160]}", flush=True)
+    time.sleep(20)
 # keep the Output small: results + logs + best weights only
 sh("rm -f /content/exp3/ckpt/*_last.pt", check=False)
 sh("du -sh /content/exp3/*", check=False)

@@ -41,12 +41,14 @@ colab exec -s exp3 -f ../exp1_linevul_on_primevul/setup_vm.py        # dữ li�
 ```
 `run_vm.sh` bỏ qua chiến lược đã có `results.json`, nên chạy lại được sau khi VM bị reset.
 
-## Backbone trên Kaggle
-Colab free thu hồi máy sau 30–40 phút, nên hai backbone (`neulab/codebert-c`, `microsoft/unixcoder-base`, chiến lược `head`)
-chạy trên Kaggle. Notebook mới → Accelerator **GPU T4** (chọn T4 ×2 nếu có), Internet **On**, một cell:
+## Chạy trên Kaggle
+Colab free thu hồi máy sau 30–40 phút và tới tối 20/10 thì ngừng cấp GPU, nên 4 lần chạy còn lại chuyển sang Kaggle:
+`slide`, `slice` (CodeBERT) và `head` với hai backbone `neulab/codebert-c`, `microsoft/unixcoder-base`.
+Notebook mới → Accelerator **GPU T4 x2** (hoặc P100), Internet **On**, một cell:
 ```
 !git clone -q https://github.com/phattnt/IE105.git
 !python IE105/experiments/exp3_pilot_train/kaggle_backbones.py
 ```
-Bấm **Save Version → Save & Run All** để chạy nền (không cần mở trình duyệt). Có 2 GPU thì hai backbone chạy song song.
+Bấm **Save Version → Save & Run All** để chạy nền (không cần mở trình duyệt). Mỗi GPU nhận lần chạy kế tiếp trong hàng đợi;
+T4 x2 mất khoảng 4 giờ, một GPU khoảng 7 giờ.
 Kết quả: tab Output của notebook, `exp3/results/<run>/` (tải về bỏ vào `results/` rồi chạy `python experiments/collect_results.py`).
