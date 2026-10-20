@@ -1,0 +1,199 @@
+{
+ "n_rows": 25440,
+ "columns": {
+  "idx": "int",
+  "project": "str",
+  "project_url": "str",
+  "filepath": "str",
+  "commit_id": "str",
+  "commit_message": "str",
+  "is_vulnerable": "bool",
+  "hash": "str",
+  "func_name": "str",
+  "func_body": "str",
+  "changed_lines": "str",
+  "changed_statements": "str",
+  "cve_list": "list",
+  "cwe_list": "list",
+  "fixed_func_idx": "float",
+  "context": "dict"
+ },
+ "fields_used": {
+  "code": "func_body",
+  "label": "is_vulnerable",
+  "statements": "changed_statements",
+  "lines": "changed_lines",
+  "commit": "commit_id",
+  "project": "project",
+  "cve": "cve_list"
+ },
+ "n_vulnerable": 10998,
+ "vulnerable_pct": 43.2311320754717,
+ "n_unique_project": 707,
+ "n_unique_cve_list": 5659,
+ "n_unique_commit_id": 6050,
+ "pairs_vulnerable_fixed": {
+  "vulnerable_with_fixed_idx": 10024,
+  "valid_pairs": 10024,
+  "same_func_name_pct": 100.0,
+  "fixed_longer_pct": 74.29169992019155
+ },
+ "top_projects": [
+  [
+   "linux",
+   6081
+  ],
+  [
+   "Chrome",
+   3688
+  ],
+  [
+   "tensorflow",
+   1506
+  ],
+  [
+   "Android",
+   1300
+  ],
+  [
+   "ImageMagick",
+   562
+  ],
+  [
+   "vim",
+   472
+  ],
+  [
+   "relic",
+   455
+  ],
+  [
+   "radare2",
+   382
+  ],
+  [
+   "gpac",
+   366
+  ],
+  [
+   "tcpdump",
+   351
+  ],
+  [
+   "krb5",
+   288
+  ],
+  [
+   "FFmpeg",
+   262
+  ],
+  [
+   "envoy",
+   209
+  ],
+  [
+   "FreeRDP",
+   200
+  ],
+  [
+   "jasper",
+   189
+  ]
+ ],
+ "tokens_all": {
+  "median": 577.5,
+  "p90": 3111.0,
+  "gt510_pct": 54.17845911949686
+ },
+ "tokens_vulnerable": {
+  "median": 547.0,
+  "p90": 2936.0,
+  "fits_510_pct": 47.79050736497545,
+  "fits_1022_pct": 69.55810147299509,
+  "fits_2046_pct": 84.94271685761048,
+  "fits_4094_pct": 93.47154028005092
+ },
+ "vulnerable_without_statement_label": 826,
+ "statements": {
+  "total": 38493,
+  "located_in_function_pct": 100.0,
+  "visible_in_first_510_tokens_pct_of_located": 65.42228457122074
+ },
+ "groups_ABC": {
+  "A_fits": 4904,
+  "C_truncated_hidden": 1807,
+  "B_truncated_visible": 3461
+ },
+ "context_columns": [
+  "context"
+ ],
+ "context_tokens_vulnerable": {
+  "context": {
+   "nonempty_pct": 100.0,
+   "tokens_median": 60.0,
+   "tokens_p90": 113.0
+  }
+ },
+ "context_keys_vulnerable": {
+  "Execution Environment": {
+   "nonempty_pct": 5.464629932715039,
+   "items_median": 0.0,
+   "items_p90": 0.0
+  },
+  "Explanation": {
+   "nonempty_pct": 0.009092562284051645,
+   "items_median": 0.0,
+   "items_p90": 0.0
+  },
+  "External Function": {
+   "nonempty_pct": 69.11256592107657,
+   "items_median": 1.0,
+   "items_p90": 4.0
+  },
+  "Function Argument": {
+   "nonempty_pct": 32.042189488998005,
+   "items_median": 0.0,
+   "items_p90": 2.0
+  },
+  "Globals": {
+   "nonempty_pct": 33.59701763957083,
+   "items_median": 0.0,
+   "items_p90": 3.0
+  },
+  "Type Execution Declaration": {
+   "nonempty_pct": 46.45390070921986,
+   "items_median": 0.0,
+   "items_p90": 3.0
+  }
+ },
+ "overlap_with_primevul": {
+  "train": {
+   "rows": 184427,
+   "same_function_text": 6159,
+   "same_function_text_vulnerable": 2087,
+   "vulnerable_rows": 5574,
+   "same_commit_rows": 97505
+  },
+  "valid": {
+   "rows": 25430,
+   "same_function_text": 803,
+   "same_function_text_vulnerable": 239,
+   "vulnerable_rows": 699,
+   "same_commit_rows": 13262
+  },
+  "test": {
+   "rows": 25911,
+   "same_function_text": 773,
+   "same_function_text_vulnerable": 251,
+   "vulnerable_rows": 695,
+   "same_commit_rows": 13069
+  },
+  "test_paired": {
+   "rows": 1128,
+   "same_function_text": 481,
+   "same_function_text_vulnerable": 203,
+   "vulnerable_rows": 564,
+   "same_commit_rows": 586
+  }
+ }
+}
