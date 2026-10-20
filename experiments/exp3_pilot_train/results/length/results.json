@@ -1,0 +1,66 @@
+{
+ "experiment": "exp3 pilot: length-only control (logistic regression on log tokens, log lines)",
+ "coef": [
+  [
+   0.30457910973289753,
+   0.6711566602978783
+  ]
+ ],
+ "valid_thresholds": {
+  "f1_threshold": 0.2577218682611181,
+  "valid_f1_at_best": 0.4768125408229915,
+  "vds_threshold": 0.7336649878608656
+ },
+ "pairs": {
+  "n_pairs": 564,
+  "P-C": 1,
+  "P-V": 120,
+  "P-B": 441,
+  "P-R": 2,
+  "P-C_pct": 0.1773049645390071,
+  "P-V_pct": 21.27659574468085,
+  "P-B_pct": 78.19148936170212,
+  "P-R_pct": 0.3546099290780142,
+  "net_PC_minus_PR_pct": -0.1773049645390071,
+  "ranking_accuracy_pct": 13.652482269503546,
+  "f1_on_pairs_balanced": 0.29987608426270135,
+  "length_rule_shorter_is_vulnerable_pct": {
+   "chars": 85.46099290780141,
+   "tokens": 84.21985815602837
+  },
+  "pairs_identical_after_truncation_pct": 35.46099290780142,
+  "random_guess_expected_PC_pct": 25.0,
+  "at_valid_f1_threshold": {
+   "P-C": 4,
+   "P-V": 302,
+   "P-B": 236,
+   "P-R": 22
+  }
+ },
+ "full_test": {
+  "n": 25911,
+  "n_vulnerable": 695,
+  "threshold": 0.5,
+  "precision": 0.17939814814814814,
+  "recall": 0.22302158273381295,
+  "f1": 0.1988454137267479,
+  "flag_rate": 0.03334491142757902,
+  "auprc": 0.13029691207707084,
+  "roc_auc": 0.8134674398805828,
+  "vd_s_oracle_threshold": {
+   "vd_s": 0.9410071942446043,
+   "threshold": 0.7634446057258779,
+   "actual_fpr": 0.004560596446700507
+  },
+  "at_valid_f1_threshold": {
+   "threshold": 0.2577218682611181,
+   "f1": 0.17217962760131436,
+   "flag_rate": 0.14935741576936437
+  },
+  "vd_s_valid_threshold": {
+   "threshold": 0.7336649878608656,
+   "vd_s": 0.9323741007194245,
+   "actual_fpr": 0.005631345177664975
+  }
+ }
+}
