@@ -138,6 +138,21 @@ def as_list(v):
     return out
 
 
+def statement_texts(v):
+    """changed_statements / changed_lines are JSON lists of [line number in the FILE, text]."""
+    if isinstance(v, str):
+        try:
+            v = json.loads(v)
+        except Exception:
+            return [v] if norm(v) else []
+    out = []
+    for x in v or []:
+        t = x[1] if isinstance(x, (list, tuple)) and len(x) == 2 else x
+        if isinstance(t, str) and norm(t):
+            out.append(t)
+    return out
+
+
 @step("balance and metadata")
 def balance():
     vul = [is_vul(r) for r in rows]
@@ -145,10 +160,18 @@ def balance():
     STATS["vulnerable_pct"] = STATS["n_vulnerable"] / len(rows) * 100
     for f in (F_PROJ, F_CVE, F_COMMIT):
         if f:
-            STATS[f"n_unique_{f}"] = len({r[f] for r in rows})
+            STATS[f"n_unique_{f}"] = len({json.dumps(r[f], default=str) if isinstance(r[f], (list, dict)) else r[f] for r in rows})
+    # vulnerable rows that point at their fixed version (fixed_func_idx) -> vulnerable/fixed pairs
+    if "fixed_func_idx" in cols:
+        by_idx = {r["idx"]: r for r in rows}
+        pairs = [(r, by_idx.get(int(r["fixed_func_idx"]))) for r in rows if is_vul(r) and r["fixed_func_idx"] == r["fixed_func_idx"] and r["fixed_func_idx"] is not None]
+        ok = [(a, b) for a, b in pairs if b is not None and not is_vul(b)]
+        STATS["pairs_vulnerable_fixed"] = {"vulnerable_with_fixed_idx": len(pairs), "valid_pairs": len(ok),
+                                           "same_func_name_pct": sum(a["func_name"] == b["func_name"] for a, b in ok) / max(len(ok), 1) * 100,
+                                           "fixed_longer_pct": sum(len(b[F_CODE]) > len(a[F_CODE]) for a, b in ok) / max(len(ok), 1) * 100}
     if F_PROJ:
         STATS["top_projects"] = Counter(r[F_PROJ] for r in rows).most_common(15)
-    log(json.dumps({k: STATS[k] for k in STATS if k.startswith(("n_", "vulnerable", "top_"))}, indent=1, default=str))
+    log(json.dumps({k: STATS[k] for k in STATS if k.startswith(("n_", "vulnerable", "top_", "pairs_"))}, indent=1, default=str))
 
 
 @step("length and visibility of vulnerable statements")
@@ -165,8 +188,7 @@ def visibility():
             continue
         vlens.append(n)
         cut = enc["offset_mapping"][509][1] if n > 510 else len(code)
-        stmts = [str(s) for s in as_list(r.get(F_STMT))] if F_STMT else []
-        stmts = [s for s in stmts if norm(s)]
+        stmts = statement_texts(r.get(F_STMT)) if F_STMT else []
         if not stmts:
             no_label += 1
             continue
@@ -222,6 +244,28 @@ def context():
     log(json.dumps(out, indent=1))
 
 
+@step("context keys")
+def context_keys():
+    import ast
+    import numpy as np
+    per = {}
+    for r in rows:
+        if not is_vul(r):
+            continue
+        c = r.get("context")
+        if isinstance(c, str):
+            try:
+                c = ast.literal_eval(c)
+            except Exception:
+                continue
+        for k, v in (c or {}).items():
+            n = len(v) if isinstance(v, list) else (0 if v in (None, "") else 1)
+            per.setdefault(k, []).append(n)
+    STATS["context_keys_vulnerable"] = {k: {"nonempty_pct": float((np.array(v) > 0).mean() * 100), "items_median": float(np.median(v)),
+                                            "items_p90": float(np.percentile(v, 90))} for k, v in per.items()}
+    log(json.dumps(STATS["context_keys_vulnerable"], indent=1))
+
+
 @step("overlap with PrimeVul")
 def overlap():
     pv_dir = "/kaggle/tmp/primevul" if os.path.isdir("/kaggle") else "./primevul"
@@ -253,6 +297,7 @@ def overlap():
 balance(); save()
 visibility(); save()
 context(); save()
+context_keys(); save()
 overlap(); save()
 log("\n===== STATS =====")
 log(json.dumps(STATS, indent=1, default=str)[:20000])
