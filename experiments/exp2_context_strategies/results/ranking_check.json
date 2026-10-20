@@ -1,0 +1,52 @@
+{
+ "head": {
+  "ranking_accuracy_ties_pct": 47.695035460992905,
+  "ranking_accuracy_on_distinguishable_pairs_pct": 46.42857142857143,
+  "n_distinguishable_pairs": 364,
+  "n_fixed_missing_from_test": 0,
+  "mean_prob_vuln_truncated": 0.2406261950245067,
+  "mean_prob_vuln_not_truncated": 0.08718809919716933,
+  "flag_rate_vuln_truncated_pct": 24.504950495049506,
+  "flag_rate_vuln_not_truncated_pct": 8.75
+ },
+ "headtail": {
+  "ranking_accuracy_ties_pct": 51.06382978723404,
+  "ranking_accuracy_on_distinguishable_pairs_pct": 51.64835164835166,
+  "n_distinguishable_pairs": 364,
+  "n_fixed_missing_from_test": 0,
+  "mean_prob_vuln_truncated": 0.20565054435079075,
+  "mean_prob_vuln_not_truncated": 0.08718809919716933,
+  "flag_rate_vuln_truncated_pct": 20.792079207920793,
+  "flag_rate_vuln_not_truncated_pct": 8.75
+ },
+ "slide_max": {
+  "ranking_accuracy_ties_pct": 47.5177304964539,
+  "ranking_accuracy_on_distinguishable_pairs_pct": 47.5177304964539,
+  "n_distinguishable_pairs": 564,
+  "n_fixed_missing_from_test": 0,
+  "mean_prob_vuln_truncated": 0.3397952600310211,
+  "mean_prob_vuln_not_truncated": 0.08718809918552779,
+  "flag_rate_vuln_truncated_pct": 33.910891089108915,
+  "flag_rate_vuln_not_truncated_pct": 8.75
+ },
+ "slide_mean": {
+  "ranking_accuracy_ties_pct": 46.98581560283688,
+  "ranking_accuracy_on_distinguishable_pairs_pct": 46.98581560283688,
+  "n_distinguishable_pairs": 564,
+  "n_fixed_missing_from_test": 0,
+  "mean_prob_vuln_truncated": 0.18150224808431736,
+  "mean_prob_vuln_not_truncated": 0.08718809918552779,
+  "flag_rate_vuln_truncated_pct": 16.08910891089109,
+  "flag_rate_vuln_not_truncated_pct": 8.75
+ },
+ "slice": {
+  "ranking_accuracy_ties_pct": 50.44326241134751,
+  "ranking_accuracy_on_distinguishable_pairs_pct": 50.68493150684932,
+  "n_distinguishable_pairs": 365,
+  "n_fixed_missing_from_test": 0,
+  "mean_prob_vuln_truncated": 0.10621001401439499,
+  "mean_prob_vuln_not_truncated": 0.06296032862567244,
+  "flag_rate_vuln_truncated_pct": 10.643564356435643,
+  "flag_rate_vuln_not_truncated_pct": 6.25
+ }
+}
