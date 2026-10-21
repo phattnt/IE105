@@ -539,6 +539,9 @@ def train(data, out, args):
             torch.save({k: v.half() for k, v in model.state_dict().items()}, ck_best)
             log(f"saved best epoch {ep}")
         save_last(ep + 1, 0)
+        if args.patience and ep - best["epoch"] >= args.patience:
+            log(f"early stop: no improvement for {args.patience} epochs (best epoch {best['epoch']})")
+            break
     if os.path.exists(ck_best):
         model.load_state_dict({k: v.float() for k, v in torch.load(ck_best, map_location="cpu").items()})
     ls, fs = score_rows(model, tok, test, args.strategy, args, device)
@@ -586,6 +589,7 @@ if __name__ == "__main__":
     ap.add_argument("--pair_batches", action="store_true", help="pair batching without pair losses (fair BCE-only control)")
     ap.add_argument("--max_pair_views", type=int, default=4, help="max windows per function inside a pair item")
     ap.add_argument("--tag", default="", help="suffix for the run name")
+    ap.add_argument("--patience", type=int, default=0, help="stop after this many epochs without a better valid score (0 = off)")
     a = ap.parse_args()
     data = find_data(a.data)
     if a.strategy != "controls":
