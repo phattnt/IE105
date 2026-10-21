@@ -1,0 +1,17 @@
+[     7.6s] PrimeVul: 564 pairs, 25911 test functions
+Loading weights:   0%|          | 0/134 [00:00<?, ?it/s]Loading weights: 100%|██████████| 134/134 [00:00<00:00, 5682.25it/s]
+[transformers] [1mModernBertModel LOAD REPORT[0m from: answerdotai/ModernBERT-base
+Key               | Status     |  | 
+------------------+------------+--+-
+decoder.bias      | UNEXPECTED |  | 
+head.norm.weight  | UNEXPECTED |  | 
+head.dense.weight | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (10246 > 8192). Running this sequence through the model will result in indexing errors
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (733 > 512). Running this sequence through the model will result in indexing errors
+[   187.7s] paired: {"lines_ALL": {"n": 357, "median_ifa": 8.0, "top1": 17.647058823529413, "top5": 38.93557422969188, "top10": 54.34173669467787, "rand_top1": 5.918633195040236, "rand_top5": 22.60531487329123, "rand_top10": 36.6916096025223}, "lines_A": {"n": 103, "median_ifa": 2.0, "top1": 28.155339805825243, "top5": 65.0485436893204, "top10": 81.55339805825243, "rand_top1": 9.930408281595495, "rand_top5": 39.142328736711626, "rand_top10": 63.513065869009964}, "lines_B": {"n": 122, "median_ifa": 7.5, "top1": 18.0327868852459, "top5": 40.16393442622951, "top10": 57.377049180327866, "rand_top1": 6.902678616126441, "rand_top5": 23.858983096552265, "rand_top10": 36.89306172979458}, "lines_C": {"n": 132, "median_ifa": 28.5, "top1": 9.090909090909092, "top5": 17.424242424242426, "top10": 30.303030303030305, "rand_top1": 1.8787364125575947, "rand_top5": 8.542739485638622, "rand_top10": 15.576555398162863}, "function": {"n": 1128, "vulnerable": 564, "auprc": 0.5269947130556948, "roc_auc": 0.5195129772144258, "spearman_with_tokens": -0.6669398403575159}, "pairs": {"n": 564, "ties": 24, "ranking_acc_ties_half": 58.86524822695035, "ranking_acc_non_tied": 59.25925925925925}, "same_text_flaw_lines": {"n": 200, "vul_scored_higher_pct": 50.0}}
+[   890.6s] full test: {"n": 25911, "vulnerable": 695, "auprc": 0.016927274934030158, "roc_auc": 0.26973375931234705, "spearman_with_tokens": -0.7045053252023302}
+[   890.7s] DONE primevul
+EVAL_EXIT=0
