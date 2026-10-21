@@ -31,6 +31,32 @@ def diff_flaw_lines(vul, fix):
     return out
 
 
+def primevul_rows(primevul_dir, limit=None):
+    """-> (pair_rows, test_rows) in train_lines row format; downloads PrimeVul if needed."""
+    os.makedirs(primevul_dir, exist_ok=True)
+    if not any(f.endswith(".jsonl") for f in os.listdir(primevul_dir)):
+        subprocess.run(f"gdown -q --folder https://drive.google.com/drive/folders/{PRIMEVUL_FOLDER} -O {primevul_dir} --remaining-ok", shell=True)
+    rd = lambda n: [json.loads(l) for l in open(f"{primevul_dir}/primevul_{n}.jsonl")]
+    test, paired = rd("test"), rd("test_paired")
+    if limit:
+        paired, test = paired[:2 * limit], test[:20 * limit]
+    pair_rows = []
+    for k in range(0, len(paired) - 1, 2):
+        v, f = paired[k], paired[k + 1]
+        if v["target"] == 0:
+            v, f = f, v
+        if v["commit_id"] != f["commit_id"] or {v["target"], f["target"]} != {0, 1}:
+            continue
+        iv, iff = f"v{k}", f"f{k}"
+        pair_rows.append({"idx": iv, "target": 1, "func": v["func"], "n_lines": v["func"].count("\n") + 1,
+                          "flaw_lines": diff_flaw_lines(v["func"], f["func"]), "pair_idx": iff})
+        pair_rows.append({"idx": iff, "target": 0, "func": f["func"], "n_lines": f["func"].count("\n") + 1,
+                          "flaw_lines": [], "pair_idx": iv})
+    test_rows = [{"idx": r["idx"], "target": r["target"], "func": r["func"], "n_lines": r["func"].count("\n") + 1,
+                  "flaw_lines": [], "pair_idx": None} for r in test]
+    return pair_rows, test_rows
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--run", required=True, help="output dir of train_lines.py (results.json + ckpt_best.pt)")
