@@ -1,0 +1,108 @@
+[     7.6s] data /content/exp5/secvul_lines -> out /content/exp5/slide_ModernBERT-base_2048_s0_contrast
+[     9.7s] dropped 679 train functions overlapping the PrimeVul test set (incl. pair partners)
+[    10.1s] train 19571 functions (add-only fixes dropped) | valid 2584 | test 2606 | device cuda
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (8233 > 8192). Running this sequence through the model will result in indexing errors
+[   508.4s] pair mode: 7789 vulnerable/fixed pairs, 35357 aligned flaw lines, 5338 single views | lam_line 1.0 lam_fn 1.0 margin 1.0
+[   508.4s] 21721 training views | lines: 40207 flaw / 1419798 clean | pos_weight 20.0
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (730 > 512). Running this sequence through the model will result in indexing errors
+Loading weights:   0%|          | 0/134 [00:00<?, ?it/s]Loading weights: 100%|██████████| 134/134 [00:00<00:00, 5389.07it/s]
+[transformers] [1mModernBertModel LOAD REPORT[0m from: answerdotai/ModernBERT-base
+Key               | Status     |  | 
+------------------+------------+--+-
+head.dense.weight | UNEXPECTED |  | 
+decoder.bias      | UNEXPECTED |  | 
+head.norm.weight  | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[   579.8s]   ep 0 step 100/8541 loss 2.9178 (bce 1.379 line-hinge 0.747 fn-hinge 0.791) | 15.5 items/s
+[   622.6s]   ep 0 step 200/8541 loss 2.2688 (bce 0.822 line-hinge 0.707 fn-hinge 0.740) | 13.6 items/s
+[   666.1s]   ep 0 step 300/8541 loss 2.6196 (bce 1.404 line-hinge 0.567 fn-hinge 0.648) | 12.5 items/s
+[   711.2s]   ep 0 step 400/8541 loss 2.4433 (bce 1.009 line-hinge 0.657 fn-hinge 0.778) | 11.6 items/s
+[   756.3s]   ep 0 step 500/8541 loss 2.4097 (bce 1.019 line-hinge 0.669 fn-hinge 0.721) | 11.0 items/s
+[   799.1s]   ep 0 step 600/8541 loss 2.2568 (bce 0.823 line-hinge 0.711 fn-hinge 0.723) | 11.0 items/s
+[   843.0s]   ep 0 step 700/8541 loss 2.8130 (bce 1.249 line-hinge 0.743 fn-hinge 0.820) | 10.8 items/s
+[   886.0s]   ep 0 step 800/8541 loss 2.2233 (bce 0.858 line-hinge 0.625 fn-hinge 0.740) | 10.6 items/s
+[   931.5s]   ep 0 step 900/8541 loss 2.6494 (bce 1.143 line-hinge 0.706 fn-hinge 0.800) | 10.3 items/s
+[   975.1s]   ep 0 step 1000/8541 loss 2.6179 (bce 1.344 line-hinge 0.601 fn-hinge 0.673) | 10.7 items/s
+[  1019.9s]   ep 0 step 1100/8541 loss 2.7064 (bce 1.292 line-hinge 0.675 fn-hinge 0.740) | 10.7 items/s
+[  1063.3s]   ep 0 step 1200/8541 loss 2.5946 (bce 1.095 line-hinge 0.729 fn-hinge 0.771) | 10.5 items/s
+[  1106.1s]   ep 0 step 1300/8541 loss 2.2060 (bce 0.862 line-hinge 0.618 fn-hinge 0.726) | 10.6 items/s
+[  1148.6s]   ep 0 step 1400/8541 loss 2.1120 (bce 0.919 line-hinge 0.553 fn-hinge 0.640) | 10.8 items/s
+[  1189.9s]   ep 0 step 1500/8541 loss 2.3033 (bce 0.961 line-hinge 0.629 fn-hinge 0.713) | 10.8 items/s
+[  1234.0s]   ep 0 step 1600/8541 loss 2.6946 (bce 1.338 line-hinge 0.631 fn-hinge 0.726) | 10.7 items/s
+[  1278.7s]   ep 0 step 1700/8541 loss 2.5021 (bce 1.091 line-hinge 0.674 fn-hinge 0.737) | 10.6 items/s
+[  1321.6s]   ep 0 step 1800/8541 loss 2.2972 (bce 1.039 line-hinge 0.586 fn-hinge 0.671) | 10.7 items/s
+[  1364.7s]   ep 0 step 1900/8541 loss 2.0865 (bce 0.918 line-hinge 0.521 fn-hinge 0.647) | 10.5 items/s
+[  1407.9s]   ep 0 step 2000/8541 loss 3.4541 (bce 2.192 line-hinge 0.604 fn-hinge 0.658) | 10.7 items/s
+[  1451.7s]   ep 0 step 2100/8541 loss 1.9880 (bce 0.659 line-hinge 0.632 fn-hinge 0.697) | 10.7 items/s
+[  1495.3s]   ep 0 step 2200/8541 loss 2.0807 (bce 0.870 line-hinge 0.571 fn-hinge 0.639) | 10.7 items/s
+[  1537.6s]   ep 0 step 2300/8541 loss 2.6874 (bce 1.459 line-hinge 0.581 fn-hinge 0.647) | 10.8 items/s
+[  1584.3s]   ep 0 step 2400/8541 loss 2.4391 (bce 1.141 line-hinge 0.593 fn-hinge 0.705) | 10.7 items/s
+[  1627.8s]   ep 0 step 2500/8541 loss 1.9686 (bce 0.818 line-hinge 0.505 fn-hinge 0.646) | 10.6 items/s
+[  1670.4s]   ep 0 step 2600/8541 loss 3.3655 (bce 2.128 line-hinge 0.558 fn-hinge 0.680) | 10.6 items/s
+[  1716.6s]   ep 0 step 2700/8541 loss 2.0953 (bce 0.798 line-hinge 0.602 fn-hinge 0.696) | 10.6 items/s
+[  1759.4s]   ep 0 step 2800/8541 loss 2.3008 (bce 1.119 line-hinge 0.579 fn-hinge 0.603) | 10.6 items/s
+[  1976.6s] valid ep 0: {"lines_ALL": {"n": 1081, "median_ifa": 3.0, "top1": 28.95467160037003, "top5": 56.70675300647549, "top10": 70.0277520814061, "rand_top1": 13.64938691005086, "rand_top5": 38.953889562762754, "rand_top10": 54.335168187641415}, "lines_A": {"n": 463, "median_ifa": 1.0, "top1": 43.412526997840175, "top5": 79.6976241900648, "top10": 91.5766738660907, "rand_top1": 20.719036742056662, "rand_top5": 58.18691678314103, "rand_top10": 78.03858587334102}, "lines_B": {"n": 416, "median_ifa": 4.0, "top1": 23.557692307692307, "top5": 50.24038461538461, "top10": 66.10576923076923, "rand_top1": 11.570175439733575, "rand_top5": 32.50340767818506, "rand_top10": 46.8833407584975}, "lines_C": {"n": 202, "median_ifa": 25.0, "top1": 6.9306930693069315, "top5": 17.326732673267326, "top10": 28.71287128712871, "rand_top1": 1.7271299765523507, "rand_top5": 8.154428478352797, "rand_top10": 15.351395029448062}, "function": {"n": 2584, "vulnerable": 1093, "auprc": 0.45316616431079615, "roc_auc": 0.5360464095951126, "spearman_with_tokens": -0.756526369023859}, "pairs": {"n": 1003, "ties": 60, "ranking_acc_ties_half": 64.00797607178464, "ranking_acc_non_tied": 64.89925768822906}, "same_text_flaw_lines": {"n": 4305, "vul_scored_higher_pct": 61.03368176538908}}
+[  1977.0s] saved best epoch 0
+[  2001.3s]   ep 1 step 2900/8541 loss 1.8690 (bce 1.320 line-hinge 0.214 fn-hinge 0.335) | 8.1 items/s
+[  2045.5s]   ep 1 step 3000/8541 loss 1.7606 (bce 0.719 line-hinge 0.439 fn-hinge 0.602) | 9.3 items/s
+[  2089.3s]   ep 1 step 3100/8541 loss 1.8137 (bce 0.855 line-hinge 0.428 fn-hinge 0.531) | 8.8 items/s
+[  2133.0s]   ep 1 step 3200/8541 loss 1.7917 (bce 0.931 line-hinge 0.377 fn-hinge 0.484) | 10.1 items/s
+[  2175.4s]   ep 1 step 3300/8541 loss 1.7505 (bce 0.761 line-hinge 0.416 fn-hinge 0.573) | 10.2 items/s
+[  2220.8s]   ep 1 step 3400/8541 loss 2.7109 (bce 1.771 line-hinge 0.390 fn-hinge 0.550) | 10.3 items/s
+[  2263.8s]   ep 1 step 3500/8541 loss 2.0997 (bce 1.093 line-hinge 0.422 fn-hinge 0.585) | 10.2 items/s
+[  2310.2s]   ep 1 step 3600/8541 loss 2.1645 (bce 1.085 line-hinge 0.455 fn-hinge 0.625) | 10.3 items/s
+[  2353.4s]   ep 1 step 3700/8541 loss 1.5586 (bce 0.711 line-hinge 0.346 fn-hinge 0.502) | 10.5 items/s
+[  2397.0s]   ep 1 step 3800/8541 loss 1.4497 (bce 0.609 line-hinge 0.351 fn-hinge 0.489) | 10.6 items/s
+[  2440.3s]   ep 1 step 3900/8541 loss 1.6991 (bce 0.795 line-hinge 0.407 fn-hinge 0.497) | 10.7 items/s
+[  2483.5s]   ep 1 step 4000/8541 loss 2.3236 (bce 1.390 line-hinge 0.397 fn-hinge 0.537) | 10.8 items/s
+[  2529.9s]   ep 1 step 4100/8541 loss 2.0155 (bce 1.210 line-hinge 0.322 fn-hinge 0.483) | 10.7 items/s
+[  2574.7s]   ep 1 step 4200/8541 loss 1.7485 (bce 0.847 line-hinge 0.388 fn-hinge 0.513) | 10.8 items/s
+[  2618.5s]   ep 1 step 4300/8541 loss 1.5523 (bce 0.626 line-hinge 0.377 fn-hinge 0.550) | 10.7 items/s
+[  2662.1s]   ep 1 step 4400/8541 loss 1.8416 (bce 0.952 line-hinge 0.377 fn-hinge 0.513) | 11.0 items/s
+[  2707.6s]   ep 1 step 4500/8541 loss 1.5565 (bce 0.728 line-hinge 0.344 fn-hinge 0.485) | 10.9 items/s
+[  2750.9s]   ep 1 step 4600/8541 loss 1.4884 (bce 0.757 line-hinge 0.298 fn-hinge 0.434) | 10.8 items/s
+[  2795.1s]   ep 1 step 4700/8541 loss 2.0343 (bce 1.097 line-hinge 0.425 fn-hinge 0.512) | 10.8 items/s
+[  2838.7s]   ep 1 step 4800/8541 loss 1.9261 (bce 0.974 line-hinge 0.417 fn-hinge 0.535) | 10.8 items/s
+[  2882.5s]   ep 1 step 4900/8541 loss 2.5959 (bce 1.606 line-hinge 0.439 fn-hinge 0.551) | 10.7 items/s
+[  2925.4s]   ep 1 step 5000/8541 loss 1.9497 (bce 1.309 line-hinge 0.285 fn-hinge 0.356) | 10.7 items/s
+[  2968.6s]   ep 1 step 5100/8541 loss 2.5070 (bce 1.591 line-hinge 0.416 fn-hinge 0.500) | 10.8 items/s
+[  3013.0s]   ep 1 step 5200/8541 loss 2.7052 (bce 1.902 line-hinge 0.357 fn-hinge 0.446) | 10.7 items/s
+[  3058.1s]   ep 1 step 5300/8541 loss 1.4012 (bce 0.626 line-hinge 0.308 fn-hinge 0.467) | 10.6 items/s
+[  3103.3s]   ep 1 step 5400/8541 loss 2.1136 (bce 1.059 line-hinge 0.496 fn-hinge 0.558) | 10.6 items/s
+[  3149.1s]   ep 1 step 5500/8541 loss 1.5086 (bce 0.797 line-hinge 0.307 fn-hinge 0.405) | 10.5 items/s
+[  3192.4s]   ep 1 step 5600/8541 loss 1.8455 (bce 0.954 line-hinge 0.399 fn-hinge 0.493) | 10.5 items/s
+[  3418.7s] valid ep 1: {"lines_ALL": {"n": 1081, "median_ifa": 3.0, "top1": 31.267345050878813, "top5": 57.90934320074006, "top10": 69.75023126734506, "rand_top1": 13.64938691005086, "rand_top5": 38.953889562762754, "rand_top10": 54.335168187641415}, "lines_A": {"n": 463, "median_ifa": 1.0, "top1": 46.00431965442765, "top5": 80.77753779697623, "top10": 91.5766738660907, "rand_top1": 20.719036742056662, "rand_top5": 58.18691678314103, "rand_top10": 78.03858587334102}, "lines_B": {"n": 416, "median_ifa": 4.0, "top1": 26.923076923076923, "top5": 52.16346153846154, "top10": 66.82692307692307, "rand_top1": 11.570175439733575, "rand_top5": 32.50340767818506, "rand_top10": 46.8833407584975}, "lines_C": {"n": 202, "median_ifa": 26.0, "top1": 6.435643564356436, "top5": 17.326732673267326, "top10": 25.742574257425744, "rand_top1": 1.7271299765523507, "rand_top5": 8.154428478352797, "rand_top10": 15.351395029448062}, "function": {"n": 2584, "vulnerable": 1093, "auprc": 0.45574336321942144, "roc_auc": 0.5439465091862551, "spearman_with_tokens": -0.5471350674931532}, "pairs": {"n": 1003, "ties": 31, "ranking_acc_ties_half": 57.17846460618146, "ranking_acc_non_tied": 57.407407407407405}, "same_text_flaw_lines": {"n": 4305, "vul_scored_higher_pct": 56.38792102206737}}
+[  3434.2s]   ep 2 step 5700/8541 loss 0.4322 (bce 0.237 line-hinge 0.080 fn-hinge 0.114) | 10.4 items/s
+[  3477.2s]   ep 2 step 5800/8541 loss 0.8552 (bce 0.457 line-hinge 0.142 fn-hinge 0.256) | 9.5 items/s
+[  3519.5s]   ep 2 step 5900/8541 loss 1.7726 (bce 1.249 line-hinge 0.201 fn-hinge 0.323) | 9.9 items/s
+[  3562.8s]   ep 2 step 6000/8541 loss 1.2307 (bce 0.786 line-hinge 0.150 fn-hinge 0.296) | 10.2 items/s
+[  3607.7s]   ep 2 step 6100/8541 loss 2.2555 (bce 1.695 line-hinge 0.230 fn-hinge 0.331) | 9.7 items/s
+[  3652.1s]   ep 2 step 6200/8541 loss 1.4871 (bce 1.026 line-hinge 0.196 fn-hinge 0.265) | 9.4 items/s
+[  3695.0s]   ep 2 step 6300/8541 loss 1.7790 (bce 1.306 line-hinge 0.183 fn-hinge 0.290) | 9.8 items/s
+[  3739.4s]   ep 2 step 6400/8541 loss 1.2604 (bce 0.816 line-hinge 0.162 fn-hinge 0.282) | 10.2 items/s
+[  3783.2s]   ep 2 step 6500/8541 loss 1.0787 (bce 0.627 line-hinge 0.152 fn-hinge 0.300) | 10.0 items/s
+[  3827.8s]   ep 2 step 6600/8541 loss 1.4787 (bce 0.886 line-hinge 0.265 fn-hinge 0.328) | 10.3 items/s
+[  3871.6s]   ep 2 step 6700/8541 loss 0.9780 (bce 0.620 line-hinge 0.119 fn-hinge 0.239) | 10.2 items/s
+[  3916.0s]   ep 2 step 6800/8541 loss 0.8198 (bce 0.439 line-hinge 0.150 fn-hinge 0.230) | 10.2 items/s
+[  3959.2s]   ep 2 step 6900/8541 loss 0.9406 (bce 0.538 line-hinge 0.154 fn-hinge 0.248) | 10.3 items/s
+[  4003.2s]   ep 2 step 7000/8541 loss 1.6494 (bce 1.229 line-hinge 0.136 fn-hinge 0.284) | 10.2 items/s
+[  4047.9s]   ep 2 step 7100/8541 loss 1.3763 (bce 0.898 line-hinge 0.167 fn-hinge 0.311) | 10.4 items/s
+[  4093.3s]   ep 2 step 7200/8541 loss 1.2793 (bce 0.812 line-hinge 0.160 fn-hinge 0.307) | 10.3 items/s
+[  4137.1s]   ep 2 step 7300/8541 loss 1.0989 (bce 0.702 line-hinge 0.159 fn-hinge 0.237) | 10.3 items/s
+[  4181.2s]   ep 2 step 7400/8541 loss 1.0421 (bce 0.654 line-hinge 0.149 fn-hinge 0.240) | 10.4 items/s
+[  4225.8s]   ep 2 step 7500/8541 loss 1.2137 (bce 0.701 line-hinge 0.137 fn-hinge 0.376) | 10.4 items/s
+[  4269.1s]   ep 2 step 7600/8541 loss 1.0293 (bce 0.600 line-hinge 0.160 fn-hinge 0.270) | 10.4 items/s
+[  4313.3s]   ep 2 step 7700/8541 loss 0.8925 (bce 0.532 line-hinge 0.124 fn-hinge 0.236) | 10.4 items/s
+[  4357.0s]   ep 2 step 7800/8541 loss 1.1954 (bce 0.756 line-hinge 0.185 fn-hinge 0.255) | 10.4 items/s
+[  4402.9s]   ep 2 step 7900/8541 loss 0.8817 (bce 0.544 line-hinge 0.116 fn-hinge 0.221) | 10.4 items/s
+[  4447.1s]   ep 2 step 8000/8541 loss 1.2342 (bce 0.801 line-hinge 0.160 fn-hinge 0.273) | 10.6 items/s
+[  4492.0s]   ep 2 step 8100/8541 loss 0.8566 (bce 0.500 line-hinge 0.119 fn-hinge 0.238) | 10.5 items/s
+[  4533.7s]   ep 2 step 8200/8541 loss 0.9705 (bce 0.580 line-hinge 0.143 fn-hinge 0.247) | 10.7 items/s
+[  4578.1s]   ep 2 step 8300/8541 loss 1.1618 (bce 0.646 line-hinge 0.231 fn-hinge 0.284) | 10.6 items/s
+[  4622.2s]   ep 2 step 8400/8541 loss 1.0404 (bce 0.651 line-hinge 0.134 fn-hinge 0.255) | 10.5 items/s
+[  4860.5s] valid ep 2: {"lines_ALL": {"n": 1081, "median_ifa": 3.0, "top1": 30.619796484736355, "top5": 55.596669750231264, "top10": 69.93524514338574, "rand_top1": 13.64938691005086, "rand_top5": 38.953889562762754, "rand_top10": 54.335168187641415}, "lines_A": {"n": 463, "median_ifa": 1.0, "top1": 45.78833693304535, "top5": 78.40172786177105, "top10": 91.14470842332614, "rand_top1": 20.719036742056662, "rand_top5": 58.18691678314103, "rand_top10": 78.03858587334102}, "lines_B": {"n": 416, "median_ifa": 5.0, "top1": 24.759615384615387, "top5": 46.394230769230774, "top10": 63.22115384615385, "rand_top1": 11.570175439733575, "rand_top5": 32.50340767818506, "rand_top10": 46.8833407584975}, "lines_C": {"n": 202, "median_ifa": 20.5, "top1": 7.920792079207921, "top5": 22.277227722772277, "top10": 35.148514851485146, "rand_top1": 1.7271299765523507, "rand_top5": 8.154428478352797, "rand_top10": 15.351395029448062}, "function": {"n": 2584, "vulnerable": 1093, "auprc": 0.45769590866321475, "roc_auc": 0.5439738154452792, "spearman_with_tokens": -0.43658561275993857}, "pairs": {"n": 1003, "ties": 29, "ranking_acc_ties_half": 55.88235294117647, "ranking_acc_non_tied": 56.05749486652978}, "same_text_flaw_lines": {"n": 4305, "vul_scored_higher_pct": 55.1219512195122}}
+[  5234.2s] test: {"lines_ALL": {"n": 1037, "median_ifa": 6.0, "top1": 20.73288331726133, "top5": 45.51591128254581, "top10": 59.884281581485055, "rand_top1": 11.433263614523854, "rand_top5": 34.327928788284964, "rand_top10": 48.667007900367594}, "lines_A": {"n": 417, "median_ifa": 1.0, "top1": 36.930455635491604, "top5": 75.0599520383693, "top10": 88.96882494004797, "rand_top1": 20.472506752819026, "rand_top5": 57.83867857756011, "rand_top10": 77.4444301348686}, "lines_B": {"n": 389, "median_ifa": 8.0, "top1": 13.624678663239074, "top5": 33.933161953727506, "top10": 51.9280205655527, "rand_top1": 7.610360620416337, "rand_top5": 25.162195294348066, "rand_top10": 38.59119905130036}, "lines_C": {"n": 231, "median_ifa": 32.0, "top1": 3.463203463203463, "top5": 11.688311688311687, "top10": 20.77922077922078, "rand_top1": 1.5533713030032332, "rand_top5": 7.321381892240428, "rand_top10": 13.685642404697623}, "function": {"n": 2606, "vulnerable": 1061, "auprc": 0.44472107788706394, "roc_auc": 0.537541978166778, "spearman_with_tokens": -0.79206412701701}, "pairs": {"n": 979, "ties": 61, "ranking_acc_ties_half": 68.28396322778345, "ranking_acc_non_tied": 69.49891067538127}, "same_text_flaw_lines": {"n": 3737, "vul_scored_higher_pct": 55.27160824190527}}
+[  5234.2s] DONE
+TRAIN_EXIT=0
