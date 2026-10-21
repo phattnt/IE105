@@ -1,0 +1,202 @@
+[conv] [     7.5s] data /content/exp5/secvul_lines -> out /content/exp5/conv
+[conv] [     9.7s] dropped 679 train functions overlapping the PrimeVul test set (incl. pair partners)
+[conv] [    10.0s] train 18795 functions (add-only fixes dropped) | valid 2584 | test 2606 | device cuda
+[conv] [   483.4s] 25066 training views | lines: 45320 flaw / 1929087 clean | pos_weight 20.0
+[conv] 
+[conv] [transformers] [1mModernBertModel LOAD REPORT[0m from: answerdotai/ModernBERT-base
+[conv] Key               | Status     |  | 
+[conv] ------------------+------------+--+-
+[conv] head.norm.weight  | UNEXPECTED |  | 
+[conv] decoder.bias      | UNEXPECTED |  | 
+[conv] head.dense.weight | UNEXPECTED |  | 
+[conv] 
+[conv] Notes:
+[conv] - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[conv] [   558.8s]   ep 0 step 100/12596 loss 1.0866 | 16.9 items/s
+[conv] [   607.6s]   ep 0 step 200/12596 loss 0.7615 | 15.6 items/s
+[conv] [   655.9s]   ep 0 step 300/12596 loss 1.0224 | 15.9 items/s
+[conv] [   705.5s]   ep 0 step 400/12596 loss 0.7500 | 15.8 items/s
+[conv] [   705.8s] saved checkpoint epoch 0 batch 400 step 400
+[conv] [   755.2s]   ep 0 step 500/12596 loss 0.9975 | 15.3 items/s
+[conv] [   804.1s]   ep 0 step 600/12596 loss 1.0131 | 16.5 items/s
+[conv] [   852.8s]   ep 0 step 700/12596 loss 0.6195 | 16.9 items/s
+[conv] [   902.7s]   ep 0 step 800/12596 loss 0.8602 | 16.5 items/s
+[conv] [   903.2s] saved checkpoint epoch 0 batch 800 step 800
+[conv] [   952.4s]   ep 0 step 900/12596 loss 0.9933 | 16.4 items/s
+[conv] [  1001.7s]   ep 0 step 1000/12596 loss 1.1643 | 16.2 items/s
+[conv] [  1049.7s]   ep 0 step 1100/12596 loss 1.5263 | 16.4 items/s
+[conv] [  1098.8s]   ep 0 step 1200/12596 loss 1.0339 | 16.3 items/s
+[conv] [  1099.3s] saved checkpoint epoch 0 batch 1200 step 1200
+[conv] [  1148.2s]   ep 0 step 1300/12596 loss 0.9488 | 16.3 items/s
+[conv] [  1197.2s]   ep 0 step 1400/12596 loss 1.1920 | 16.2 items/s
+[conv] [  1246.2s]   ep 0 step 1500/12596 loss 1.0517 | 16.1 items/s
+[conv] [  1295.1s]   ep 0 step 1600/12596 loss 0.8768 | 16.3 items/s
+[conv] [  1295.6s] saved checkpoint epoch 0 batch 1600 step 1600
+[conv] Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[conv] [    14.2s] data /content/exp5/secvul_lines -> out /content/exp5/conv
+[conv] [    18.0s] dropped 679 train functions overlapping the PrimeVul test set (incl. pair partners)
+[conv] [    18.1s] train 18795 functions (add-only fixes dropped) | valid 2584 | test 2606 | device cuda
+[conv] [   491.4s] 25066 training views | lines: 45320 flaw / 1929087 clean | pos_weight 20.0
+[conv] 
+[conv] [transformers] [1mModernBertModel LOAD REPORT[0m from: answerdotai/ModernBERT-base
+[conv] Key               | Status     |  | 
+[conv] ------------------+------------+--+-
+[conv] head.norm.weight  | UNEXPECTED |  | 
+[conv] head.dense.weight | UNEXPECTED |  | 
+[conv] decoder.bias      | UNEXPECTED |  | 
+[conv] 
+[conv] Notes:
+[conv] - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[conv] /content/IE105/experiments/exp5_line_labels/train_lines.py:489: UserWarning: Detected call of `lr_scheduler.step()` before `optimizer.step()`. In PyTorch 1.1.0 and later, you should call them in the opposite order: `optimizer.step()` before `lr_scheduler.step()`.  Failure to do this will result in PyTorch skipping the first value of the learning rate schedule. See more details at https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate
+[conv]   sched.step()
+[conv] [   528.2s] RESUMED epoch 0 batch 1600 step 1600
+[conv] [   577.6s]   ep 0 step 1700/12596 loss 0.7806 | 14.4 items/s
+[conv] [   626.9s]   ep 0 step 1800/12596 loss 0.9200 | 14.1 items/s
+[conv] [   675.0s]   ep 0 step 1900/12596 loss 1.0205 | 14.9 items/s
+[conv] [   723.4s]   ep 0 step 2000/12596 loss 0.9414 | 16.0 items/s
+[conv] [   723.9s] saved checkpoint epoch 0 batch 2000 step 2000
+[conv] [   772.6s]   ep 0 step 2100/12596 loss 0.9859 | 16.1 items/s
+[conv] [   820.9s]   ep 0 step 2200/12596 loss 1.1925 | 16.0 items/s
+[conv] [   869.7s]   ep 0 step 2300/12596 loss 0.7848 | 15.8 items/s
+[conv] [   918.4s]   ep 0 step 2400/12596 loss 0.7281 | 16.3 items/s
+[conv] [   918.9s] saved checkpoint epoch 0 batch 2400 step 2400
+[conv] [   966.8s]   ep 0 step 2500/12596 loss 0.9307 | 16.6 items/s
+[conv] [  1015.2s]   ep 0 step 2600/12596 loss 0.9043 | 16.6 items/s
+[conv] [  1064.0s]   ep 0 step 2700/12596 loss 0.6936 | 16.6 items/s
+[conv] [  1112.6s]   ep 0 step 2800/12596 loss 1.1355 | 16.7 items/s
+[conv] [  1113.1s] saved checkpoint epoch 0 batch 2800 step 2800
+[conv] [  1161.0s]   ep 0 step 2900/12596 loss 0.8608 | 16.8 items/s
+[conv] [  1210.3s]   ep 0 step 3000/12596 loss 1.1349 | 16.5 items/s
+[conv] [  1259.0s]   ep 0 step 3100/12596 loss 1.3751 | 16.4 items/s
+[conv] [  1478.9s] valid ep 0: {"lines_ALL": {"n": 1081, "median_ifa": 2.0, "top1": 32.09990749306198, "top5": 62.534690101757626, "top10": 77.15078630897317, "rand_top1": 13.64938691005086, "rand_top5": 38.953889562762754, "rand_top10": 54.335168187641415}, "lines_A": {"n": 463, "median_ifa": 1.0, "top1": 42.98056155507559, "top5": 80.56155507559394, "top10": 93.08855291576674, "rand_top1": 20.719036742056662, "rand_top5": 58.18691678314103, "rand_top10": 78.03858587334102}, "lines_B": {"n": 416, "median_ifa": 3.0, "top1": 30.288461538461537, "top5": 60.33653846153846, "top10": 77.16346153846155, "rand_top1": 11.570175439733575, "rand_top5": 32.50340767818506, "rand_top10": 46.8833407584975}, "lines_C": {"n": 202, "median_ifa": 13.5, "top1": 10.891089108910892, "top5": 25.742574257425744, "top10": 40.5940594059406, "rand_top1": 1.7271299765523507, "rand_top5": 8.154428478352797, "rand_top10": 15.351395029448062}, "function": {"n": 2584, "vulnerable": 1093, "auprc": 0.4253520170493529, "roc_auc": 0.511166419069464, "spearman_with_tokens": -0.86570453896717}, "pairs": {"n": 1003, "ties": 51, "ranking_acc_ties_half": 59.37188434695913, "ranking_acc_non_tied": 59.87394957983193}, "same_text_flaw_lines": {"n": 4305, "vul_scored_higher_pct": 52.9732868757259}}
+[conv] [  1479.3s] saved best epoch 0
+[conv] [  1479.8s] saved checkpoint epoch 1 batch 0 step 3149
+[conv] [  1505.2s]   ep 1 step 3200/12596 loss 0.3140 | 16.1 items/s
+[conv] [  1505.7s] saved checkpoint epoch 1 batch 51 step 3200
+[conv] [  1554.6s]   ep 1 step 3300/12596 loss 1.1738 | 14.7 items/s
+[conv] [  1603.1s]   ep 1 step 3400/12596 loss 0.8886 | 16.4 items/s
+[conv] [  1651.8s]   ep 1 step 3500/12596 loss 0.9516 | 16.4 items/s
+[conv] [  1700.6s]   ep 1 step 3600/12596 loss 0.9999 | 15.9 items/s
+[conv] [  1701.2s] saved checkpoint epoch 1 batch 451 step 3600
+[conv] [  1749.2s]   ep 1 step 3700/12596 loss 0.6038 | 16.3 items/s
+[conv] [  1797.6s]   ep 1 step 3800/12596 loss 1.2567 | 16.5 items/s
+[conv] [  1844.9s]   ep 1 step 3900/12596 loss 0.9599 | 17.1 items/s
+[conv] [  1894.7s]   ep 1 step 4000/12596 loss 1.1713 | 16.8 items/s
+[conv] [  1895.2s] saved checkpoint epoch 1 batch 851 step 4000
+[conv] [  1944.1s]   ep 1 step 4100/12596 loss 0.5583 | 16.6 items/s
+[conv] [  1993.2s]   ep 1 step 4200/12596 loss 0.6960 | 16.4 items/s
+[conv] [  2041.5s]   ep 1 step 4300/12596 loss 1.3937 | 16.3 items/s
+[conv] [  2089.4s]   ep 1 step 4400/12596 loss 0.5882 | 16.7 items/s
+[conv] [  2089.9s] saved checkpoint epoch 1 batch 1251 step 4400
+[conv] [  2138.5s]   ep 1 step 4500/12596 loss 0.5951 | 16.7 items/s
+[conv] [  2187.5s]   ep 1 step 4600/12596 loss 0.7342 | 16.6 items/s
+[conv] [  2236.4s]   ep 1 step 4700/12596 loss 1.1836 | 16.6 items/s
+[conv] [  2285.7s]   ep 1 step 4800/12596 loss 0.7398 | 16.3 items/s
+[conv] [  2286.2s] saved checkpoint epoch 1 batch 1651 step 4800
+[conv] [  2334.2s]   ep 1 step 4900/12596 loss 0.9405 | 16.5 items/s
+[conv] [  2382.8s]   ep 1 step 5000/12596 loss 0.9285 | 16.6 items/s
+[conv] [  2430.7s]   ep 1 step 5100/12596 loss 0.7627 | 16.7 items/s
+[conv] [  2479.8s]   ep 1 step 5200/12596 loss 0.8520 | 16.7 items/s
+[conv] [  2480.3s] saved checkpoint epoch 1 batch 2051 step 5200
+[conv] [  2529.6s]   ep 1 step 5300/12596 loss 1.2878 | 16.7 items/s
+[conv] [  2578.8s]   ep 1 step 5400/12596 loss 1.1607 | 16.7 items/s
+[conv] [  2627.5s]   ep 1 step 5500/12596 loss 0.9454 | 16.6 items/s
+[conv] [  2676.7s]   ep 1 step 5600/12596 loss 0.8734 | 16.5 items/s
+[conv] [  2677.2s] saved checkpoint epoch 1 batch 2451 step 5600
+[conv] [  2725.7s]   ep 1 step 5700/12596 loss 0.6798 | 16.5 items/s
+[conv] [  2774.6s]   ep 1 step 5800/12596 loss 0.5485 | 16.4 items/s
+[conv] [  2823.4s]   ep 1 step 5900/12596 loss 0.7781 | 16.4 items/s
+[conv] [  2871.8s]   ep 1 step 6000/12596 loss 0.9361 | 16.3 items/s
+[conv] [  2872.3s] saved checkpoint epoch 1 batch 2851 step 6000
+[conv] [  2921.2s]   ep 1 step 6100/12596 loss 1.0210 | 16.2 items/s
+[conv] [  2969.9s]   ep 1 step 6200/12596 loss 0.5762 | 16.3 items/s
+[conv] [  3214.9s] valid ep 1: {"lines_ALL": {"n": 1081, "median_ifa": 2.0, "top1": 36.077705827937095, "top5": 63.3672525439408, "top10": 75.39315448658648, "rand_top1": 13.64938691005086, "rand_top5": 38.953889562762754, "rand_top10": 54.335168187641415}, "lines_A": {"n": 463, "median_ifa": 1.0, "top1": 47.30021598272138, "top5": 81.42548596112312, "top10": 91.36069114470843, "rand_top1": 20.719036742056662, "rand_top5": 58.18691678314103, "rand_top10": 78.03858587334102}, "lines_B": {"n": 416, "median_ifa": 3.0, "top1": 30.528846153846157, "top5": 55.52884615384615, "top10": 71.39423076923077, "rand_top1": 11.570175439733575, "rand_top5": 32.50340767818506, "rand_top10": 46.8833407584975}, "lines_C": {"n": 202, "median_ifa": 11.5, "top1": 21.782178217821784, "top5": 38.11881188118812, "top10": 47.02970297029702, "rand_top1": 1.7271299765523507, "rand_top5": 8.154428478352797, "rand_top10": 15.351395029448062}, "function": {"n": 2584, "vulnerable": 1093, "auprc": 0.43408868575006554, "roc_auc": 0.5136528227001533, "spearman_with_tokens": -0.6642469433924094}, "pairs": {"n": 1003, "ties": 50, "ranking_acc_ties_half": 56.33100697906281, "ranking_acc_non_tied": 56.66316894018888}, "same_text_flaw_lines": {"n": 4305, "vul_scored_higher_pct": 52.717770034843205}}
+[conv] [  3215.4s] saved best epoch 1
+[conv] [  3215.8s] saved checkpoint epoch 2 batch 0 step 6298
+[conv] [  3216.8s]   ep 2 step 6300/12596 loss 0.0003 | 10.7 items/s
+[conv] [  3265.5s]   ep 2 step 6400/12596 loss 0.5467 | 14.9 items/s
+[conv] [  3266.0s] saved checkpoint epoch 2 batch 102 step 6400
+[conv] [  3314.1s]   ep 2 step 6500/12596 loss 0.6493 | 15.7 items/s
+[conv] [  3363.0s]   ep 2 step 6600/12596 loss 0.8983 | 15.6 items/s
+[conv] [  3411.2s]   ep 2 step 6700/12596 loss 0.7355 | 16.2 items/s
+[conv] [  3459.9s]   ep 2 step 6800/12596 loss 0.6484 | 16.1 items/s
+[conv] [  3460.4s] saved checkpoint epoch 2 batch 502 step 6800
+[conv] [  3509.7s]   ep 2 step 6900/12596 loss 0.8921 | 16.0 items/s
+[conv] [  3558.5s]   ep 2 step 7000/12596 loss 0.5863 | 16.0 items/s
+[conv] [  3606.7s]   ep 2 step 7100/12596 loss 0.8793 | 16.5 items/s
+[conv] [  3655.6s]   ep 2 step 7200/12596 loss 0.5177 | 16.3 items/s
+[conv] [  3656.1s] saved checkpoint epoch 2 batch 902 step 7200
+[conv] [  3705.4s]   ep 2 step 7300/12596 loss 1.2491 | 16.3 items/s
+[conv] [  3753.9s]   ep 2 step 7400/12596 loss 0.7282 | 16.3 items/s
+[conv] [  3802.8s]   ep 2 step 7500/12596 loss 0.3301 | 16.3 items/s
+[conv] [  3850.4s]   ep 2 step 7600/12596 loss 1.0685 | 16.3 items/s
+[conv] [  3850.9s] saved checkpoint epoch 2 batch 1302 step 7600
+[conv] [  3899.6s]   ep 2 step 7700/12596 loss 0.8212 | 16.3 items/s
+[conv] [  3948.3s]   ep 2 step 7800/12596 loss 1.1752 | 16.3 items/s
+[conv] [  3997.0s]   ep 2 step 7900/12596 loss 0.6101 | 16.4 items/s
+[conv] [  4046.3s]   ep 2 step 8000/12596 loss 1.0080 | 16.4 items/s
+[conv] [  4046.8s] saved checkpoint epoch 2 batch 1702 step 8000
+[conv] [  4095.8s]   ep 2 step 8100/12596 loss 1.3738 | 16.3 items/s
+[conv] [  4144.9s]   ep 2 step 8200/12596 loss 0.8040 | 16.2 items/s
+[conv] [  4193.7s]   ep 2 step 8300/12596 loss 0.7516 | 16.2 items/s
+[conv] [  4241.5s]   ep 2 step 8400/12596 loss 0.6928 | 16.3 items/s
+[conv] [  4242.0s] saved checkpoint epoch 2 batch 2102 step 8400
+[conv] [  4290.9s]   ep 2 step 8500/12596 loss 0.4780 | 16.2 items/s
+[conv] [  4340.5s]   ep 2 step 8600/12596 loss 0.6246 | 16.1 items/s
+[conv] [  4389.5s]   ep 2 step 8700/12596 loss 0.8207 | 16.0 items/s
+[conv] [  4438.0s]   ep 2 step 8800/12596 loss 0.7712 | 16.0 items/s
+[conv] [  4438.5s] saved checkpoint epoch 2 batch 2502 step 8800
+[conv] [  4487.4s]   ep 2 step 8900/12596 loss 0.7049 | 16.1 items/s
+[conv] [  4536.2s]   ep 2 step 9000/12596 loss 0.6626 | 16.1 items/s
+[conv] [  4583.8s]   ep 2 step 9100/12596 loss 0.6152 | 16.3 items/s
+[conv] [  4633.2s]   ep 2 step 9200/12596 loss 0.6202 | 16.3 items/s
+[conv] [  4633.7s] saved checkpoint epoch 2 batch 2902 step 9200
+[conv] [  4681.6s]   ep 2 step 9300/12596 loss 0.5842 | 16.5 items/s
+[conv] [  4731.0s]   ep 2 step 9400/12596 loss 0.8558 | 16.4 items/s
+[conv] [  4950.6s] valid ep 2: {"lines_ALL": {"n": 1081, "median_ifa": 2.0, "top1": 38.66790009250694, "top5": 65.40240518038854, "top10": 77.42830712303423, "rand_top1": 13.64938691005086, "rand_top5": 38.953889562762754, "rand_top10": 54.335168187641415}, "lines_A": {"n": 463, "median_ifa": 0.0, "top1": 52.26781857451404, "top5": 80.56155507559394, "top10": 95.03239740820734, "rand_top1": 20.719036742056662, "rand_top5": 58.18691678314103, "rand_top10": 78.03858587334102}, "lines_B": {"n": 416, "median_ifa": 2.0, "top1": 32.21153846153847, "top5": 63.22115384615385, "top10": 74.27884615384616, "rand_top1": 11.570175439733575, "rand_top5": 32.50340767818506, "rand_top10": 46.8833407584975}, "lines_C": {"n": 202, "median_ifa": 13.5, "top1": 20.792079207920793, "top5": 35.148514851485146, "top10": 43.56435643564357, "rand_top1": 1.7271299765523507, "rand_top5": 8.154428478352797, "rand_top10": 15.351395029448062}, "function": {"n": 2584, "vulnerable": 1093, "auprc": 0.44274810562229266, "roc_auc": 0.5272120677710668, "spearman_with_tokens": -0.6069699194635534}, "pairs": {"n": 1003, "ties": 36, "ranking_acc_ties_half": 56.82951146560319, "ranking_acc_non_tied": 57.083764219234745}, "same_text_flaw_lines": {"n": 4305, "vul_scored_higher_pct": 50.36004645760743}}
+[conv] [  4951.1s] saved checkpoint epoch 3 batch 0 step 9446
+[conv] [  4977.5s]   ep 3 step 9500/12596 loss 0.5558 | 19.3 items/s
+[conv] [  5026.9s]   ep 3 step 9600/12596 loss 0.5486 | 14.7 items/s
+[conv] [  5027.4s] saved checkpoint epoch 3 batch 154 step 9600
+[conv] [  5076.0s]   ep 3 step 9700/12596 loss 0.9740 | 16.3 items/s
+[conv] [  5123.8s]   ep 3 step 9800/12596 loss 0.7150 | 16.7 items/s
+[conv] [  5171.7s]   ep 3 step 9900/12596 loss 0.5502 | 17.2 items/s
+[conv] [  5220.7s]   ep 3 step 10000/12596 loss 0.7485 | 16.4 items/s
+[conv] [  5221.2s] saved checkpoint epoch 3 batch 554 step 10000
+[conv] [  5269.6s]   ep 3 step 10100/12596 loss 0.7046 | 16.1 items/s
+[conv] [  5318.0s]   ep 3 step 10200/12596 loss 0.7272 | 16.1 items/s
+[conv] [  5366.7s]   ep 3 step 10300/12596 loss 0.3703 | 16.3 items/s
+[conv] [  5415.6s]   ep 3 step 10400/12596 loss 0.5011 | 16.4 items/s
+[conv] [  5416.1s] saved checkpoint epoch 3 batch 954 step 10400
+[conv] [  5464.7s]   ep 3 step 10500/12596 loss 0.7835 | 16.4 items/s
+[conv] [  5513.9s]   ep 3 step 10600/12596 loss 0.4852 | 16.4 items/s
+[conv] [  5563.0s]   ep 3 step 10700/12596 loss 1.0117 | 16.4 items/s
+[conv] [  5611.6s]   ep 3 step 10800/12596 loss 0.5709 | 16.3 items/s
+[conv] [  5612.1s] saved checkpoint epoch 3 batch 1354 step 10800
+[conv] [  5660.4s]   ep 3 step 10900/12596 loss 0.7035 | 16.1 items/s
+[conv] [  5710.1s]   ep 3 step 11000/12596 loss 0.3825 | 16.0 items/s
+[conv] [  5758.6s]   ep 3 step 11100/12596 loss 0.4852 | 15.9 items/s
+[conv] [  5807.3s]   ep 3 step 11200/12596 loss 0.6009 | 16.0 items/s
+[conv] [  5807.8s] saved checkpoint epoch 3 batch 1754 step 11200
+[conv] [  5855.2s]   ep 3 step 11300/12596 loss 0.6727 | 16.3 items/s
+[conv] [  5903.3s]   ep 3 step 11400/12596 loss 0.4778 | 16.4 items/s
+[conv] [  5951.9s]   ep 3 step 11500/12596 loss 0.6841 | 16.4 items/s
+[conv] [  6000.0s]   ep 3 step 11600/12596 loss 0.3768 | 16.6 items/s
+[conv] [  6000.5s] saved checkpoint epoch 3 batch 2154 step 11600
+[conv] [  6049.4s]   ep 3 step 11700/12596 loss 0.3482 | 16.5 items/s
+[conv] [  6098.5s]   ep 3 step 11800/12596 loss 0.2739 | 16.4 items/s
+[conv] [  6147.7s]   ep 3 step 11900/12596 loss 0.3088 | 16.3 items/s
+[conv] [  6197.0s]   ep 3 step 12000/12596 loss 0.3837 | 16.2 items/s
+[conv] [  6197.6s] saved checkpoint epoch 3 batch 2554 step 12000
+[conv] [  6246.1s]   ep 3 step 12100/12596 loss 0.6514 | 16.2 items/s
+[conv] [  6295.2s]   ep 3 step 12200/12596 loss 0.4327 | 16.3 items/s
+[conv] [  6342.9s]   ep 3 step 12300/12596 loss 0.7124 | 16.4 items/s
+[conv] [  6391.8s]   ep 3 step 12400/12596 loss 0.4684 | 16.3 items/s
+[conv] [  6392.3s] saved checkpoint epoch 3 batch 2954 step 12400
+[conv] [  6440.6s]   ep 3 step 12500/12596 loss 0.2321 | 16.4 items/s
+[conv] [  6683.6s] valid ep 3: {"lines_ALL": {"n": 1081, "median_ifa": 2.0, "top1": 37.83533765032377, "top5": 62.25716928769658, "top10": 74.46808510638297, "rand_top1": 13.64938691005086, "rand_top5": 38.953889562762754, "rand_top10": 54.335168187641415}, "lines_A": {"n": 463, "median_ifa": 0.0, "top1": 50.53995680345572, "top5": 81.6414686825054, "top10": 93.08855291576674, "rand_top1": 20.719036742056662, "rand_top5": 58.18691678314103, "rand_top10": 78.03858587334102}, "lines_B": {"n": 416, "median_ifa": 3.0, "top1": 31.490384615384613, "top5": 54.807692307692314, "top10": 69.23076923076923, "rand_top1": 11.570175439733575, "rand_top5": 32.50340767818506, "rand_top10": 46.8833407584975}, "lines_C": {"n": 202, "median_ifa": 15.0, "top1": 21.782178217821784, "top5": 33.16831683168317, "top10": 42.57425742574257, "rand_top1": 1.7271299765523507, "rand_top5": 8.154428478352797, "rand_top10": 15.351395029448062}, "function": {"n": 2584, "vulnerable": 1093, "auprc": 0.43287564419646246, "roc_auc": 0.5179291669504676, "spearman_with_tokens": -0.5651148947771332}, "pairs": {"n": 1003, "ties": 36, "ranking_acc_ties_half": 55.83250249252243, "ranking_acc_non_tied": 56.04963805584281}, "same_text_flaw_lines": {"n": 4305, "vul_scored_higher_pct": 50.70847851335656}}
+[conv] [  6684.2s] saved checkpoint epoch 4 batch 0 step 12596
+[conv] [  6684.2s] early stop: no improvement for 2 epochs (best epoch 1)
+[conv] [  7057.8s] test: {"lines_ALL": {"n": 1037, "median_ifa": 4.0, "top1": 27.483124397299903, "top5": 53.616200578592085, "top10": 68.75602700096431, "rand_top1": 11.433263614523854, "rand_top5": 34.327928788284964, "rand_top10": 48.667007900367594}, "lines_A": {"n": 417, "median_ifa": 1.0, "top1": 43.4052757793765, "top5": 77.21822541966426, "top10": 91.84652278177458, "rand_top1": 20.472506752819026, "rand_top5": 57.83867857756011, "rand_top10": 77.4444301348686}, "lines_B": {"n": 389, "median_ifa": 6.0, "top1": 21.59383033419023, "top5": 45.24421593830334, "top10": 62.98200514138818, "rand_top1": 7.610360620416337, "rand_top5": 25.162195294348066, "rand_top10": 38.59119905130036}, "lines_C": {"n": 231, "median_ifa": 20.0, "top1": 8.658008658008658, "top5": 25.108225108225106, "top10": 36.79653679653679, "rand_top1": 1.5533713030032332, "rand_top5": 7.321381892240428, "rand_top10": 13.685642404697623}, "function": {"n": 2606, "vulnerable": 1061, "auprc": 0.42756733859095963, "roc_auc": 0.5249038429276893, "spearman_with_tokens": -0.7527467214790454}, "pairs": {"n": 979, "ties": 59, "ranking_acc_ties_half": 57.967313585291116, "ranking_acc_non_tied": 58.47826086956521}, "same_text_flaw_lines": {"n": 3737, "vul_scored_higher_pct": 53.505485683703505}}
+[conv] [  7057.8s] DONE
+[conv] TRAIN_EXIT=0
