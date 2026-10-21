@@ -323,6 +323,126 @@ def score_rows(model, tok, rows, strategy, args, device):
     return line_scores, fn
 
 
+# ----------------------------------------------------------------------------- fix-contrastive training
+def align_lines(vul, fix):
+    """Map each line of the vulnerable version to its counterpart line in the fixed version (difflib on stripped
+    lines): equal -> same line; replace -> most similar replacement line; delete -> the fixed line at the junction."""
+    import difflib
+    a = [x.strip() for x in vul.split("\n")]
+    b = [x.strip() for x in fix.split("\n")]
+    m = {}
+    for op, i1, i2, j1, j2 in difflib.SequenceMatcher(None, a, b, autojunk=False).get_opcodes():
+        if op == "equal":
+            for k in range(i2 - i1):
+                m[i1 + k] = j1 + k
+        elif op == "replace":
+            for i in range(i1, i2):
+                m[i] = max(range(j1, j2), key=lambda j: difflib.SequenceMatcher(None, a[i], b[j], autojunk=False).ratio())
+        elif op == "delete" and b:
+            for i in range(i1, i2):
+                m[i] = min(j1, len(b) - 1)
+    return m
+
+
+def pick_views(views, keep_lines, k):
+    """At most k views of one function, preferring windows that contain the lines the pair losses need."""
+    if len(views) <= k:
+        return views
+    hit = [v for v in views if keep_lines & set(v[2])]
+    rest = [v for v in views if v not in hit]
+    return (hit + rest)[:k]
+
+
+def make_items(train_rows, tok, args):
+    """Items = [vulnerable, fixed] pairs (both kept together in one batch) or single functions.
+    Each member: {"views", "flaws", "bce" (whether its line labels are known)}; pairs also carry
+    "match" = [(flaw line in vul, counterpart line in fix)]."""
+    by = {r["idx"]: r for r in train_rows}
+    used, items = set(), []
+    for r in train_rows:
+        if r["target"] != 1 or r["pair_idx"] not in by:
+            continue
+        f = by[r["pair_idx"]]
+        al = align_lines(r["func"], f["func"])
+        match = [(l, al[l]) for l in r["flaw_lines"] if l in al]
+        vv = build_views(tok, r["func"], r["flaw_lines"], args.strategy, args.max_len)
+        fv = build_views(tok, f["func"], [], args.strategy, args.max_len)
+        vv = pick_views(vv, {l for l, _ in match} | set(r["flaw_lines"]), args.max_pair_views)
+        fv = pick_views(fv, {j for _, j in match}, args.max_pair_views)
+        items.append({"members": [{"views": vv, "bce": bool(r["flaw_lines"])}, {"views": fv, "bce": True}], "match": match})
+        used |= {r["idx"], f["idx"]}
+    for r in train_rows:
+        if r["idx"] in used or (r["target"] == 1 and not r["flaw_lines"]):
+            continue
+        for v in build_views(tok, r["func"], r["flaw_lines"], args.strategy, args.max_len):
+            items.append({"members": [{"views": [v], "bce": True}], "match": []})
+    return items
+
+
+def item_batches(items, budget, seed):
+    """Pack items so that (number of views) x (longest view) stays under the token budget."""
+    order = list(range(len(items)))
+    random.Random(seed).shuffle(order)
+    cost = lambda it: (sum(len(m["views"]) for m in it["members"]), max(len(v[0]) for m in it["members"] for v in m["views"]))
+    out, chunk = [], 1000
+    for c in range(0, len(order), chunk):
+        part = sorted(order[c:c + chunk], key=lambda i: cost(items[i])[1])
+        cur, nv, ml = [], 0, 0
+        for i in part:
+            n, l = cost(items[i])
+            if cur and (nv + n) * max(ml, l) > budget:
+                out.append(cur); cur, nv, ml = [], 0, 0
+            cur.append(i); nv += n; ml = max(ml, l)
+        if cur:
+            out.append(cur)
+    random.Random(seed + 1).shuffle(out)
+    return out
+
+
+def collate_items(items, device):
+    """Flatten items into views; return model inputs plus everything the three losses need."""
+    import torch
+    views, vfunc, bce_ok, func_of = [], [], [], 0
+    pairs_fn, line_pairs = [], []
+    for it in items:
+        ids_f = []
+        for m in it["members"]:
+            for v in m["views"]:
+                views.append(v); vfunc.append(func_of); bce_ok.append(m["bce"])
+            ids_f.append(func_of); func_of += 1
+        if len(ids_f) == 2:
+            pairs_fn.append((ids_f[0], ids_f[1]))
+            line_pairs += [((ids_f[0], l), (ids_f[1], j)) for l, j in it["match"]]
+    ids, seg, n_seg, y, _ = collate(views, device)
+    # per (function, line) unit = max over the windows that contain the line
+    ukey, seg_u, mask = {}, [], []
+    for v, f, ok in zip(views, vfunc, bce_ok):
+        for l in v[2]:
+            seg_u.append(ukey.setdefault((f, l), len(ukey)))
+            mask.append(1.0 if ok else 0.0)
+    u_func = [k[0] for k in sorted(ukey, key=ukey.get)]
+    lp = [(ukey[a], ukey[b]) for a, b in line_pairs if a in ukey and b in ukey]
+    T = lambda x, dt=torch.long: torch.tensor(x, device=device, dtype=dt)
+    return (ids, seg, n_seg, y, T(mask, torch.float), T(seg_u), len(ukey), T(u_func), func_of,
+            T([a for a, _ in lp]), T([b for _, b in lp]), T([a for a, _ in pairs_fn]), T([b for _, b in pairs_fn]))
+
+
+def pair_losses(z, seg_u, n_u, u_func, n_func, lv, lf, fv, ff, margin):
+    """Line hinge: flaw line in the vulnerable version must beat its counterpart in the fixed version by `margin`
+    (logits). Function hinge: soft-max (logsumexp) over the lines of the vulnerable function must beat the fixed one."""
+    import torch
+    zu = torch.full((n_u,), -1e4, device=z.device, dtype=z.dtype).scatter_reduce(0, seg_u, z, reduce="amax", include_self=False)
+    line = torch.relu(margin - (zu[lv] - zu[lf])).mean() if lv.numel() else zu.sum() * 0
+    if fv.numel():
+        mx = torch.full((n_func,), -1e4, device=z.device, dtype=z.dtype).scatter_reduce(0, u_func, zu, reduce="amax", include_self=False)
+        se = torch.zeros(n_func, device=z.device, dtype=z.dtype).index_add(0, u_func, torch.exp(zu - mx[u_func]))
+        F = mx + torch.log(se.clamp(min=1e-12))
+        fn = torch.relu(margin - (F[fv] - F[ff])).mean()
+    else:
+        fn = zu.sum() * 0
+    return line, fn
+
+
 def train(data, out, args):
     import torch
     from transformers import AutoTokenizer, get_linear_schedule_with_warmup
@@ -332,23 +452,33 @@ def train(data, out, args):
     train_all = read_split(data, "train", args.limit)
     leak = {r["idx"] for r in train_all if r.get("in_primevul_test")}
     leak |= {r["pair_idx"] for r in train_all if r["idx"] in leak and r["pair_idx"] is not None}
-    train_rows = [r for r in train_all if r["idx"] not in leak and not (r["target"] == 1 and not r["flaw_lines"])]
+    pair_mode = args.lam_line > 0 or args.lam_fn > 0 or args.pair_batches
+    # add-only fixes have no labelled line; pair mode keeps them (function hinge only, line BCE masked)
+    train_rows = [r for r in train_all if r["idx"] not in leak and (pair_mode or not (r["target"] == 1 and not r["flaw_lines"]))]
     log(f"dropped {len(leak)} train functions overlapping the PrimeVul test set (incl. pair partners)")
     valid = read_split(data, "valid", args.limit)
     test = read_split(data, "test", args.limit)
     log(f"train {len(train_rows)} functions (add-only fixes dropped) | valid {len(valid)} | test {len(test)} | device {device}")
-    views = [v for r in train_rows for v in build_views(tok, r["func"], r["flaw_lines"], args.strategy, args.max_len)]
+    if pair_mode:
+        items = make_items(train_rows, tok, args)
+        views = [v for it in items for m in it["members"] if m["bce"] for v in m["views"]]
+        log(f"pair mode: {sum(len(it['members']) == 2 for it in items)} vulnerable/fixed pairs, "
+            f"{sum(len(it['match']) for it in items)} aligned flaw lines, {sum(len(it['members']) == 1 for it in items)} single views | "
+            f"lam_line {args.lam_line} lam_fn {args.lam_fn} margin {args.margin}")
+    else:
+        views = [v for r in train_rows for v in build_views(tok, r["func"], r["flaw_lines"], args.strategy, args.max_len)]
     n_pos = sum(sum(v[3]) for v in views); n_neg = sum(len(v[3]) for v in views) - n_pos
     pos_weight = min(args.max_pos_weight, n_neg / max(n_pos, 1))
     log(f"{len(views)} training views | lines: {n_pos} flaw / {n_neg} clean | pos_weight {pos_weight:.1f}")
     valid_groups = group_info(valid)
     model = make_model(args.model).to(device)
     opt = torch.optim.AdamW(model.parameters(), lr=args.lr, eps=1e-8)
-    n_batches = len(token_batches(views, args.train_tokens, 0))
+    n_batches = len(item_batches(items, args.train_tokens, 0)) if pair_mode else len(token_batches(views, args.train_tokens, 0))
     steps = n_batches * args.epochs
     sched = get_linear_schedule_with_warmup(opt, int(0.05 * steps), steps)
     scaler = torch.amp.GradScaler(device.type, enabled=device.type == "cuda" and amp() == torch.float16)
     lossf = torch.nn.BCEWithLogitsLoss(pos_weight=torch.tensor(pos_weight, device=device))
+    lossf_each = torch.nn.BCEWithLogitsLoss(pos_weight=torch.tensor(pos_weight, device=device), reduction="none")
     ck_last, ck_best = f"{out}/ckpt_last.pt", f"{out}/ckpt_best.pt"
     start_ep, start_b, step, curve, best = 0, 0, 0, [], {"score": -1, "epoch": -1}
     if os.path.exists(ck_last):
@@ -365,18 +495,28 @@ def train(data, out, args):
         os.replace(ck_last + ".tmp", ck_last)
 
     for ep in range(start_ep, args.epochs):
-        batches = token_batches(views, args.train_tokens, args.seed * 1000 + ep)
+        batches = item_batches(items, args.train_tokens, args.seed * 1000 + ep) if pair_mode else token_batches(views, args.train_tokens, args.seed * 1000 + ep)
         model.train()
-        t_ep, run, seen = time.time(), 0.0, 0
+        t_ep, run, seen, run_parts = time.time(), 0.0, 0, np.zeros(3)
         first = start_b if ep == start_ep else 0
         for bi in range(first, len(batches)):
-            ids, seg, n_seg, y, _ = collate([views[i] for i in batches[bi]], device)
+            if pair_mode:
+                (ids, seg, n_seg, y, mask, seg_u, n_u, u_func, n_func, lv, lf, fv, ff) = collate_items([items[i] for i in batches[bi]], device)
+            else:
+                ids, seg, n_seg, y, _ = collate([views[i] for i in batches[bi]], device)
             seen += len(batches[bi])
             if y.numel() == 0:
                 continue
             with torch.autocast(device.type, dtype=amp(), enabled=device.type == "cuda"):
                 logits = model(ids, seg, n_seg, tok.pad_token_id)
-            loss = lossf(logits.float(), y)
+            if pair_mode:
+                z = logits.float()
+                bce = (lossf_each(z, y) * mask).sum() / mask.sum().clamp(min=1)
+                l_line, l_fn = pair_losses(z, seg_u, n_u, u_func, n_func, lv, lf, fv, ff, args.margin)
+                loss = bce + args.lam_line * l_line + args.lam_fn * l_fn
+                run_parts += [bce.item(), l_line.item(), l_fn.item()]
+            else:
+                loss = lossf(logits.float(), y)
             opt.zero_grad(set_to_none=True)
             scaler.scale(loss).backward()
             scaler.unscale_(opt)
@@ -384,8 +524,9 @@ def train(data, out, args):
             scaler.step(opt); scaler.update(); sched.step()
             run += loss.item(); step += 1
             if step % 100 == 0:
-                log(f"  ep {ep} step {step}/{steps} loss {run / 100:.4f} | {seen / (time.time() - t_ep):.1f} views/s")
-                run = 0.0
+                parts = f" (bce {run_parts[0] / 100:.3f} line-hinge {run_parts[1] / 100:.3f} fn-hinge {run_parts[2] / 100:.3f})" if pair_mode else ""
+                log(f"  ep {ep} step {step}/{steps} loss {run / 100:.4f}{parts} | {seen / (time.time() - t_ep):.1f} items/s")
+                run, run_parts = 0.0, np.zeros(3)
             if step % args.ckpt_every == 0:
                 save_last(ep, bi + 1)
         ls, fs = score_rows(model, tok, valid, args.strategy, args, device)
@@ -402,7 +543,7 @@ def train(data, out, args):
         model.load_state_dict({k: v.float() for k, v in torch.load(ck_best, map_location="cpu").items()})
     ls, fs = score_rows(model, tok, test, args.strategy, args, device)
     hv, nt = group_info(test)
-    res = {"experiment": "exp5 line-level supervision on SecVulEval", "args": vars(args), "best_epoch": best["epoch"],
+    res = {"experiment": "exp5 line-level supervision on SecVulEval" + (" + fix-contrastive losses" if pair_mode else ""), "args": vars(args), "best_epoch": best["epoch"],
            "valid_curve": curve, "test": evaluate(test, ls, fs, hv, nt)}
     json.dump(res, open(f"{out}/results.json", "w"), indent=1)
     with open(f"{out}/test_scores.jsonl", "w") as fh:
@@ -439,6 +580,12 @@ if __name__ == "__main__":
     ap.add_argument("--ckpt_every", type=int, default=500)
     ap.add_argument("--limit", type=int, default=None, help="smoke test: keep this many functions per split (pairs)")
     ap.add_argument("--bf16", action="store_true", help="bfloat16 autocast (Ampere/Ada GPUs such as L4, A100)")
+    ap.add_argument("--lam_line", type=float, default=0.0, help="weight of the line-level vulnerable-vs-fixed hinge")
+    ap.add_argument("--lam_fn", type=float, default=0.0, help="weight of the function-level vulnerable-vs-fixed hinge")
+    ap.add_argument("--margin", type=float, default=1.0, help="hinge margin in logits")
+    ap.add_argument("--pair_batches", action="store_true", help="pair batching without pair losses (fair BCE-only control)")
+    ap.add_argument("--max_pair_views", type=int, default=4, help="max windows per function inside a pair item")
+    ap.add_argument("--tag", default="", help="suffix for the run name")
     a = ap.parse_args()
     data = find_data(a.data)
     if a.strategy != "controls":
@@ -447,7 +594,7 @@ if __name__ == "__main__":
         if a.bf16:
             import torch
             AMP_DTYPE = torch.bfloat16
-    name = a.strategy if a.strategy == "controls" else f"{a.strategy}_{a.model.split('/')[-1]}_{a.max_len}_s{a.seed}"
+    name = a.strategy if a.strategy == "controls" else f"{a.strategy}_{a.model.split('/')[-1]}_{a.max_len}_s{a.seed}{a.tag}"
     out = a.out or (f"/kaggle/working/exp5/{name}" if os.path.isdir("/kaggle/working") else f"exp5_out/{name}")
     os.makedirs(out, exist_ok=True)
     log("data", data, "-> out", out)
