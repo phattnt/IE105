@@ -108,10 +108,32 @@ def evaluate(rows, line_scores, fn_scores, head_visible, n_tokens):
             pv.append(p[by[r["idx"]]]); pf.append(p[by[r["pair_idx"]]])
     pv, pf = np.array(pv), np.array(pf)
     if len(pv):
-        tie = np.isclose(pv, pf, atol=1e-6)
+        tie = np.isclose(pv, pf, rtol=0, atol=1e-4)
         res["pairs"] = {"n": int(len(pv)), "ties": int(tie.sum()),
                         "ranking_acc_ties_half": float((((pv > pf) & ~tie) + 0.5 * tie).mean() * 100),
                         "ranking_acc_non_tied": float((pv > pf)[~tie].mean() * 100) if (~tie).any() else None}
+    # length-neutral pair test: a flaw line whose exact text also appears in the fixed version
+    # (e.g. kthread_stop(x) that the fix only guards) - same tokens, different context
+    same, win = 0, 0.0
+    for r in rows:
+        if r["target"] != 1 or r["pair_idx"] not in by or not r["flaw_lines"]:
+            continue
+        f = rows[by[r["pair_idx"]]]
+        fl_text = {}
+        for j, t in enumerate(f["func"].split("\n")):
+            k = re.sub(r"\s+", "", t)
+            if k:
+                fl_text.setdefault(k, []).append(j)
+        vlines = r["func"].split("\n")
+        for l in r["flaw_lines"]:
+            k = re.sub(r"\s+", "", vlines[l]) if l < len(vlines) else ""
+            if len(k) < 6 or k not in fl_text:
+                continue
+            j = min(fl_text[k], key=lambda x: abs(x - l))
+            a, b = line_scores[by[r["idx"]]][l], line_scores[by[r["pair_idx"]]][j]
+            same += 1
+            win += 1.0 if a > b + 1e-4 else (0.5 if abs(a - b) <= 1e-4 else 0.0)
+    res["same_text_flaw_lines"] = {"n": same, "vul_scored_higher_pct": win / same * 100 if same else None}
     return res
 
 
@@ -152,6 +174,20 @@ def controls(data, out, args):
     json.dump(results, open(f"{out}/controls.json", "w"), indent=1)
 
 
+_GROUP_TOK = None
+
+
+def group_info(rows):
+    """(head_visible per line, n_tokens) under CodeBERT's tokenizer and a 512-token head, as in TN1-TN3."""
+    global _GROUP_TOK
+    if _GROUP_TOK is None:
+        from transformers import AutoTokenizer
+        _GROUP_TOK = AutoTokenizer.from_pretrained("microsoft/codebert-base")
+    hv = [head_visibility(_GROUP_TOK, r["func"], 512) for r in rows]
+    nt = [len(_GROUP_TOK(r["func"], add_special_tokens=False)["input_ids"]) for r in rows]
+    return hv, nt
+
+
 def head_visibility(tok, func, max_len):
     enc = tok(func, add_special_tokens=False, return_offsets_mapping=True)
     starts = line_starts(func)
@@ -180,11 +216,8 @@ def build_views(tok, func, flaws, strategy, max_len):
     fl = set(flaws)
     views = []
     for a, b in spans:
-        vid = [tok.cls_token_id] + ids[a:b] + [tok.sep_token_id]
+        vid = [tok.cls_token_id] + ids[a:b] + [tok.sep_token_id]     # padded per batch in collate
         vl = [-1] + tline[a:b] + [-1]
-        pad = max_len - len(vid)
-        vid += [tok.pad_token_id] * pad
-        vl += [-1] * pad
         lines = sorted({l for l in vl if l >= 0})
         views.append((vid, vl, lines, [int(l in fl) for l in lines]))
     return views
@@ -197,7 +230,10 @@ def make_model(model_name):
     class LineModel(torch.nn.Module):
         def __init__(self):
             super().__init__()
-            self.enc = AutoModel.from_pretrained(model_name, add_pooling_layer=False)
+            try:
+                self.enc = AutoModel.from_pretrained(model_name, add_pooling_layer=False)
+            except TypeError:          # ModernBERT and other non-RoBERTa encoders
+                self.enc = AutoModel.from_pretrained(model_name)
             h = self.enc.config.hidden_size
             self.drop = torch.nn.Dropout(0.1)
             self.head = torch.nn.Sequential(torch.nn.Linear(h, h), torch.nn.Tanh(), torch.nn.Dropout(0.1), torch.nn.Linear(h, 1))
@@ -217,39 +253,68 @@ def make_model(model_name):
     return LineModel()
 
 
+PAD_ID = 1
+
+
 def collate(batch, device):
     import torch
-    ids = torch.tensor([v[0] for v in batch], device=device)
+    L = max(len(v[0]) for v in batch)
+    ids = torch.tensor([v[0] + [PAD_ID] * (L - len(v[0])) for v in batch], device=device)
     seg, labels, owners, off = [], [], [], 0
     for v in batch:
         loc = {l: off + j for j, l in enumerate(v[2])}
-        seg.append([loc[l] if l >= 0 else -1 for l in v[1]])
+        seg.append([loc[l] if l >= 0 else -1 for l in v[1]] + [-1] * (L - len(v[1])))
         labels.extend(v[3])
         owners.extend(v[2])
         off += len(v[2])
     return ids, torch.tensor(seg, device=device), off, torch.tensor(labels, device=device, dtype=torch.float), owners
 
 
+def token_batches(views, budget, shuffle_seed=None):
+    """Group view indices into batches of at most `budget` padded tokens; similar lengths together."""
+    idx = list(range(len(views)))
+    if shuffle_seed is not None:
+        random.Random(shuffle_seed).shuffle(idx)
+    out, chunk = [], 2000
+    for c in range(0, len(idx), chunk):
+        part = sorted(idx[c:c + chunk], key=lambda i: len(views[i][0]))
+        cur, cur_max = [], 0
+        for i in part:
+            m = max(cur_max, len(views[i][0]))
+            if cur and m * (len(cur) + 1) > budget:
+                out.append(cur); cur, m = [], len(views[i][0])
+            cur.append(i); cur_max = m
+        if cur:
+            out.append(cur)
+    if shuffle_seed is not None:
+        random.Random(shuffle_seed + 1).shuffle(out)
+    return out
+
+
 def score_rows(model, tok, rows, strategy, args, device):
+    """Line LOGITS (float32; unseen lines = -inf) and function logit = max line logit."""
     import torch
     model.eval()
     allv, own = [], []
     for i, r in enumerate(rows):
-        for v in build_views(tok, r["func"], r["flaw_lines"], strategy, args.max_len):
+        for v in build_views(tok, r["func"], r.get("flaw_lines", []), strategy, args.max_len):
             allv.append(v); own.append(i)
-    line_scores = [np.zeros(r["n_lines"]) for r in rows]
+    line_scores = [np.full(r["n_lines"], -np.inf) for r in rows]
     with torch.no_grad():
-        for b in range(0, len(allv), args.eval_bs):
-            chunk = allv[b:b + args.eval_bs]
+        for bidx in token_batches(allv, args.eval_tokens):
+            chunk = [allv[i] for i in bidx]
             ids, seg, n_seg, _, owners = collate(chunk, device)
             with torch.autocast(device.type, dtype=torch.float16, enabled=device.type == "cuda"):
-                p = torch.sigmoid(model(ids, seg, n_seg, tok.pad_token_id)).float().cpu().numpy()
+                z = model(ids, seg, n_seg, tok.pad_token_id).float().cpu().numpy()
             k = 0
-            for j, v in enumerate(chunk):
-                i = own[b + j]
+            for j, v in zip(bidx, chunk):
+                i = own[j]
                 for l in v[2]:
-                    line_scores[i][l] = max(line_scores[i][l], p[k]); k += 1
-    return line_scores, [float(s.max()) if len(s) else 0.0 for s in line_scores]
+                    line_scores[i][l] = max(line_scores[i][l], z[k]); k += 1
+    fn = [float(s.max()) if len(s) and np.isfinite(s.max()) else -1e9 for s in line_scores]
+    for s in line_scores:          # unseen lines rank after every seen line
+        s[~np.isfinite(s)] = -1e9
+    return line_scores, fn
 
 
 def train(data, out, args):
@@ -258,7 +323,11 @@ def train(data, out, args):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     random.seed(args.seed); np.random.seed(args.seed); torch.manual_seed(args.seed)
     tok = AutoTokenizer.from_pretrained(args.model)
-    train_rows = [r for r in read_split(data, "train", args.limit) if not (r["target"] == 1 and not r["flaw_lines"])]
+    train_all = read_split(data, "train", args.limit)
+    leak = {r["idx"] for r in train_all if r.get("in_primevul_test")}
+    leak |= {r["pair_idx"] for r in train_all if r["idx"] in leak and r["pair_idx"] is not None}
+    train_rows = [r for r in train_all if r["idx"] not in leak and not (r["target"] == 1 and not r["flaw_lines"])]
+    log(f"dropped {len(leak)} train functions overlapping the PrimeVul test set (incl. pair partners)")
     valid = read_split(data, "valid", args.limit)
     test = read_split(data, "test", args.limit)
     log(f"train {len(train_rows)} functions (add-only fixes dropped) | valid {len(valid)} | test {len(test)} | device {device}")
@@ -266,9 +335,11 @@ def train(data, out, args):
     n_pos = sum(sum(v[3]) for v in views); n_neg = sum(len(v[3]) for v in views) - n_pos
     pos_weight = min(args.max_pos_weight, n_neg / max(n_pos, 1))
     log(f"{len(views)} training views | lines: {n_pos} flaw / {n_neg} clean | pos_weight {pos_weight:.1f}")
+    valid_groups = group_info(valid)
     model = make_model(args.model).to(device)
     opt = torch.optim.AdamW(model.parameters(), lr=args.lr, eps=1e-8)
-    steps = math.ceil(len(views) / args.bs) * args.epochs
+    n_batches = len(token_batches(views, args.train_tokens, 0))
+    steps = n_batches * args.epochs
     sched = get_linear_schedule_with_warmup(opt, int(0.05 * steps), steps)
     scaler = torch.amp.GradScaler(device.type, enabled=device.type == "cuda")
     lossf = torch.nn.BCEWithLogitsLoss(pos_weight=torch.tensor(pos_weight, device=device))
@@ -288,13 +359,15 @@ def train(data, out, args):
         os.replace(ck_last + ".tmp", ck_last)
 
     for ep in range(start_ep, args.epochs):
-        order = list(range(len(views)))
-        random.Random(args.seed * 1000 + ep).shuffle(order)
+        batches = token_batches(views, args.train_tokens, args.seed * 1000 + ep)
         model.train()
-        t_ep, run = time.time(), 0.0
+        t_ep, run, seen = time.time(), 0.0, 0
         first = start_b if ep == start_ep else 0
-        for bi, b in enumerate(range(first * args.bs, len(order), args.bs), start=first):
-            ids, seg, n_seg, y, _ = collate([views[i] for i in order[b:b + args.bs]], device)
+        for bi in range(first, len(batches)):
+            ids, seg, n_seg, y, _ = collate([views[i] for i in batches[bi]], device)
+            seen += len(batches[bi])
+            if y.numel() == 0:
+                continue
             with torch.autocast(device.type, dtype=torch.float16, enabled=device.type == "cuda"):
                 logits = model(ids, seg, n_seg, tok.pad_token_id)
             loss = lossf(logits.float(), y)
@@ -305,15 +378,13 @@ def train(data, out, args):
             scaler.step(opt); scaler.update(); sched.step()
             run += loss.item(); step += 1
             if step % 100 == 0:
-                log(f"  ep {ep} step {step}/{steps} loss {run / 100:.4f} | {(b - first * args.bs + args.bs) / (time.time() - t_ep):.1f} views/s")
+                log(f"  ep {ep} step {step}/{steps} loss {run / 100:.4f} | {seen / (time.time() - t_ep):.1f} views/s")
                 run = 0.0
             if step % args.ckpt_every == 0:
                 save_last(ep, bi + 1)
         ls, fs = score_rows(model, tok, valid, args.strategy, args, device)
-        hv = [head_visibility(tok, r["func"], args.max_len) for r in valid]
-        nt = [len(tok(r["func"], add_special_tokens=False)["input_ids"]) for r in valid]
-        m = evaluate(valid, ls, fs, hv, nt)
-        score = m.get("lines_ALL", {}).get("top5", 0) + m["function"]["auprc"] * 100
+        m = evaluate(valid, ls, fs, *valid_groups)
+        score = m.get("lines_ALL", {}).get("top5", 0) + (m["same_text_flaw_lines"]["vul_scored_higher_pct"] or 50)
         curve.append({"epoch": ep, "valid": m, "select_score": score})
         log(f"valid ep {ep}: {json.dumps(m)}")
         if score > best["score"]:
@@ -324,8 +395,7 @@ def train(data, out, args):
     if os.path.exists(ck_best):
         model.load_state_dict({k: v.float() for k, v in torch.load(ck_best, map_location="cpu").items()})
     ls, fs = score_rows(model, tok, test, args.strategy, args, device)
-    hv = [head_visibility(tok, r["func"], args.max_len) for r in test]
-    nt = [len(tok(r["func"], add_special_tokens=False)["input_ids"]) for r in test]
+    hv, nt = group_info(test)
     res = {"experiment": "exp5 line-level supervision on SecVulEval", "args": vars(args), "best_epoch": best["epoch"],
            "valid_curve": curve, "test": evaluate(test, ls, fs, hv, nt)}
     json.dump(res, open(f"{out}/results.json", "w"), indent=1)
@@ -355,8 +425,8 @@ if __name__ == "__main__":
     ap.add_argument("--out", default=None)
     ap.add_argument("--max_len", type=int, default=512)
     ap.add_argument("--epochs", type=int, default=3)
-    ap.add_argument("--bs", type=int, default=16)
-    ap.add_argument("--eval_bs", type=int, default=64)
+    ap.add_argument("--train_tokens", type=int, default=8192, help="padded tokens per training batch (16 x 512)")
+    ap.add_argument("--eval_tokens", type=int, default=32768)
     ap.add_argument("--lr", type=float, default=2e-5)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--max_pos_weight", type=float, default=20.0)
@@ -364,6 +434,9 @@ if __name__ == "__main__":
     ap.add_argument("--limit", type=int, default=None, help="smoke test: keep this many functions per split (pairs)")
     a = ap.parse_args()
     data = find_data(a.data)
+    if a.strategy != "controls":
+        from transformers import AutoTokenizer
+        PAD_ID = AutoTokenizer.from_pretrained(a.model).pad_token_id
     name = a.strategy if a.strategy == "controls" else f"{a.strategy}_{a.model.split('/')[-1]}_{a.max_len}_s{a.seed}"
     out = a.out or (f"/kaggle/working/exp5/{name}" if os.path.isdir("/kaggle/working") else f"exp5_out/{name}")
     os.makedirs(out, exist_ok=True)
