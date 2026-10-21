@@ -1,0 +1,15 @@
+[conv2_primevul] [     7.5s] PrimeVul: 564 pairs, 25911 test functions
+[conv2_primevul] 
+[conv2_primevul] [transformers] [1mModernBertModel LOAD REPORT[0m from: answerdotai/ModernBERT-base
+[conv2_primevul] Key               | Status     |  | 
+[conv2_primevul] ------------------+------------+--+-
+[conv2_primevul] head.norm.weight  | UNEXPECTED |  | 
+[conv2_primevul] head.dense.weight | UNEXPECTED |  | 
+[conv2_primevul] decoder.bias      | UNEXPECTED |  | 
+[conv2_primevul] 
+[conv2_primevul] Notes:
+[conv2_primevul] - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[conv2_primevul] [   188.1s] paired: {"lines_ALL": {"n": 357, "median_ifa": 10.0, "top1": 12.605042016806722, "top5": 36.134453781512605, "top10": 49.85994397759104, "rand_top1": 5.918633195040236, "rand_top5": 22.60531487329123, "rand_top10": 36.6916096025223}, "lines_A": {"n": 103, "median_ifa": 3.0, "top1": 21.35922330097087, "top5": 61.165048543689316, "top10": 84.46601941747572, "rand_top1": 9.930408281595495, "rand_top5": 39.142328736711626, "rand_top10": 63.513065869009964}, "lines_B": {"n": 122, "median_ifa": 10.0, "top1": 12.295081967213115, "top5": 36.885245901639344, "top10": 49.18032786885246, "rand_top1": 6.902678616126441, "rand_top5": 23.858983096552265, "rand_top10": 36.89306172979458}, "lines_C": {"n": 132, "median_ifa": 36.5, "top1": 6.0606060606060606, "top5": 15.909090909090908, "top10": 23.484848484848484, "rand_top1": 1.8787364125575947, "rand_top5": 8.542739485638622, "rand_top10": 15.576555398162863}, "function": {"n": 1128, "vulnerable": 564, "auprc": 0.5353678899117427, "roc_auc": 0.5353902595442885, "spearman_with_tokens": -0.47195486819914284}, "pairs": {"n": 564, "ties": 29, "ranking_acc_ties_half": 62.322695035460995, "ranking_acc_non_tied": 62.99065420560748}, "same_text_flaw_lines": {"n": 200, "vul_scored_higher_pct": 52.5}}
+[conv2_primevul] [   890.2s] full test: {"n": 25911, "vulnerable": 695, "auprc": 0.020431833027205075, "roc_auc": 0.3592642446956141, "spearman_with_tokens": -0.320225913442758}
+[conv2_primevul] [   890.3s] DONE primevul
+[conv2_primevul] EVAL_EXIT=0
