@@ -254,6 +254,12 @@ def make_model(model_name):
 
 
 PAD_ID = 1
+AMP_DTYPE = None   # set from --bf16 in __main__; None = float16 on CUDA
+
+
+def amp():
+    import torch
+    return AMP_DTYPE or torch.float16
 
 
 def collate(batch, device):
@@ -304,7 +310,7 @@ def score_rows(model, tok, rows, strategy, args, device):
         for bidx in token_batches(allv, args.eval_tokens):
             chunk = [allv[i] for i in bidx]
             ids, seg, n_seg, _, owners = collate(chunk, device)
-            with torch.autocast(device.type, dtype=torch.float16, enabled=device.type == "cuda"):
+            with torch.autocast(device.type, dtype=amp(), enabled=device.type == "cuda"):
                 z = model(ids, seg, n_seg, tok.pad_token_id).float().cpu().numpy()
             k = 0
             for j, v in zip(bidx, chunk):
@@ -341,7 +347,7 @@ def train(data, out, args):
     n_batches = len(token_batches(views, args.train_tokens, 0))
     steps = n_batches * args.epochs
     sched = get_linear_schedule_with_warmup(opt, int(0.05 * steps), steps)
-    scaler = torch.amp.GradScaler(device.type, enabled=device.type == "cuda")
+    scaler = torch.amp.GradScaler(device.type, enabled=device.type == "cuda" and amp() == torch.float16)
     lossf = torch.nn.BCEWithLogitsLoss(pos_weight=torch.tensor(pos_weight, device=device))
     ck_last, ck_best = f"{out}/ckpt_last.pt", f"{out}/ckpt_best.pt"
     start_ep, start_b, step, curve, best = 0, 0, 0, [], {"score": -1, "epoch": -1}
@@ -368,7 +374,7 @@ def train(data, out, args):
             seen += len(batches[bi])
             if y.numel() == 0:
                 continue
-            with torch.autocast(device.type, dtype=torch.float16, enabled=device.type == "cuda"):
+            with torch.autocast(device.type, dtype=amp(), enabled=device.type == "cuda"):
                 logits = model(ids, seg, n_seg, tok.pad_token_id)
             loss = lossf(logits.float(), y)
             opt.zero_grad(set_to_none=True)
@@ -432,11 +438,15 @@ if __name__ == "__main__":
     ap.add_argument("--max_pos_weight", type=float, default=20.0)
     ap.add_argument("--ckpt_every", type=int, default=500)
     ap.add_argument("--limit", type=int, default=None, help="smoke test: keep this many functions per split (pairs)")
+    ap.add_argument("--bf16", action="store_true", help="bfloat16 autocast (Ampere/Ada GPUs such as L4, A100)")
     a = ap.parse_args()
     data = find_data(a.data)
     if a.strategy != "controls":
         from transformers import AutoTokenizer
         PAD_ID = AutoTokenizer.from_pretrained(a.model).pad_token_id
+        if a.bf16:
+            import torch
+            AMP_DTYPE = torch.bfloat16
     name = a.strategy if a.strategy == "controls" else f"{a.strategy}_{a.model.split('/')[-1]}_{a.max_len}_s{a.seed}"
     out = a.out or (f"/kaggle/working/exp5/{name}" if os.path.isdir("/kaggle/working") else f"exp5_out/{name}")
     os.makedirs(out, exist_ok=True)

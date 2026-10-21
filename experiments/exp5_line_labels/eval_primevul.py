@@ -94,6 +94,8 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     tok = AutoTokenizer.from_pretrained(cfg["model"])
     tl.PAD_ID = tok.pad_token_id
+    if cfg.get("bf16"):
+        tl.AMP_DTYPE = torch.bfloat16
     model = tl.make_model(cfg["model"]).to(device)
     model.load_state_dict({k: v.float() for k, v in torch.load(f"{a.run}/ckpt_best.pt", map_location="cpu").items()})
 
