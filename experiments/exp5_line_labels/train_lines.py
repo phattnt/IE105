@@ -458,7 +458,7 @@ def train(data, out, args):
     log(f"dropped {len(leak)} train functions overlapping the PrimeVul test set (incl. pair partners)")
     valid = read_split(data, "valid", args.limit)
     test = read_split(data, "test", args.limit)
-    log(f"train {len(train_rows)} functions (add-only fixes dropped) | valid {len(valid)} | test {len(test)} | device {device}")
+    log(f"train {len(train_rows)} functions{'' if pair_mode else ' (add-only fixes dropped)'} | valid {len(valid)} | test {len(test)} | device {device}")
     if pair_mode:
         items = make_items(train_rows, tok, args)
         views = [v for it in items for m in it["members"] if m["bce"] for v in m["views"]]
@@ -493,6 +493,7 @@ def train(data, out, args):
         torch.save({"model": {k: v.half() for k, v in model.state_dict().items()}, "epoch": ep, "b": b, "step": step,
                     "curve": curve, "best": best}, ck_last + ".tmp")
         os.replace(ck_last + ".tmp", ck_last)
+        log(f"saved checkpoint epoch {ep} batch {b} step {step}")
 
     for ep in range(start_ep, args.epochs):
         batches = item_batches(items, args.train_tokens, args.seed * 1000 + ep) if pair_mode else token_batches(views, args.train_tokens, args.seed * 1000 + ep)
