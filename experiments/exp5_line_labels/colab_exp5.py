@@ -39,7 +39,6 @@ PRIMEVUL_FOLDER = "19iLaNDS0z99N8kB_jBRTmDLehwZBolMY"
 MODERNBERT, UNIXCODER = "answerdotai/ModernBERT-base", "microsoft/unixcoder-base"
 SYNTH = f"{ROOT}/synth_guards"
 PV_LINES = f"{ROOT}/primevul_lines"
-DATA_CLEAN = f"{ROOT}/secvul_lines_clean"   # train/valid without trivial flaw labels and dense (>0.5) rewrites; same test
 SYNTH_PAIRS = 40000
 COMMON = "--strategy slide --train_tokens 8192 --bf16 --ckpt_every 400"
 PLAIN = "--lam_line 0 --lam_fn 0"
@@ -67,9 +66,6 @@ RUNS = [
     # SecVulEval -> PrimeVul transfer is capped by the opposite length shortcut of the two datasets
     dict(seed=0, tag="_pv_mix_conv", loss=PLAIN, model=MODERNBERT, max_len=2048, data=PV_LINES,
          extra=f"{SELECT} --extra_train {SYNTH} --extra_pairs 8000"),
-    # 23/10: plain _conv retrained on cleaned line labels (label_noise.py). Same recipe as the original _conv run
-    # (colab/run_inner_conv.py: lr 3e-5, default epoch selection top5_same_text), only --data differs
-    dict(seed=0, tag="_conv_clean", loss=PLAIN, model=MODERNBERT, max_len=2048, data=DATA_CLEAN, extra="--lr 3e-5"),
 ]
 EXTRA_SEEDS = [
     dict(seed=1, tag="_conv", loss=PLAIN, model=MODERNBERT, max_len=2048),
@@ -125,10 +121,6 @@ def setup():
             sys.exit(1)
     if not os.path.exists(f"{DATA}/test.jsonl"):
         sh(f"{sys.executable} {D}/prepare_secvuleval.py --out {DATA} --primevul_dir {PRIMEVUL}")
-    if any(r.get("data") == DATA_CLEAN for r in RUNS) and not os.path.exists(f"{DATA_CLEAN}/test.jsonl"):
-        sh(f"{sys.executable} {D}/prepare_secvuleval.py --out {DATA_CLEAN} --primevul_dir {PRIMEVUL} "
-           f"--drop_trivial_flaw --max_flaw_density 0.5")
-        sh(f"cmp {DATA}/test.jsonl {DATA_CLEAN}/test.jsonl")   # test must be byte-identical to the unfiltered one
     if any(r.get("data") == SYNTH for r in RUNS) and not os.path.exists(f"{SYNTH}/train.jsonl"):
         if not os.path.exists(f"{PRIMEVUL}/primevul_train.jsonl"):
             qlog("primevul_train.jsonl missing - needed for make_synthetic_guards.py")

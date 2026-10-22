@@ -6,10 +6,6 @@ CPU only, needs Internet (HuggingFace + Google Drive for the PrimeVul overlap fl
   in_primevul_train / in_primevul_test (same whitespace-normalised text as a PrimeVul function)
 commit_message, CVE text and file paths are dropped on purpose: they must never reach a model input.
 
-Optional label filters for train and valid only (off by default; test is never filtered), see label_noise.py:
-  --drop_trivial_flaw       flaw labels on trivial lines (`}`, blank, comment-only, `;`, `} else {`) become 0
-  --max_flaw_density X      drop vulnerable functions with more than X of their lines labelled, and their pairs
-
 Split (--split project, default): projects holding more than --big_share of all functions always go to train
 (linux, Chrome, tensorflow, Android); the remaining projects are shuffled (seed) and assigned whole to
 test / valid until each holds ~10% of the functions; the rest is train. Pairs never straddle splits because
@@ -88,9 +84,6 @@ def main():
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--primevul_dir", default="/kaggle/tmp/primevul" if os.path.isdir("/kaggle") else "primevul")
     ap.add_argument("--skip_primevul", action="store_true")
-    ap.add_argument("--drop_trivial_flaw", action="store_true", help="train/valid: remove flaw labels of trivial lines")
-    ap.add_argument("--max_flaw_density", type=float, default=None,
-                    help="train/valid: drop vulnerable functions whose flaw-line density exceeds this, with their pair")
     a = ap.parse_args()
     os.makedirs(a.out, exist_ok=True)
     subprocess.run(f"{sys.executable} -m pip install -q datasets gdown", shell=True)
@@ -158,10 +151,6 @@ def main():
 
     for s in ("train", "valid", "test"):
         part = [x for x in recs if x["split"] == s]
-        if s != "test" and (a.drop_trivial_flaw or a.max_flaw_density is not None):
-            from label_noise import filter_labels
-            part, fst = filter_labels(part, a.drop_trivial_flaw, a.max_flaw_density)
-            stats[f"{s}_label_filter"] = fst
         with open(f"{a.out}/{s}.jsonl", "w") as fh:
             for x in part:
                 fh.write(json.dumps(x) + "\n")
