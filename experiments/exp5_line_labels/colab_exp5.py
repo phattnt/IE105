@@ -38,6 +38,7 @@ PRIMEVUL_FOLDER = "19iLaNDS0z99N8kB_jBRTmDLehwZBolMY"
 
 MODERNBERT, UNIXCODER = "answerdotai/ModernBERT-base", "microsoft/unixcoder-base"
 SYNTH = f"{ROOT}/synth_guards"
+PV_LINES = f"{ROOT}/primevul_lines"
 SYNTH_PAIRS = 40000
 COMMON = "--strategy slide --train_tokens 8192 --bf16 --ckpt_every 400"
 PLAIN = "--lam_line 0 --lam_fn 0"
@@ -61,6 +62,10 @@ RUNS = [
     dict(seed=0, tag="_s13bal_conv", loss=PLAIN, model=MODERNBERT, max_len=2048, init=STAGE1, extra=f"{SELECT} --balance_length"),
     # 23/10: sequential stage 1 -> 2 lost the guard skill (probe +6.0 -> +0.28); mix 8k synthetic pairs into every epoch instead
     dict(seed=0, tag="_mix_conv", loss=PLAIN, model=MODERNBERT, max_len=2048, extra=f"{SELECT} --extra_train {SYNTH} --extra_pairs 8000"),
+    # 23/10: train on PrimeVul itself (line labels from its own train pairs, temporal split) + the same synthetic mix;
+    # SecVulEval -> PrimeVul transfer is capped by the opposite length shortcut of the two datasets
+    dict(seed=0, tag="_pv_mix_conv", loss=PLAIN, model=MODERNBERT, max_len=2048, data=PV_LINES,
+         extra=f"{SELECT} --extra_train {SYNTH} --extra_pairs 8000"),
 ]
 EXTRA_SEEDS = [
     dict(seed=1, tag="_conv", loss=PLAIN, model=MODERNBERT, max_len=2048),
@@ -121,6 +126,8 @@ def setup():
             qlog("primevul_train.jsonl missing - needed for make_synthetic_guards.py")
             sys.exit(1)
         sh(f"cd {D} && {sys.executable} make_synthetic_guards.py --primevul {PRIMEVUL} --secvul {DATA} --out {SYNTH} --max_train {SYNTH_PAIRS}")
+    if any(r.get("data") == PV_LINES for r in RUNS) and not os.path.exists(f"{PV_LINES}/train.jsonl"):
+        sh(f"cd {D} && {sys.executable} prepare_primevul_lines.py --primevul {PRIMEVUL} --out {PV_LINES}")
 
 
 def stream(cmd, log_path):
