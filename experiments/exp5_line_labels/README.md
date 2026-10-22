@@ -54,6 +54,20 @@ Top-5 +2,1 [−1,3; +5,4], cặp −0,1 [−5,5; +4,8] – mọi CI chứa 0. M�
 bám độ dài còn nặng hơn (Spearman điểm–độ dài −0,79 vs −0,4), toàn tập PrimeVul ROC 0,236 thô → 0,489 sau trừ. Kết luận với 1 seed: định vị dòng
 được quyết bởi nhãn dòng + đọc cả hàm, không phải backbone; UniXcoder không có C trong dữ liệu pretrain nhưng cũng không thua. Không chạy thêm backbone.
 
+**Ghép điểm các mô hình (22/10, `ensemble_scores.py`, 0 unit) – không chạm được mức hàm.** Trung bình điểm dòng đã chuẩn hóa z của
+2–4 run (điểm hàm = max như cũ; trên PrimeVul chỉ có logit hàm nên ghép ở mức hàm). Bootstrap theo project, ghép − thành viên tốt nhất:
+
+| Ghép | Top-10 SecVulEval | Cặp trừ độ dài SecVulEval | Cặp trừ độ dài PrimeVul | ROC toàn tập PrimeVul sau trừ |
+|---|---|---|---|---|
+| ModernBERT + UniXcoder | 69,1 (−0,9 [−2,7; +0,7]) | 50,8 (−0,2 [−3,9; +2,9]) | 54,5 (+1,2 [−2,4; +4,1]) | 0,49 |
+| A (plain) + B (λ=1) | 66,5 (−2,2 [−4,0; −0,5]) | 61,2 (+0,5 [−2,6; +3,1]) | 58,8 (+0,6 [−2,2; +3,2]) | 0,50 |
+| cả 4 run | 69,9 (−0,1 [−3,6; +2,2]) | 57,8 (−2,9 [−6,1; −0,4]) | 59,8 (+1,1 [−2,2; +4,3]) | 0,49 |
+
+→ Không ghép nào vượt thành viên tốt nhất ở bất kỳ cột nào (mọi CI chứa 0 hoặc âm); ROC toàn tập PrimeVul sau khi trừ độ dài vẫn 0,49–0,50 ở
+mọi tổ hợp. Hai backbone sai cùng chỗ (tương quan điểm–độ dài của ghép còn mạnh hơn: −0,85), nên ghép chỉ cộng dồn lối tắt độ dài.
+Ghép theo vai trò (B chấm hàm/cặp, A chỉ dòng) chỉ là lấy số tốt nhất của từng cột từ hai mô hình, không tạo tín hiệu mới.
+Kết luận: bệnh mức hàm nằm ở dữ liệu dạy (lối tắt độ dài), không chữa được bằng ghép điểm; chỉ còn hướng đổi cách dạy (Train 13).
+
 ## Lần chạy kế tiếp (Colab Pro, L4)
 
 Quyết định ngân sách (22/10): chạy **một** run trước, rồi mới quyết định có chạy thêm seed không. Hàng đợi mặc định trong `colab_exp5.py`:
