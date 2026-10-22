@@ -68,6 +68,23 @@ mọi tổ hợp. Hai backbone sai cùng chỗ (tương quan điểm–độ dà
 Ghép theo vai trò (B chấm hàm/cặp, A chỉ dòng) chỉ là lấy số tốt nhất của từng cột từ hai mô hình, không tạo tín hiệu mới.
 Kết luận: bệnh mức hàm nằm ở dữ liệu dạy (lối tắt độ dài), không chữa được bằng ghép điểm; chỉ còn hướng đổi cách dạy (Train 13).
 
+**Phép thử phản thực guard (22/10, `probe_guards.py`, GPU máy nhà, 0 unit) – mô hình gần như mù quan hệ guard–sink.**
+250 hàm lỗi test: chèn ngay trên dòng lỗi một guard liên quan `if (!IDENT) return;` (G1), một guard không liên quan `if (error) return;` (G2),
+hoặc một dòng chú thích (N); 250 hàm lành: xóa một guard `if (...) return/break/goto;` có sẵn (nạn nhân = dòng code kế tiếp) so với xóa một câu lệnh thường.
+Δ = thay đổi logit của dòng lỗi / dòng nạn nhân (độ lệch chuẩn logit dòng lỗi: UniXcoder 1,5; ModernBERT 2,9).
+
+| Checkpoint | chèn G1 | chèn G2 | chèn N | G1 − N | xóa guard | xóa guard liên quan | xóa câu thường |
+|---|---|---|---|---|---|---|---|
+| UniXcoder 1024 plain (ep0) | −0,07 | −0,05 | +0,01 | −0,08 [−0,10; −0,07] | +0,07 | +0,10 | +0,04 |
+| ModernBERT 2048 λ0,3 (ep3) | +0,01 | **+0,20** | **−0,17** | +0,17 | +0,14 | +0,09 | 0,00 |
+
+→ UniXcoder: có phản ứng đúng chiều nhưng ~0,1 logit (1/15 độ lệch chuẩn), chỉ 3% ca đổi quá 0,5; thực tế không dùng guard.
+ModernBERT: phản ứng mạnh hơn (20–40% ca đổi quá 0,5) nhưng **không theo quan hệ**: guard không liên quan làm dòng lỗi *tăng* điểm, chú thích làm *giảm*
+(Top-10 58 → 51 chỉ vì thêm một dòng chú thích); xóa guard không liên quan (+0,18) tác động mạnh hơn guard liên quan (+0,09). Tức là nó nhạy với
+"mật độ câu kiểm tra quanh đây" và với mọi nhiễu ngữ cảnh, không nhạy với "dòng này có được bảo vệ không". Chẩn đoán ở mục trên được xác nhận:
+điểm dòng hiện tại đến từ hình dạng của dòng, không từ quan hệ giữa các dòng → Train 13 (cặp phản thực khác đúng một guard) là đúng thuốc.
+Cùng script này, đổi chiều (xóa guard khỏi hàm lành của PrimeVul train) là bộ sinh dữ liệu cho Train 13.
+
 ## Lần chạy kế tiếp (Colab Pro, L4)
 
 Quyết định ngân sách (22/10): chạy **một** run trước, rồi mới quyết định có chạy thêm seed không. Hàng đợi mặc định trong `colab_exp5.py`:

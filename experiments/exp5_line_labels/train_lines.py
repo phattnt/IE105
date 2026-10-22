@@ -40,7 +40,7 @@ def log(*a):
 
 
 def read_split(data, split, limit=None):
-    rows = [json.loads(l) for l in open(f"{data}/{split}.jsonl")]
+    rows = [json.loads(l) for l in open(f"{data}/{split}.jsonl", encoding="utf-8")]
     if limit:
         rng = random.Random(0)
         pairs = [r for r in rows if r["target"] == 1 and r["pair_idx"] is not None]
@@ -323,6 +323,25 @@ def score_rows(model, tok, rows, strategy, args, device):
     return line_scores, fn
 
 
+def pair_acc_debiased(rows, fs):
+    """Pair accuracy (ties half) after removing E[score | log chars] (cubic fit, label-free) from the function scores,
+    i.e. the part of the vulnerable-vs-fixed ranking that length alone cannot explain (see debias_length.py)."""
+    x = np.log(np.maximum([len(r["func"]) for r in rows], 1))
+    s = np.asarray(fs, float)
+    ok = s > -1e8
+    if ok.sum() < 10:
+        return 50.0
+    c = np.polyfit(x[ok], s[ok], 3)
+    res = {r["idx"]: v - np.polyval(c, xi) for r, v, xi in zip(rows, s, x)}
+    w = t = 0
+    for r in rows:
+        if r["target"] == 1 and r["pair_idx"] in res:
+            a, b = res[r["idx"]], res[r["pair_idx"]]
+            t += 1
+            w += 1.0 if a > b else 0.5 if a == b else 0.0
+    return 100 * w / t if t else 50.0
+
+
 # ----------------------------------------------------------------------------- fix-contrastive training
 def align_lines(vul, fix):
     """Map each line of the vulnerable version to its counterpart line in the fixed version (difflib on stripped
@@ -456,6 +475,16 @@ def train(data, out, args):
     # add-only fixes have no labelled line; pair mode keeps them (function hinge only, line BCE masked)
     train_rows = [r for r in train_all if r["idx"] not in leak and (pair_mode or not (r["target"] == 1 and not r["flaw_lines"]))]
     log(f"dropped {len(leak)} train functions overlapping the PrimeVul test set (incl. pair partners)")
+    if args.balance_length:
+        by = {r["idx"]: r for r in train_rows}
+        longer, rest = [], []
+        for r in train_rows:
+            if r["target"] == 1 and r["pair_idx"] in by:
+                (longer if by[r["pair_idx"]]["n_lines"] > r["n_lines"] else rest).append(r["idx"])
+        drop = set(random.Random(args.seed).sample(longer, max(0, len(longer) - len(rest))))
+        drop |= {by[i]["pair_idx"] for i in drop}
+        train_rows = [r for r in train_rows if r["idx"] not in drop]
+        log(f"balance_length: {len(longer)} pairs with a longer fix vs {len(rest)} shorter/equal -> dropped {len(drop)} functions")
     valid = read_split(data, "valid", args.limit)
     test = read_split(data, "test", args.limit)
     log(f"train {len(train_rows)} functions{'' if pair_mode else ' (add-only fixes dropped)'} | valid {len(valid)} | test {len(test)} | device {device}")
@@ -481,6 +510,11 @@ def train(data, out, args):
     lossf_each = torch.nn.BCEWithLogitsLoss(pos_weight=torch.tensor(pos_weight, device=device), reduction="none")
     ck_last, ck_best = f"{out}/ckpt_last.pt", f"{out}/ckpt_best.pt"
     start_ep, start_b, step, curve, best = 0, 0, 0, [], {"score": -1, "epoch": -1}
+    if args.init and not os.path.exists(ck_last):
+        st = torch.load(args.init, map_location="cpu")
+        st = st["model"] if "model" in st else st
+        model.load_state_dict({k: v.float() for k, v in st.items()})
+        log(f"initialised from {args.init}")
     if os.path.exists(ck_last):
         st = torch.load(ck_last, map_location="cpu")
         model.load_state_dict({k: v.float() for k, v in st["model"].items()})
@@ -532,7 +566,11 @@ def train(data, out, args):
                 save_last(ep, bi + 1)
         ls, fs = score_rows(model, tok, valid, args.strategy, args, device)
         m = evaluate(valid, ls, fs, *valid_groups)
-        score = m.get("lines_ALL", {}).get("top5", 0) + (m["same_text_flaw_lines"]["vul_scored_higher_pct"] or 50)
+        m["pairs_debiased"] = pair_acc_debiased(valid, fs)
+        if args.select == "top5_pair_debias":
+            score = m.get("lines_ALL", {}).get("top5", 0) + m["pairs_debiased"]
+        else:
+            score = m.get("lines_ALL", {}).get("top5", 0) + (m["same_text_flaw_lines"]["vul_scored_higher_pct"] or 50)
         curve.append({"epoch": ep, "valid": m, "select_score": score})
         log(f"valid ep {ep}: {json.dumps(m)}")
         if score > best["score"]:
@@ -591,6 +629,12 @@ if __name__ == "__main__":
     ap.add_argument("--max_pair_views", type=int, default=4, help="max windows per function inside a pair item")
     ap.add_argument("--tag", default="", help="suffix for the run name")
     ap.add_argument("--patience", type=int, default=0, help="stop after this many epochs without a better valid score (0 = off)")
+    ap.add_argument("--init", default=None, help="checkpoint (ckpt_best.pt / ckpt_last.pt) to start from, e.g. a stage-1 model")
+    ap.add_argument("--select", choices=["top5_same_text", "top5_pair_debias"], default="top5_same_text",
+                    help="epoch selection score on valid: Top-5 + same-text %% (old, biased by one function) or "
+                         "Top-5 + length-debiased pair accuracy")
+    ap.add_argument("--balance_length", action="store_true",
+                    help="drop pairs whose fixed version is longer until they are as many as the shorter/equal ones")
     a = ap.parse_args()
     data = find_data(a.data)
     if a.strategy != "controls":

@@ -37,23 +37,34 @@ LOGS = f"{ROOT}/logs"
 PRIMEVUL_FOLDER = "19iLaNDS0z99N8kB_jBRTmDLehwZBolMY"
 
 MODERNBERT, UNIXCODER = "answerdotai/ModernBERT-base", "microsoft/unixcoder-base"
-COMMON = "--strategy slide --train_tokens 8192 --bf16 --epochs 4 --patience 2 --ckpt_every 400"
+SYNTH = f"{ROOT}/synth_guards"
+SYNTH_PAIRS = 40000
+COMMON = "--strategy slide --train_tokens 8192 --bf16 --ckpt_every 400"
 PLAIN = "--lam_line 0 --lam_fn 0"
+CONTRAST = "--lam_line 1.0 --lam_fn 1.0 --margin 1"
 CONTRAST_LIGHT = "--lam_line 0.3 --lam_fn 1.0 --margin 1"
 
-# (seed, tag, loss args, model, max_len). Run name = slide_{model}_{max_len}_s{seed}{tag}, as in results/.
-# Done: ModernBERT 2048 plain s0 (_conv), contrast s0 (_contrast_conv), light contrast s0 (_contrast03_conv).
-# 22/10: backbone/window check — UniXcoder (RoBERTa, 1024 positions, code-pretrained with AST) on the same
-# line-label pipeline. Its group-A numbers (functions that fit any window) isolate the backbone effect from the
-# window effect when set against ModernBERT 2048.
+# One dict per run. Run name = slide_{model}_{max_len}_s{seed}{tag}, as in results/. Keys: seed, tag, loss, model,
+# max_len, and optionally data (default: SecVulEval line labels), epochs/patience (default 4/2), init (name of an
+# earlier run in this queue whose ckpt_best.pt initialises the model), extra (more train_lines.py flags).
+# Done: ModernBERT 2048 plain s0 (_conv), contrast s0 (_contrast_conv), light contrast s0 (_contrast03_conv),
+# UniXcoder 1024 plain s0 (_conv).
+# 22/10 Train 13: stage 1 learns "a guard is missing above this line" from synthetic counterfactual pairs
+# (make_synthetic_guards.py: one guard removed from a benign PrimeVul function; both versions differ by 1-3 lines, so
+# no length shortcut exists); stage 2 fine-tunes that model on SecVulEval like the plain _conv run, once as is and once
+# with the pair length distribution balanced. Epoch selection uses Top-5 + length-debiased pair accuracy.
+SELECT = "--select top5_pair_debias"
+STAGE1 = "slide_ModernBERT-base_2048_s0_synth1"
 RUNS = [
-    (0, "_conv", PLAIN, UNIXCODER, 1024),
+    dict(seed=0, tag="_synth1", loss=CONTRAST, model=MODERNBERT, max_len=2048, data=SYNTH, epochs=1, patience=0, extra=SELECT),
+    dict(seed=0, tag="_s13_conv", loss=PLAIN, model=MODERNBERT, max_len=2048, init=STAGE1, extra=SELECT),
+    dict(seed=0, tag="_s13bal_conv", loss=PLAIN, model=MODERNBERT, max_len=2048, init=STAGE1, extra=f"{SELECT} --balance_length"),
 ]
 EXTRA_SEEDS = [
-    (1, "_conv", PLAIN, MODERNBERT, 2048),
-    (1, "_contrast03_conv", CONTRAST_LIGHT, MODERNBERT, 2048),
-    (2, "_conv", PLAIN, MODERNBERT, 2048),
-    (2, "_contrast03_conv", CONTRAST_LIGHT, MODERNBERT, 2048),
+    dict(seed=1, tag="_conv", loss=PLAIN, model=MODERNBERT, max_len=2048),
+    dict(seed=1, tag="_contrast03_conv", loss=CONTRAST_LIGHT, model=MODERNBERT, max_len=2048),
+    dict(seed=2, tag="_conv", loss=PLAIN, model=MODERNBERT, max_len=2048),
+    dict(seed=2, tag="_contrast03_conv", loss=CONTRAST_LIGHT, model=MODERNBERT, max_len=2048),
 ]
 if os.environ.get("EXP5_EXTRA_SEEDS"):
     RUNS += EXTRA_SEEDS
@@ -103,6 +114,11 @@ def setup():
             sys.exit(1)
     if not os.path.exists(f"{DATA}/test.jsonl"):
         sh(f"{sys.executable} {D}/prepare_secvuleval.py --out {DATA} --primevul_dir {PRIMEVUL}")
+    if any(r.get("data") == SYNTH for r in RUNS) and not os.path.exists(f"{SYNTH}/train.jsonl"):
+        if not os.path.exists(f"{PRIMEVUL}/primevul_train.jsonl"):
+            qlog("primevul_train.jsonl missing - needed for make_synthetic_guards.py")
+            sys.exit(1)
+        sh(f"cd {D} && {sys.executable} make_synthetic_guards.py --primevul {PRIMEVUL} --secvul {DATA} --out {SYNTH} --max_train {SYNTH_PAIRS}")
 
 
 def stream(cmd, log_path):
@@ -126,13 +142,20 @@ def main():
     ap.add_argument("--skip_setup", action="store_true")
     a = ap.parse_args()
     os.makedirs(LOGS, exist_ok=True)
-    queue = [(run_name(s, t, m, L), s, t, f"--model {m} --max_len {L} {x}") for s, t, x, m, L in RUNS]
+    queue = []
+    for r in RUNS:
+        nm = run_name(r["seed"], r["tag"], r["model"], r["max_len"])
+        x = (f"--model {r['model']} --max_len {r['max_len']} {r['loss']} --epochs {r.get('epochs', 4)} "
+             f"--patience {r.get('patience', 2)} --data {r.get('data', DATA)} {r.get('extra', '')}")
+        if r.get("init"):
+            x += f" --init {ROOT}/{r['init']}/ckpt_best.pt"
+        queue.append((nm, r["seed"], r["tag"], x, r.get("init")))
     if a.only:
         queue = [q for q in queue if any(o in q[0] for o in a.only)]
     qlog("queue:", ", ".join(q[0] for q in queue))
     if a.dry:
-        for nm, s, t, x in queue:
-            print(f"{sys.executable} {D}/train_lines.py {COMMON} {x} --seed {s} --tag {t} --data {DATA} --out {ROOT}/{nm}")
+        for nm, s, t, x, _ in queue:
+            print(f"{sys.executable} {D}/train_lines.py {COMMON} {x} --seed {s} --tag {t} --out {ROOT}/{nm}")
             print(f"{sys.executable} {D}/eval_primevul.py --run {ROOT}/{nm} --primevul {PRIMEVUL}")
         return
     import torch  # preinstalled on Colab
@@ -142,17 +165,20 @@ def main():
     qlog("GPU:", torch.cuda.get_device_name(0), "| bf16:", torch.cuda.is_bf16_supported())
     if not a.skip_setup:
         setup()
-    for nm, s, t, x in queue:
+    for nm, s, t, x, init in queue:
         out, log = f"{ROOT}/{nm}", f"{LOGS}/{nm}.log"
         if os.path.exists(f"{out}/primevul_results.json"):
             qlog(f"skip {nm} (trained and scored)")
+            continue
+        if init and not os.path.exists(f"{ROOT}/{init}/ckpt_best.pt"):
+            qlog(f"{nm}: init checkpoint {init}/ckpt_best.pt missing - skipped")
             continue
         t_run = time.time()
         if os.path.exists(f"{out}/results.json"):
             qlog(f"{nm}: results.json exists, PrimeVul scoring only")
         else:
             qlog(f"start {nm}")
-            rc = stream(f"{sys.executable} {D}/train_lines.py {COMMON} {x} --seed {s} --tag {t} --data {DATA} --out {out}", log)
+            rc = stream(f"{sys.executable} {D}/train_lines.py {COMMON} {x} --seed {s} --tag {t} --out {out}", log)
             if rc != 0 or not os.path.exists(f"{out}/results.json"):
                 qlog(f"{nm}: train exit {rc} - moving on (relaunch resumes from ckpt_last.pt)")
                 continue
