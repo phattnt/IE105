@@ -130,6 +130,12 @@ mọi cách gộp, mọi run** (đối chứng độ dài 0,507); cặp sau tr�
 → Kết luận dứt khoát: **điểm dòng không chứa thông tin mức hàm ngoài độ dài**; gộp kiểu gì cũng không lấy ra được. Mức hàm chỉ có thể khá lên
 khi chính điểm dòng mang tín hiệu khác (kỹ năng guard của `synth1` là ứng viên duy nhất đến giờ, và nó bị dạy nối tiếp xóa mất → run `_mix_conv`).
 
+**Run 3 (`s13bal_conv`: như giai đoạn 2 + `--balance_length` theo ký tự, 1,8 giờ, ~3 unit, best ep2) – cân độ dài bằng cách bớt dữ liệu không giúp.**
+Cân theo ký tự bỏ 3.285 cặp (6.570 hàm, 35% tập dạy; bản đếm theo dòng không bỏ cặp nào vì sửa tại chỗ giữ số dòng, run đó bị dừng).
+Test SecVulEval: Top-10 **65,8** (A 89,9 / B 62,5 / C 27,7) – kém `s0_conv` 3 điểm và `s13_conv` 6 điểm; cặp 56,0 → **51,0** sau trừ độ dài (= `s0_conv`), ρ −0,69.
+PrimeVul: Top-10 54,3, cặp 58,3 → 52,9, toàn tập ROC 0,26 → 0,48. Probe: xóa guard +0,49, chèn G1 −0,27 nhưng chèn chú thích cũng −0,29 → chỉ dấu vết.
+→ Mô hình vẫn học lối tắt từ 65% dữ liệu còn lại; bớt dữ liệu chỉ làm tìm dòng tụt. Hướng "cân độ dài" đóng.
+
 ## Lần chạy kế tiếp (Colab Pro, L4)
 
 Quyết định ngân sách (22/10): chạy **một** run trước, rồi mới quyết định có chạy thêm seed không. Hàng đợi mặc định trong `colab_exp5.py`:
