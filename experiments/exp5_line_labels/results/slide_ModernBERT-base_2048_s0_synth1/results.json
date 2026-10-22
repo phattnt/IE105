@@ -1,0 +1,155 @@
+{
+ "experiment": "exp5 line-level supervision on SecVulEval + fix-contrastive losses",
+ "args": {
+  "strategy": "slide",
+  "model": "answerdotai/ModernBERT-base",
+  "data": "/content/exp5/synth_guards",
+  "out": "/content/exp5/slide_ModernBERT-base_2048_s0_synth1",
+  "max_len": 2048,
+  "epochs": 1,
+  "train_tokens": 8192,
+  "eval_tokens": 32768,
+  "lr": 2e-05,
+  "seed": 0,
+  "max_pos_weight": 20.0,
+  "ckpt_every": 400,
+  "limit": null,
+  "bf16": true,
+  "lam_line": 1.0,
+  "lam_fn": 1.0,
+  "margin": 1.0,
+  "pair_batches": false,
+  "max_pair_views": 4,
+  "tag": "_synth1",
+  "patience": 0,
+  "init": null,
+  "select": "top5_pair_debias",
+  "balance_length": false
+ },
+ "best_epoch": 0,
+ "valid_curve": [
+  {
+   "epoch": 0,
+   "valid": {
+    "lines_ALL": {
+     "n": 2000,
+     "median_ifa": 0.0,
+     "top1": 74.65,
+     "top5": 91.35,
+     "top10": 95.75,
+     "rand_top1": 5.125531906176434,
+     "rand_top5": 25.2359928642155,
+     "rand_top10": 43.88170795065322
+    },
+    "lines_A": {
+     "n": 1259,
+     "median_ifa": 0.0,
+     "top1": 80.54011119936457,
+     "top5": 96.98173153296267,
+     "top10": 99.3645750595711,
+     "rand_top1": 7.284677237146473,
+     "rand_top5": 35.801199264895736,
+     "rand_top10": 61.133331368905395
+    },
+    "lines_B": {
+     "n": 477,
+     "median_ifa": 0.0,
+     "top1": 69.81132075471697,
+     "top5": 87.84067085953879,
+     "top10": 93.9203354297694,
+     "rand_top1": 1.6467613059292527,
+     "rand_top5": 8.233806529646262,
+     "rand_top10": 16.46761305929252
+    },
+    "lines_C": {
+     "n": 264,
+     "median_ifa": 0.0,
+     "top1": 55.3030303030303,
+     "top5": 70.83333333333334,
+     "top10": 81.81818181818183,
+     "rand_top1": 1.1142046509742511,
+     "rand_top5": 5.571023254871258,
+     "rand_top10": 11.142046509742515
+    },
+    "function": {
+     "n": 4000,
+     "vulnerable": 2000,
+     "auprc": 0.9095541310216221,
+     "roc_auc": 0.8820717499999999,
+     "spearman_with_tokens": -0.18519899094993691
+    },
+    "pairs": {
+     "n": 2000,
+     "ties": 8,
+     "ranking_acc_ties_half": 99.05000000000001,
+     "ranking_acc_non_tied": 99.24698795180723
+    },
+    "same_text_flaw_lines": {
+     "n": 1966,
+     "vul_scored_higher_pct": 99.92370295015259
+    },
+    "pairs_debiased": 98.8
+   },
+   "select_score": 190.14999999999998
+  }
+ ],
+ "test": {
+  "lines_ALL": {
+   "n": 1037,
+   "median_ifa": 5.0,
+   "top1": 19.09353905496625,
+   "top5": 47.73384763741562,
+   "top10": 64.32015429122468,
+   "rand_top1": 11.433263614523854,
+   "rand_top5": 34.327928788284964,
+   "rand_top10": 48.667007900367594
+  },
+  "lines_A": {
+   "n": 417,
+   "median_ifa": 2.0,
+   "top1": 34.05275779376499,
+   "top5": 75.0599520383693,
+   "top10": 91.84652278177458,
+   "rand_top1": 20.472506752819026,
+   "rand_top5": 57.83867857756011,
+   "rand_top10": 77.4444301348686
+  },
+  "lines_B": {
+   "n": 389,
+   "median_ifa": 7.0,
+   "top1": 13.110539845758353,
+   "top5": 39.33161953727507,
+   "top10": 58.86889460154242,
+   "rand_top1": 7.610360620416337,
+   "rand_top5": 25.162195294348066,
+   "rand_top10": 38.59119905130036
+  },
+  "lines_C": {
+   "n": 231,
+   "median_ifa": 25.0,
+   "top1": 2.1645021645021645,
+   "top5": 12.554112554112553,
+   "top10": 23.809523809523807,
+   "rand_top1": 1.5533713030032332,
+   "rand_top5": 7.321381892240428,
+   "rand_top10": 13.685642404697623
+  },
+  "function": {
+   "n": 2606,
+   "vulnerable": 1061,
+   "auprc": 0.4340921836617001,
+   "roc_auc": 0.5346644339314746,
+   "spearman_with_tokens": -0.20588916538198598
+  },
+  "pairs": {
+   "n": 979,
+   "ties": 68,
+   "ranking_acc_ties_half": 56.281920326864146,
+   "ranking_acc_non_tied": 56.75082327113062
+  },
+  "same_text_flaw_lines": {
+   "n": 3737,
+   "vul_scored_higher_pct": 53.211131924003205
+  }
+ }
+}

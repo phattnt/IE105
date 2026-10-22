@@ -85,6 +85,51 @@ ModernBERT: phản ứng mạnh hơn (20–40% ca đổi quá 0,5) nhưng **khô
 điểm dòng hiện tại đến từ hình dạng của dòng, không từ quan hệ giữa các dòng → Train 13 (cặp phản thực khác đúng một guard) là đúng thuốc.
 Cùng script này, đổi chiều (xóa guard khỏi hàm lành của PrimeVul train) là bộ sinh dữ liệu cho Train 13.
 
+## Train 13 – học sơ bộ bằng cặp phản thực "rút guard" (22/10, đang chạy)
+
+`make_synthetic_guards.py`: với mỗi hàm lành của `primevul_train` có một guard `if (...) return/break/continue/goto;` (1–3 dòng), xóa guard đó
+→ bản "lỗi giả" với đúng một dòng nhãn 1 = dòng kế tiếp (câu lệnh mất bảo vệ); bản gốc là bản "đã vá". Hai bản chỉ khác 1–3 dòng nên không có
+lối tắt độ dài. Loại hàm trùng chữ với SecVulEval/PrimeVul test. 40.000 cặp train (ưu tiên guard chia sẻ biến với dòng nạn nhân: 64%), 2.000 cặp
+valid; test = SecVulEval test. Hàng đợi: `synth1` (ModernBERT 2048, λ_line 1, λ_fn 1, 1 epoch) → `s13_conv` (dạy tiếp trên SecVulEval như `s0_conv`,
+`--init`) → `s13bal_conv` (như trên + `--balance_length`). Chọn epoch bằng `--select top5_pair_debias`. ~7 unit.
+
+**Giai đoạn 1 (`synth1`, 1 giờ, ~1,5 unit) – chưa thấy một lỗi thật nào:** valid tự tạo Top-1/5/10 74,7 / 91,4 / 95,8, cặp 99,1.
+Test SecVulEval: Top-10 **64,3** (A **91,8** = bằng `s0_conv`; B 58,9; C 23,8), cặp 56,3 → **55,4** sau trừ độ dài, tương quan điểm–độ dài **−0,21**
+(các run học trên SecVulEval: −0,4 … −0,8). PrimeVul Top-10 dòng 51,8. Phép thử guard (`probe_guards.py`) trên checkpoint này:
+
+| Checkpoint | chèn G1 | chèn G2 | chèn N | xóa guard | xóa guard liên quan | xóa câu thường |
+|---|---|---|---|---|---|---|
+| `synth1` | **−1,66** (77% ca > 0,5) | −1,44 | +1,21 | **+6,00** (99% ca) | +6,09 | +0,82 |
+| (các run trước, để so) | −0,07 … +0,01 | | | +0,07 … +0,14 | | |
+
+→ Mô hình học được quan hệ "có/không có câu kiểm tra ngay trên dòng này" rất mạnh (xóa guard: +6 logit; các run cũ: +0,1). Hai điểm cần nói thật:
+(1) G2 ≈ G1 và xóa guard không liên quan ≈ liên quan: nó học "có guard ở trên" chứ chưa phải "guard kiểm tra đúng biến của tôi" – hợp lý vì 36% guard
+trong dữ liệu tự tạo không chia sẻ biến; (2) chèn một dòng chú thích làm dòng lỗi *tăng* 1,2 logit: lối tắt của dữ liệu tự tạo – dòng nạn nhân thường
+đứng ngay sau một dòng không phải câu lệnh (chú thích, khai báo, dòng trống) vì guard hay nằm đầu khối. Phiên bản 2 của dữ liệu cần thêm cặp
+đối chứng "xóa một dòng chú thích/trống" với nhãn 0 và guard giả có biến không liên quan.
+
+**Giai đoạn 2 (`s13_conv`: dạy tiếp trên SecVulEval như `s0_conv`, 1,9 giờ, ~3 unit, dừng sớm, best ep0).** Test SecVulEval: Top-10 **71,5**
+(A 92,8 / B **71,7** / C 32,5), Top-5 56,3. Bootstrap `s13_conv − s0_conv`: Top-10 **+2,7 [+0,7; +5,4]**, Top-5 **+2,7 [+0,4; +5,5]** – cải thiện tìm dòng đầu
+tiên có CI không chứa 0; cặp +5,1 [−1,2; +9,5] nhưng là nhờ bám độ dài nặng hơn (ρ −0,88): sau trừ độ dài 52,8 (plain 51,0). PrimeVul: Top-10 58,8
+(plain 59,4; B 68,0 / C 28,8), cặp 64,8 → 50,5 sau trừ, toàn tập ROC 0,22 → 0,52. Phép thử guard sau giai đoạn 2: chèn G1 −0,12, xóa guard **+0,28**
+(giai đoạn 1: −1,66 / +6,0; run cũ: ±0,1) – kỹ năng guard bị dữ liệu thật ghi đè ~95% sau một epoch, chỉ còn dấu vết (guard liên quan +0,34 > không
+liên quan +0,23). → Dạy **nối tiếp** không giữ được kỹ năng; cần **trộn** hai loại dữ liệu trong cùng một run (`--extra_train`, run `_mix_conv`).
+
+| | Run gốc `s0_conv` | gđ1 `synth1` | gđ2 `s13_conv` |
+|---|---|---|---|
+| SecVulEval Top-10 (A / B / C) | 68,8 (91,8 / 63,0 / 36,8) | 64,3 (91,8 / 58,9 / 23,8) | **71,5** (92,8 / 71,7 / 32,5) |
+| SecVulEval cặp thô → trừ độ dài; ρ | 58,0 → 51,0; −0,75 | 56,3 → 55,4; −0,21 | 62,9 → 52,8; −0,88 |
+| PrimeVul Top-10 (A / B / C) | 59,4 (88,3 / 63,9 / 32,6) | 51,8 (82,5 / 60,7 / 19,7) | 58,8 (86,4 / 68,0 / 28,8) |
+| PrimeVul cặp trừ độ dài; toàn tập ROC sau trừ | 53,3; 0,49 | 54,8; 0,48 | 50,5; 0,52 |
+| Probe: chèn guard / xóa guard | – | −1,66 / +6,0 | −0,12 / +0,28 |
+
+**Đổi cách gộp dòng → hàm trên điểm đã lưu (23/10, `aggregate_scores.py`, 0 unit) – bệnh không nằm ở cách gộp.** Thử 9 cách gộp
+(max, trung bình 3 dòng cao nhất, logsumexp, trung bình, số/tỉ lệ dòng > 0, max trừ log số dòng, max trừ kỳ vọng max của N dòng) trên 4 run
+(`s0_conv`, `s0_contrast_conv`, `synth1`, `s13_conv`), SecVulEval test, chấm thô và sau trừ độ dài. ROC toàn tập sau trừ độ dài: **0,50–0,53 ở
+mọi cách gộp, mọi run** (đối chứng độ dài 0,507); cặp sau trừ độ dài không cách nào vượt max quá 2 điểm, các cách đếm dòng còn tệ hơn (35–48).
+→ Kết luận dứt khoát: **điểm dòng không chứa thông tin mức hàm ngoài độ dài**; gộp kiểu gì cũng không lấy ra được. Mức hàm chỉ có thể khá lên
+khi chính điểm dòng mang tín hiệu khác (kỹ năng guard của `synth1` là ứng viên duy nhất đến giờ, và nó bị dạy nối tiếp xóa mất → run `_mix_conv`).
+
 ## Lần chạy kế tiếp (Colab Pro, L4)
 
 Quyết định ngân sách (22/10): chạy **một** run trước, rồi mới quyết định có chạy thêm seed không. Hàng đợi mặc định trong `colab_exp5.py`:

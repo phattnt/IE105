@@ -59,6 +59,8 @@ RUNS = [
     dict(seed=0, tag="_synth1", loss=CONTRAST, model=MODERNBERT, max_len=2048, data=SYNTH, epochs=1, patience=0, extra=SELECT),
     dict(seed=0, tag="_s13_conv", loss=PLAIN, model=MODERNBERT, max_len=2048, init=STAGE1, extra=SELECT),
     dict(seed=0, tag="_s13bal_conv", loss=PLAIN, model=MODERNBERT, max_len=2048, init=STAGE1, extra=f"{SELECT} --balance_length"),
+    # 23/10: sequential stage 1 -> 2 lost the guard skill (probe +6.0 -> +0.28); mix 8k synthetic pairs into every epoch instead
+    dict(seed=0, tag="_mix_conv", loss=PLAIN, model=MODERNBERT, max_len=2048, extra=f"{SELECT} --extra_train {SYNTH} --extra_pairs 8000"),
 ]
 EXTRA_SEEDS = [
     dict(seed=1, tag="_conv", loss=PLAIN, model=MODERNBERT, max_len=2048),

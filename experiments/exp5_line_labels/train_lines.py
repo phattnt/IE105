@@ -469,6 +469,16 @@ def train(data, out, args):
     random.seed(args.seed); np.random.seed(args.seed); torch.manual_seed(args.seed)
     tok = AutoTokenizer.from_pretrained(args.model)
     train_all = read_split(data, "train", args.limit)
+    if args.extra_train:
+        extra = read_split(args.extra_train, "train", args.limit)
+        if args.extra_pairs is not None:
+            rng = random.Random(args.seed)
+            vul = [r for r in extra if r["target"] == 1 and r["pair_idx"] is not None]
+            keep = {r["idx"] for r in rng.sample(vul, min(len(vul), args.extra_pairs))}
+            keep |= {r["pair_idx"] for r in vul if r["idx"] in keep}
+            extra = [r for r in extra if r["idx"] in keep]
+        log(f"mixed in {len(extra)} functions from {args.extra_train}")
+        train_all += extra
     leak = {r["idx"] for r in train_all if r.get("in_primevul_test")}
     leak |= {r["pair_idx"] for r in train_all if r["idx"] in leak and r["pair_idx"] is not None}
     pair_mode = args.lam_line > 0 or args.lam_fn > 0 or args.pair_batches
@@ -480,11 +490,12 @@ def train(data, out, args):
         longer, rest = [], []
         for r in train_rows:
             if r["target"] == 1 and r["pair_idx"] in by:
-                (longer if by[r["pair_idx"]]["n_lines"] > r["n_lines"] else rest).append(r["idx"])
+                # by characters: in-place edits keep the line count but the fix is still longer in ~75% of pairs
+                (longer if len(by[r["pair_idx"]]["func"]) > len(r["func"]) else rest).append(r["idx"])
         drop = set(random.Random(args.seed).sample(longer, max(0, len(longer) - len(rest))))
         drop |= {by[i]["pair_idx"] for i in drop}
         train_rows = [r for r in train_rows if r["idx"] not in drop]
-        log(f"balance_length: {len(longer)} pairs with a longer fix vs {len(rest)} shorter/equal -> dropped {len(drop)} functions")
+        log(f"balance_length: {len(longer)} pairs with a longer fix (chars) vs {len(rest)} shorter/equal -> dropped {len(drop)} functions")
     valid = read_split(data, "valid", args.limit)
     test = read_split(data, "test", args.limit)
     log(f"train {len(train_rows)} functions{'' if pair_mode else ' (add-only fixes dropped)'} | valid {len(valid)} | test {len(test)} | device {device}")
@@ -635,6 +646,8 @@ if __name__ == "__main__":
                          "Top-5 + length-debiased pair accuracy")
     ap.add_argument("--balance_length", action="store_true",
                     help="drop pairs whose fixed version is longer until they are as many as the shorter/equal ones")
+    ap.add_argument("--extra_train", default=None, help="second data dir whose train.jsonl is mixed into training (e.g. synth_guards)")
+    ap.add_argument("--extra_pairs", type=int, default=None, help="keep this many pairs of --extra_train (seed-fixed); default all")
     a = ap.parse_args()
     data = find_data(a.data)
     if a.strategy != "controls":
