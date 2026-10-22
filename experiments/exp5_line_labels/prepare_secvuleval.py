@@ -138,7 +138,7 @@ def main():
     if not a.skip_primevul:
         os.makedirs(a.primevul_dir, exist_ok=True)
         if not any(f.endswith(".jsonl") for f in os.listdir(a.primevul_dir)):
-            subprocess.run(f"gdown -q --folder https://drive.google.com/drive/folders/{PRIMEVUL_FOLDER} -O {a.primevul_dir} --remaining-ok", shell=True)
+            subprocess.run(f"gdown -q --folder https://drive.google.com/drive/folders/{PRIMEVUL_FOLDER} -O {a.primevul_dir}", shell=True)
         hashes = {}
         for split in ("train", "valid", "test"):
             p = f"{a.primevul_dir}/primevul_{split}.jsonl"

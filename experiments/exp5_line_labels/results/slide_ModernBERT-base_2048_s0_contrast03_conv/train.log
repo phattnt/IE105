@@ -1,0 +1,197 @@
+
+$ /usr/bin/python3 /content/IE105/experiments/exp5_line_labels/train_lines.py --strategy slide --model answerdotai/ModernBERT-base --max_len 2048 --train_tokens 8192 --bf16 --epochs 4 --patience 2 --ckpt_every 400 --lam_line 0.3 --lam_fn 1.0 --margin 1 --seed 0 --tag _contrast03_conv --data /content/exp5/secvul_lines --out /content/exp5/slide_ModernBERT-base_2048_s0_contrast03_conv
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[    16.2s] data /content/exp5/secvul_lines -> out /content/exp5/slide_ModernBERT-base_2048_s0_contrast03_conv
+[    19.8s] dropped 679 train functions overlapping the PrimeVul test set (incl. pair partners)
+[    20.0s] train 19571 functions | valid 2584 | test 2606 | device cuda
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (8233 > 8192). Running this sequence through the model will result in indexing errors
+[   521.1s] pair mode: 7789 vulnerable/fixed pairs, 35357 aligned flaw lines, 5338 single views | lam_line 0.3 lam_fn 1.0 margin 1.0
+[   521.2s] 23197 training views | lines: 43000 flaw / 1635519 clean | pos_weight 20.0
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (730 > 512). Running this sequence through the model will result in indexing errors
+
+Loading weights:   0%|          | 0/134 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 134/134 [00:00<00:00, 4310.89it/s]
+[transformers] [1mModernBertModel LOAD REPORT[0m from: answerdotai/ModernBERT-base
+Key               | Status     |  | 
+------------------+------------+--+-
+head.dense.weight | UNEXPECTED |  | 
+decoder.bias      | UNEXPECTED |  | 
+head.norm.weight  | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[   611.5s]   ep 0 step 100/11400 loss 2.2058 (bce 1.135 line-hinge 0.770 fn-hinge 0.840) | 9.0 items/s
+[   666.4s]   ep 0 step 200/11400 loss 2.0555 (bce 1.021 line-hinge 0.735 fn-hinge 0.814) | 9.5 items/s
+[   717.9s]   ep 0 step 300/11400 loss 1.9465 (bce 0.990 line-hinge 0.704 fn-hinge 0.745) | 9.7 items/s
+[   769.8s]   ep 0 step 400/11400 loss 1.7382 (bce 0.809 line-hinge 0.622 fn-hinge 0.742) | 9.5 items/s
+[   770.1s] saved checkpoint epoch 0 batch 400 step 400
+[   821.0s]   ep 0 step 500/11400 loss 1.8789 (bce 0.964 line-hinge 0.698 fn-hinge 0.705) | 9.3 items/s
+[   871.4s]   ep 0 step 600/11400 loss 2.1481 (bce 1.195 line-hinge 0.713 fn-hinge 0.739) | 9.1 items/s
+[   924.4s]   ep 0 step 700/11400 loss 1.8471 (bce 0.937 line-hinge 0.710 fn-hinge 0.697) | 8.8 items/s
+[   975.2s]   ep 0 step 800/11400 loss 2.6438 (bce 1.637 line-hinge 0.731 fn-hinge 0.788) | 8.8 items/s
+[   975.7s] saved checkpoint epoch 0 batch 800 step 800
+[  1027.5s]   ep 0 step 900/11400 loss 1.9121 (bce 0.848 line-hinge 0.778 fn-hinge 0.831) | 8.8 items/s
+[  1080.4s]   ep 0 step 1000/11400 loss 1.7466 (bce 0.797 line-hinge 0.659 fn-hinge 0.752) | 8.7 items/s
+[  1133.6s]   ep 0 step 1100/11400 loss 2.1402 (bce 1.152 line-hinge 0.667 fn-hinge 0.788) | 8.8 items/s
+[  1183.1s]   ep 0 step 1200/11400 loss 1.5927 (bce 0.651 line-hinge 0.664 fn-hinge 0.742) | 8.7 items/s
+[  1183.7s] saved checkpoint epoch 0 batch 1200 step 1200
+[  1234.8s]   ep 0 step 1300/11400 loss 1.7395 (bce 0.832 line-hinge 0.647 fn-hinge 0.713) | 8.9 items/s
+[  1283.6s]   ep 0 step 1400/11400 loss 1.8466 (bce 1.008 line-hinge 0.620 fn-hinge 0.653) | 9.0 items/s
+[  1336.2s]   ep 0 step 1500/11400 loss 3.0291 (bce 2.064 line-hinge 0.654 fn-hinge 0.768) | 9.0 items/s
+[  1387.9s]   ep 0 step 1600/11400 loss 1.8957 (bce 0.963 line-hinge 0.671 fn-hinge 0.731) | 8.8 items/s
+[  1388.4s] saved checkpoint epoch 0 batch 1600 step 1600
+[  1436.6s]   ep 0 step 1700/11400 loss 2.1286 (bce 1.292 line-hinge 0.573 fn-hinge 0.665) | 8.9 items/s
+[  1485.5s]   ep 0 step 1800/11400 loss 1.6801 (bce 0.828 line-hinge 0.613 fn-hinge 0.668) | 9.0 items/s
+[  1541.6s]   ep 0 step 1900/11400 loss 1.7436 (bce 0.853 line-hinge 0.606 fn-hinge 0.709) | 8.8 items/s
+[  1593.6s]   ep 0 step 2000/11400 loss 2.1517 (bce 1.254 line-hinge 0.654 fn-hinge 0.701) | 8.9 items/s
+[  1594.1s] saved checkpoint epoch 0 batch 2000 step 2000
+[  1644.4s]   ep 0 step 2100/11400 loss 1.8030 (bce 0.839 line-hinge 0.665 fn-hinge 0.765) | 8.9 items/s
+[  1695.9s]   ep 0 step 2200/11400 loss 1.9360 (bce 0.998 line-hinge 0.697 fn-hinge 0.729) | 8.9 items/s
+[  1752.0s]   ep 0 step 2300/11400 loss 2.0483 (bce 1.095 line-hinge 0.630 fn-hinge 0.764) | 8.8 items/s
+[  1799.9s]   ep 0 step 2400/11400 loss 2.0150 (bce 1.247 line-hinge 0.532 fn-hinge 0.609) | 8.9 items/s
+[  1800.4s] saved checkpoint epoch 0 batch 2400 step 2400
+[  1852.1s]   ep 0 step 2500/11400 loss 1.8930 (bce 1.036 line-hinge 0.539 fn-hinge 0.695) | 8.8 items/s
+[  1901.5s]   ep 0 step 2600/11400 loss 2.6411 (bce 1.779 line-hinge 0.607 fn-hinge 0.680) | 8.9 items/s
+[  1951.0s]   ep 0 step 2700/11400 loss 1.8264 (bce 0.905 line-hinge 0.711 fn-hinge 0.708) | 8.9 items/s
+[  2004.9s]   ep 0 step 2800/11400 loss 2.0207 (bce 1.149 line-hinge 0.605 fn-hinge 0.691) | 8.9 items/s
+[  2005.4s] saved checkpoint epoch 0 batch 2800 step 2800
+[  2226.7s] valid ep 0: {"lines_ALL": {"n": 1081, "median_ifa": 3.0, "top1": 29.23219241443108, "top5": 57.16928769657724, "top10": 71.87789084181314, "rand_top1": 13.64938691005086, "rand_top5": 38.953889562762754, "rand_top10": 54.335168187641415}, "lines_A": {"n": 463, "median_ifa": 1.0, "top1": 40.8207343412527, "top5": 77.96976241900649, "top10": 90.92872570194385, "rand_top1": 20.719036742056662, "rand_top5": 58.18691678314103, "rand_top10": 78.03858587334102}, "lines_B": {"n": 416, "median_ifa": 4.0, "top1": 26.442307692307693, "top5": 51.20192307692307, "top10": 68.50961538461539, "rand_top1": 11.570175439733575, "rand_top5": 32.50340767818506, "rand_top10": 46.8833407584975}, "lines_C": {"n": 202, "median_ifa": 20.0, "top1": 8.415841584158416, "top5": 21.782178217821784, "top10": 35.148514851485146, "rand_top1": 1.7271299765523507, "rand_top5": 8.154428478352797, "rand_top10": 15.351395029448062}, "function": {"n": 2584, "vulnerable": 1093, "auprc": 0.4454822967436779, "roc_auc": 0.5261087721817332, "spearman_with_tokens": -0.8883900215894157}, "pairs": {"n": 1003, "ties": 60, "ranking_acc_ties_half": 67.39780658025923, "ranking_acc_non_tied": 68.50477200424177}, "same_text_flaw_lines": {"n": 4305, "vul_scored_higher_pct": 57.189314750290364}}
+[  2227.0s] saved best epoch 0
+[  2227.5s] saved checkpoint epoch 1 batch 0 step 2850
+[  2254.0s]   ep 1 step 2900/11400 loss 0.7474 (bce 0.329 line-hinge 0.294 fn-hinge 0.330) | 6.8 items/s
+[  2306.4s]   ep 1 step 3000/11400 loss 1.6831 (bce 0.798 line-hinge 0.613 fn-hinge 0.701) | 8.3 items/s
+[  2359.5s]   ep 1 step 3100/11400 loss 2.0358 (bce 1.228 line-hinge 0.567 fn-hinge 0.638) | 7.6 items/s
+[  2407.4s]   ep 1 step 3200/11400 loss 1.5302 (bce 0.830 line-hinge 0.443 fn-hinge 0.567) | 8.7 items/s
+[  2407.9s] saved checkpoint epoch 1 batch 350 step 3200
+[  2460.4s]   ep 1 step 3300/11400 loss 1.3656 (bce 0.651 line-hinge 0.473 fn-hinge 0.573) | 9.0 items/s
+[  2514.0s]   ep 1 step 3400/11400 loss 1.4071 (bce 0.657 line-hinge 0.556 fn-hinge 0.584) | 8.8 items/s
+[  2567.9s]   ep 1 step 3500/11400 loss 2.0609 (bce 1.171 line-hinge 0.575 fn-hinge 0.718) | 8.6 items/s
+[  2626.4s]   ep 1 step 3600/11400 loss 1.9303 (bce 1.059 line-hinge 0.562 fn-hinge 0.703) | 8.8 items/s
+[  2626.9s] saved checkpoint epoch 1 batch 750 step 3600
+[  2677.5s]   ep 1 step 3700/11400 loss 2.8485 (bce 1.932 line-hinge 0.657 fn-hinge 0.719) | 8.9 items/s
+[  2729.4s]   ep 1 step 3800/11400 loss 1.5717 (bce 0.855 line-hinge 0.457 fn-hinge 0.580) | 9.1 items/s
+[  2782.5s]   ep 1 step 3900/11400 loss 1.5506 (bce 0.768 line-hinge 0.528 fn-hinge 0.624) | 9.1 items/s
+[  2837.3s]   ep 1 step 4000/11400 loss 1.7746 (bce 0.984 line-hinge 0.520 fn-hinge 0.635) | 9.1 items/s
+[  2837.8s] saved checkpoint epoch 1 batch 1150 step 4000
+[  2890.9s]   ep 1 step 4100/11400 loss 1.6422 (bce 0.919 line-hinge 0.465 fn-hinge 0.584) | 9.0 items/s
+[  2940.6s]   ep 1 step 4200/11400 loss 1.6366 (bce 0.907 line-hinge 0.483 fn-hinge 0.584) | 9.1 items/s
+[  2992.2s]   ep 1 step 4300/11400 loss 1.9741 (bce 1.232 line-hinge 0.524 fn-hinge 0.585) | 9.1 items/s
+[  3044.0s]   ep 1 step 4400/11400 loss 1.8637 (bce 1.140 line-hinge 0.519 fn-hinge 0.568) | 9.2 items/s
+[  3044.5s] saved checkpoint epoch 1 batch 1550 step 4400
+[  3098.0s]   ep 1 step 4500/11400 loss 2.3072 (bce 1.554 line-hinge 0.489 fn-hinge 0.606) | 9.2 items/s
+[  3146.1s]   ep 1 step 4600/11400 loss 1.2632 (bce 0.675 line-hinge 0.381 fn-hinge 0.474) | 9.0 items/s
+[  3195.0s]   ep 1 step 4700/11400 loss 1.5830 (bce 0.829 line-hinge 0.566 fn-hinge 0.584) | 9.1 items/s
+[  3244.9s]   ep 1 step 4800/11400 loss 1.9377 (bce 1.147 line-hinge 0.591 fn-hinge 0.613) | 9.2 items/s
+[  3245.4s] saved checkpoint epoch 1 batch 1950 step 4800
+[  3297.4s]   ep 1 step 4900/11400 loss 2.5941 (bce 1.874 line-hinge 0.462 fn-hinge 0.581) | 9.1 items/s
+[  3350.7s]   ep 1 step 5000/11400 loss 1.1067 (bce 0.469 line-hinge 0.409 fn-hinge 0.515) | 9.0 items/s
+[  3403.0s]   ep 1 step 5100/11400 loss 1.1634 (bce 0.556 line-hinge 0.372 fn-hinge 0.496) | 9.1 items/s
+[  3455.0s]   ep 1 step 5200/11400 loss 3.1200 (bce 2.394 line-hinge 0.514 fn-hinge 0.572) | 9.0 items/s
+[  3455.5s] saved checkpoint epoch 1 batch 2350 step 5200
+[  3507.1s]   ep 1 step 5300/11400 loss 1.4258 (bce 0.730 line-hinge 0.436 fn-hinge 0.565) | 9.0 items/s
+[  3556.4s]   ep 1 step 5400/11400 loss 1.7526 (bce 1.100 line-hinge 0.462 fn-hinge 0.514) | 9.0 items/s
+[  3610.8s]   ep 1 step 5500/11400 loss 1.5451 (bce 0.881 line-hinge 0.472 fn-hinge 0.523) | 8.9 items/s
+[  3664.2s]   ep 1 step 5600/11400 loss 1.2514 (bce 0.532 line-hinge 0.481 fn-hinge 0.575) | 8.9 items/s
+[  3664.8s] saved checkpoint epoch 1 batch 2750 step 5600
+[  3898.3s] valid ep 1: {"lines_ALL": {"n": 1081, "median_ifa": 2.0, "top1": 31.54486586493987, "top5": 59.01942645698427, "top10": 72.43293246993524, "rand_top1": 13.64938691005086, "rand_top5": 38.953889562762754, "rand_top10": 54.335168187641415}, "lines_A": {"n": 463, "median_ifa": 1.0, "top1": 43.196544276457885, "top5": 77.32181425485962, "top10": 90.71274298056156, "rand_top1": 20.719036742056662, "rand_top5": 58.18691678314103, "rand_top10": 78.03858587334102}, "lines_B": {"n": 416, "median_ifa": 3.0, "top1": 27.884615384615387, "top5": 54.567307692307686, "top10": 69.47115384615384, "rand_top1": 11.570175439733575, "rand_top5": 32.50340767818506, "rand_top10": 46.8833407584975}, "lines_C": {"n": 202, "median_ifa": 16.0, "top1": 12.376237623762377, "top5": 26.237623762376238, "top10": 36.633663366336634, "rand_top1": 1.7271299765523507, "rand_top5": 8.154428478352797, "rand_top10": 15.351395029448062}, "function": {"n": 2584, "vulnerable": 1093, "auprc": 0.4589420312610917, "roc_auc": 0.5495344743054239, "spearman_with_tokens": -0.628532778349221}, "pairs": {"n": 1003, "ties": 29, "ranking_acc_ties_half": 62.46261216350947, "ranking_acc_non_tied": 62.83367556468173}, "same_text_flaw_lines": {"n": 4305, "vul_scored_higher_pct": 58.88501742160279}}
+[  3898.8s] saved best epoch 1
+[  3899.3s] saved checkpoint epoch 2 batch 0 step 5670
+[  3914.8s]   ep 2 step 5700/11400 loss 0.4115 (bce 0.214 line-hinge 0.101 fn-hinge 0.167) | 7.0 items/s
+[  3968.0s]   ep 2 step 5800/11400 loss 1.0320 (bce 0.526 line-hinge 0.287 fn-hinge 0.420) | 7.3 items/s
+[  4018.9s]   ep 2 step 5900/11400 loss 1.0970 (bce 0.678 line-hinge 0.250 fn-hinge 0.344) | 7.2 items/s
+[  4070.3s]   ep 2 step 6000/11400 loss 1.3328 (bce 0.771 line-hinge 0.401 fn-hinge 0.441) | 7.6 items/s
+[  4070.9s] saved checkpoint epoch 2 batch 330 step 6000
+[  4124.0s]   ep 2 step 6100/11400 loss 1.0535 (bce 0.574 line-hinge 0.308 fn-hinge 0.388) | 7.5 items/s
+[  4178.4s]   ep 2 step 6200/11400 loss 1.5929 (bce 1.126 line-hinge 0.343 fn-hinge 0.364) | 7.5 items/s
+[  4232.8s]   ep 2 step 6300/11400 loss 2.0054 (bce 1.449 line-hinge 0.350 fn-hinge 0.452) | 7.3 items/s
+[  4283.6s]   ep 2 step 6400/11400 loss 1.1342 (bce 0.710 line-hinge 0.295 fn-hinge 0.336) | 7.7 items/s
+[  4284.2s] saved checkpoint epoch 2 batch 730 step 6400
+[  4331.6s]   ep 2 step 6500/11400 loss 1.7273 (bce 1.204 line-hinge 0.320 fn-hinge 0.427) | 7.9 items/s
+[  4381.8s]   ep 2 step 6600/11400 loss 1.1273 (bce 0.666 line-hinge 0.293 fn-hinge 0.373) | 8.0 items/s
+[  4433.7s]   ep 2 step 6700/11400 loss 1.2734 (bce 0.803 line-hinge 0.351 fn-hinge 0.365) | 8.2 items/s
+[  4491.4s]   ep 2 step 6800/11400 loss 1.0615 (bce 0.605 line-hinge 0.273 fn-hinge 0.374) | 8.1 items/s
+[  4491.9s] saved checkpoint epoch 2 batch 1130 step 6800
+[  4543.8s]   ep 2 step 6900/11400 loss 2.5870 (bce 2.029 line-hinge 0.427 fn-hinge 0.430) | 8.2 items/s
+[  4597.0s]   ep 2 step 7000/11400 loss 1.6703 (bce 1.184 line-hinge 0.309 fn-hinge 0.393) | 8.1 items/s
+[  4649.9s]   ep 2 step 7100/11400 loss 2.0886 (bce 1.584 line-hinge 0.344 fn-hinge 0.402) | 8.3 items/s
+[  4701.6s]   ep 2 step 7200/11400 loss 1.4598 (bce 0.971 line-hinge 0.239 fn-hinge 0.417) | 8.3 items/s
+[  4702.1s] saved checkpoint epoch 2 batch 1530 step 7200
+[  4759.0s]   ep 2 step 7300/11400 loss 1.0450 (bce 0.618 line-hinge 0.361 fn-hinge 0.318) | 8.1 items/s
+[  4808.4s]   ep 2 step 7400/11400 loss 1.1889 (bce 0.720 line-hinge 0.308 fn-hinge 0.376) | 8.3 items/s
+[  4860.4s]   ep 2 step 7500/11400 loss 1.0843 (bce 0.682 line-hinge 0.283 fn-hinge 0.318) | 8.4 items/s
+[  4910.1s]   ep 2 step 7600/11400 loss 1.0783 (bce 0.613 line-hinge 0.306 fn-hinge 0.373) | 8.5 items/s
+[  4910.6s] saved checkpoint epoch 2 batch 1930 step 7600
+[  4960.7s]   ep 2 step 7700/11400 loss 1.0201 (bce 0.572 line-hinge 0.339 fn-hinge 0.347) | 8.6 items/s
+[  5012.5s]   ep 2 step 7800/11400 loss 0.9822 (bce 0.543 line-hinge 0.334 fn-hinge 0.339) | 8.6 items/s
+[  5064.0s]   ep 2 step 7900/11400 loss 1.2068 (bce 0.754 line-hinge 0.295 fn-hinge 0.364) | 8.8 items/s
+[  5118.5s]   ep 2 step 8000/11400 loss 1.1247 (bce 0.685 line-hinge 0.283 fn-hinge 0.355) | 8.8 items/s
+[  5119.1s] saved checkpoint epoch 2 batch 2330 step 8000
+[  5171.1s]   ep 2 step 8100/11400 loss 1.0698 (bce 0.675 line-hinge 0.240 fn-hinge 0.323) | 8.8 items/s
+[  5218.4s]   ep 2 step 8200/11400 loss 1.3822 (bce 0.906 line-hinge 0.343 fn-hinge 0.373) | 9.0 items/s
+[  5271.8s]   ep 2 step 8300/11400 loss 1.4909 (bce 1.122 line-hinge 0.265 fn-hinge 0.290) | 8.9 items/s
+[  5319.4s]   ep 2 step 8400/11400 loss 1.2225 (bce 0.821 line-hinge 0.288 fn-hinge 0.316) | 8.9 items/s
+[  5319.9s] saved checkpoint epoch 2 batch 2730 step 8400
+[  5569.4s] valid ep 2: {"lines_ALL": {"n": 1081, "median_ifa": 3.0, "top1": 29.879740980573544, "top5": 57.816836262719704, "top10": 70.67530064754857, "rand_top1": 13.64938691005086, "rand_top5": 38.953889562762754, "rand_top10": 54.335168187641415}, "lines_A": {"n": 463, "median_ifa": 1.0, "top1": 41.68466522678186, "top5": 75.5939524838013, "top10": 88.98488120950324, "rand_top1": 20.719036742056662, "rand_top5": 58.18691678314103, "rand_top10": 78.03858587334102}, "lines_B": {"n": 416, "median_ifa": 4.0, "top1": 26.923076923076923, "top5": 54.32692307692307, "top10": 66.82692307692307, "rand_top1": 11.570175439733575, "rand_top5": 32.50340767818506, "rand_top10": 46.8833407584975}, "lines_C": {"n": 202, "median_ifa": 20.5, "top1": 8.91089108910891, "top5": 24.257425742574256, "top10": 36.633663366336634, "rand_top1": 1.7271299765523507, "rand_top5": 8.154428478352797, "rand_top10": 15.351395029448062}, "function": {"n": 2584, "vulnerable": 1093, "auprc": 0.45926080403173397, "roc_auc": 0.5508080504987841, "spearman_with_tokens": -0.3165800947175612}, "pairs": {"n": 1003, "ties": 27, "ranking_acc_ties_half": 59.77068793619142, "ranking_acc_non_tied": 60.040983606557376}, "same_text_flaw_lines": {"n": 4305, "vul_scored_higher_pct": 60.11614401858304}}
+[  5569.9s] saved best epoch 2
+[  5570.3s] saved checkpoint epoch 3 batch 0 step 8499
+[  5570.9s]   ep 3 step 8500/11400 loss 0.0095 (bce 0.001 line-hinge 0.000 fn-hinge 0.009) | 8.4 items/s
+[  5622.5s]   ep 3 step 8600/11400 loss 0.7178 (bce 0.489 line-hinge 0.136 fn-hinge 0.188) | 9.7 items/s
+[  5673.2s]   ep 3 step 8700/11400 loss 0.6416 (bce 0.418 line-hinge 0.134 fn-hinge 0.183) | 9.9 items/s
+[  5726.0s]   ep 3 step 8800/11400 loss 1.0817 (bce 0.766 line-hinge 0.162 fn-hinge 0.267) | 9.5 items/s
+[  5726.5s] saved checkpoint epoch 3 batch 301 step 8800
+[  5780.7s]   ep 3 step 8900/11400 loss 0.9952 (bce 0.735 line-hinge 0.190 fn-hinge 0.203) | 9.5 items/s
+[  5830.2s]   ep 3 step 9000/11400 loss 0.8471 (bce 0.609 line-hinge 0.191 fn-hinge 0.181) | 9.4 items/s
+[  5879.1s]   ep 3 step 9100/11400 loss 0.9169 (bce 0.637 line-hinge 0.196 fn-hinge 0.222) | 9.8 items/s
+[  5928.3s]   ep 3 step 9200/11400 loss 0.7937 (bce 0.570 line-hinge 0.106 fn-hinge 0.192) | 9.7 items/s
+[  5928.9s] saved checkpoint epoch 3 batch 701 step 9200
+[  5981.5s]   ep 3 step 9300/11400 loss 0.6434 (bce 0.444 line-hinge 0.142 fn-hinge 0.156) | 9.4 items/s
+[  6032.9s]   ep 3 step 9400/11400 loss 0.8220 (bce 0.584 line-hinge 0.153 fn-hinge 0.192) | 9.2 items/s
+[  6086.5s]   ep 3 step 9500/11400 loss 0.6153 (bce 0.395 line-hinge 0.139 fn-hinge 0.179) | 9.3 items/s
+[  6141.1s]   ep 3 step 9600/11400 loss 0.9375 (bce 0.696 line-hinge 0.150 fn-hinge 0.197) | 9.0 items/s
+[  6141.7s] saved checkpoint epoch 3 batch 1101 step 9600
+[  6194.0s]   ep 3 step 9700/11400 loss 0.6165 (bce 0.442 line-hinge 0.116 fn-hinge 0.139) | 8.9 items/s
+[  6243.5s]   ep 3 step 9800/11400 loss 1.0311 (bce 0.765 line-hinge 0.182 fn-hinge 0.211) | 8.9 items/s
+[  6300.8s]   ep 3 step 9900/11400 loss 1.4428 (bce 1.151 line-hinge 0.194 fn-hinge 0.233) | 8.8 items/s
+[  6350.4s]   ep 3 step 10000/11400 loss 2.1407 (bce 1.883 line-hinge 0.184 fn-hinge 0.203) | 8.9 items/s
+[  6351.0s] saved checkpoint epoch 3 batch 1501 step 10000
+[  6404.4s]   ep 3 step 10100/11400 loss 0.5849 (bce 0.330 line-hinge 0.117 fn-hinge 0.220) | 8.9 items/s
+[  6458.6s]   ep 3 step 10200/11400 loss 0.6045 (bce 0.384 line-hinge 0.142 fn-hinge 0.178) | 8.8 items/s
+[  6507.2s]   ep 3 step 10300/11400 loss 0.7069 (bce 0.466 line-hinge 0.126 fn-hinge 0.203) | 8.9 items/s
+[  6561.8s]   ep 3 step 10400/11400 loss 0.8595 (bce 0.561 line-hinge 0.195 fn-hinge 0.240) | 9.0 items/s
+[  6562.3s] saved checkpoint epoch 3 batch 1901 step 10400
+[  6612.5s]   ep 3 step 10500/11400 loss 0.6817 (bce 0.353 line-hinge 0.176 fn-hinge 0.276) | 9.1 items/s
+[  6663.1s]   ep 3 step 10600/11400 loss 2.1586 (bce 1.972 line-hinge 0.162 fn-hinge 0.138) | 9.0 items/s
+[  6719.6s]   ep 3 step 10700/11400 loss 0.6933 (bce 0.486 line-hinge 0.144 fn-hinge 0.164) | 8.9 items/s
+[  6771.6s]   ep 3 step 10800/11400 loss 0.6871 (bce 0.462 line-hinge 0.156 fn-hinge 0.178) | 8.8 items/s
+[  6772.1s] saved checkpoint epoch 3 batch 2301 step 10800
+[  6821.1s]   ep 3 step 10900/11400 loss 0.6406 (bce 0.400 line-hinge 0.131 fn-hinge 0.201) | 8.9 items/s
+[  6871.3s]   ep 3 step 11000/11400 loss 0.8843 (bce 0.666 line-hinge 0.132 fn-hinge 0.178) | 9.0 items/s
+[  6923.7s]   ep 3 step 11100/11400 loss 0.6349 (bce 0.354 line-hinge 0.177 fn-hinge 0.227) | 8.9 items/s
+[  6976.6s]   ep 3 step 11200/11400 loss 1.0578 (bce 0.756 line-hinge 0.201 fn-hinge 0.242) | 9.0 items/s
+[  6977.1s] saved checkpoint epoch 3 batch 2701 step 11200
+[  7032.8s]   ep 3 step 11300/11400 loss 0.7162 (bce 0.487 line-hinge 0.159 fn-hinge 0.182) | 8.9 items/s
+[  7239.1s] valid ep 3: {"lines_ALL": {"n": 1081, "median_ifa": 3.0, "top1": 29.972247918593897, "top5": 58.09435707678075, "top10": 71.32284921369103, "rand_top1": 13.64938691005086, "rand_top5": 38.953889562762754, "rand_top10": 54.335168187641415}, "lines_A": {"n": 463, "median_ifa": 1.0, "top1": 41.68466522678186, "top5": 76.88984881209502, "top10": 89.6328293736501, "rand_top1": 20.719036742056662, "rand_top5": 58.18691678314103, "rand_top10": 78.03858587334102}, "lines_B": {"n": 416, "median_ifa": 4.0, "top1": 26.442307692307693, "top5": 53.84615384615385, "top10": 68.50961538461539, "rand_top1": 11.570175439733575, "rand_top5": 32.50340767818506, "rand_top10": 46.8833407584975}, "lines_C": {"n": 202, "median_ifa": 18.5, "top1": 10.396039603960396, "top5": 23.762376237623762, "top10": 35.148514851485146, "rand_top1": 1.7271299765523507, "rand_top5": 8.154428478352797, "rand_top10": 15.351395029448062}, "function": {"n": 2584, "vulnerable": 1093, "auprc": 0.4647317240237554, "roc_auc": 0.5514247424160701, "spearman_with_tokens": -0.35242288124035376}, "pairs": {"n": 1003, "ties": 24, "ranking_acc_ties_half": 58.723828514456635, "ranking_acc_non_tied": 58.93769152196119}, "same_text_flaw_lines": {"n": 4305, "vul_scored_higher_pct": 61.02206736353077}}
+[  7239.7s] saved best epoch 3
+[  7240.1s] saved checkpoint epoch 4 batch 0 step 11318
+[  7617.4s] test: {"lines_ALL": {"n": 1037, "median_ifa": 4.0, "top1": 25.168756027000967, "top5": 51.59112825458052, "top10": 66.15236258437801, "rand_top1": 11.433263614523854, "rand_top5": 34.327928788284964, "rand_top10": 48.667007900367594}, "lines_A": {"n": 417, "median_ifa": 1.0, "top1": 38.60911270983213, "top5": 76.97841726618705, "top10": 91.84652278177458, "rand_top1": 20.472506752819026, "rand_top5": 57.83867857756011, "rand_top10": 77.4444301348686}, "lines_B": {"n": 389, "median_ifa": 6.0, "top1": 20.051413881748072, "top5": 42.159383033419026, "top10": 60.411311053984576, "rand_top1": 7.610360620416337, "rand_top5": 25.162195294348066, "rand_top10": 38.59119905130036}, "lines_C": {"n": 231, "median_ifa": 23.0, "top1": 9.523809523809524, "top5": 21.645021645021643, "top10": 29.43722943722944, "rand_top1": 1.5533713030032332, "rand_top5": 7.321381892240428, "rand_top10": 13.685642404697623}, "function": {"n": 2606, "vulnerable": 1061, "auprc": 0.4364494269206866, "roc_auc": 0.5301858477530814, "spearman_with_tokens": -0.37746774171563896}, "pairs": {"n": 979, "ties": 26, "ranking_acc_ties_half": 55.158324821246175, "ranking_acc_non_tied": 55.299055613851}, "same_text_flaw_lines": {"n": 3737, "vul_scored_higher_pct": 52.24779234680225}}
+[  7617.4s] DONE
+
+$ /usr/bin/python3 /content/IE105/experiments/exp5_line_labels/eval_primevul.py --run /content/exp5/slide_ModernBERT-base_2048_s0_contrast03_conv --primevul /content/exp5/primevul
+[     7.6s] PrimeVul: 564 pairs, 25911 test functions
+
+Loading weights:   0%|          | 0/134 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 134/134 [00:00<00:00, 5552.74it/s]
+[transformers] [1mModernBertModel LOAD REPORT[0m from: answerdotai/ModernBERT-base
+Key               | Status     |  | 
+------------------+------------+--+-
+head.dense.weight | UNEXPECTED |  | 
+decoder.bias      | UNEXPECTED |  | 
+head.norm.weight  | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (10246 > 8192). Running this sequence through the model will result in indexing errors
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (733 > 512). Running this sequence through the model will result in indexing errors
+[   190.4s] paired: {"lines_ALL": {"n": 357, "median_ifa": 9.0, "top1": 16.246498599439775, "top5": 38.93557422969188, "top10": 50.42016806722689, "rand_top1": 5.918633195040236, "rand_top5": 22.60531487329123, "rand_top10": 36.6916096025223}, "lines_A": {"n": 103, "median_ifa": 2.0, "top1": 30.097087378640776, "top5": 65.0485436893204, "top10": 80.58252427184466, "rand_top1": 9.930408281595495, "rand_top5": 39.142328736711626, "rand_top10": 63.513065869009964}, "lines_B": {"n": 122, "median_ifa": 6.0, "top1": 15.573770491803279, "top5": 43.44262295081967, "top10": 54.91803278688525, "rand_top1": 6.902678616126441, "rand_top5": 23.858983096552265, "rand_top10": 36.89306172979458}, "lines_C": {"n": 132, "median_ifa": 24.0, "top1": 6.0606060606060606, "top5": 14.393939393939394, "top10": 22.727272727272727, "rand_top1": 1.8787364125575947, "rand_top5": 8.542739485638622, "rand_top10": 15.576555398162863}, "function": {"n": 1128, "vulnerable": 564, "auprc": 0.5289988357352469, "roc_auc": 0.5352943765404155, "spearman_with_tokens": -0.3526141207214789}, "pairs": {"n": 564, "ties": 24, "ranking_acc_ties_half": 60.63829787234043, "ranking_acc_non_tied": 61.111111111111114}, "same_text_flaw_lines": {"n": 200, "vul_scored_higher_pct": 48.25}}
+[   899.1s] full test: {"n": 25911, "vulnerable": 695, "auprc": 0.020289397208264566, "roc_auc": 0.36807123146660337, "spearman_with_tokens": -0.36194214001961683}
+[   899.2s] DONE primevul

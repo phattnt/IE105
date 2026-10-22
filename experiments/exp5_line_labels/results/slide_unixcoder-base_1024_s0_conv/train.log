@@ -1,0 +1,174 @@
+
+$ /usr/bin/python3 /content/IE105/experiments/exp5_line_labels/train_lines.py --strategy slide --train_tokens 8192 --bf16 --epochs 4 --patience 2 --ckpt_every 400 --model microsoft/unixcoder-base --max_len 1024 --lam_line 0 --lam_fn 0 --seed 0 --tag _conv --data /content/exp5/secvul_lines --out /content/exp5/slide_unixcoder-base_1024_s0_conv
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[    15.5s] data /content/exp5/secvul_lines -> out /content/exp5/slide_unixcoder-base_1024_s0_conv
+[    18.8s] dropped 679 train functions overlapping the PrimeVul test set (incl. pair partners)
+[    18.9s] train 18795 functions (add-only fixes dropped) | valid 2584 | test 2606 | device cuda
+[   472.8s] 36848 training views | lines: 51320 flaw / 2417558 clean | pos_weight 20.0
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (730 > 512). Running this sequence through the model will result in indexing errors
+
+Loading weights:   0%|          | 0/197 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 197/197 [00:00<00:00, 16655.13it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: microsoft/unixcoder-base
+Key                 | Status     |  | 
+--------------------+------------+--+-
+pooler.dense.bias   | UNEXPECTED |  | 
+pooler.dense.weight | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[   536.2s]   ep 0 step 100/13516 loss 1.0308 | 42.2 items/s
+[   559.1s]   ep 0 step 200/13516 loss 0.8682 | 44.7 items/s
+[   582.3s]   ep 0 step 300/13516 loss 0.8313 | 43.2 items/s
+[   605.7s]   ep 0 step 400/13516 loss 1.2441 | 44.4 items/s
+[   606.0s] saved checkpoint epoch 0 batch 400 step 400
+[   629.8s]   ep 0 step 500/13516 loss 0.7694 | 44.3 items/s
+[   654.0s]   ep 0 step 600/13516 loss 1.0419 | 44.8 items/s
+[   678.4s]   ep 0 step 700/13516 loss 0.8324 | 44.2 items/s
+[   702.9s]   ep 0 step 800/13516 loss 0.9870 | 43.7 items/s
+[   703.3s] saved checkpoint epoch 0 batch 800 step 800
+[   728.0s]   ep 0 step 900/13516 loss 0.7201 | 43.6 items/s
+[   752.6s]   ep 0 step 1000/13516 loss 0.7734 | 43.6 items/s
+[   776.8s]   ep 0 step 1100/13516 loss 1.0461 | 43.7 items/s
+[   801.1s]   ep 0 step 1200/13516 loss 0.6165 | 43.7 items/s
+[   801.6s] saved checkpoint epoch 0 batch 1200 step 1200
+[   826.1s]   ep 0 step 1300/13516 loss 0.6582 | 43.7 items/s
+[   850.1s]   ep 0 step 1400/13516 loss 0.9047 | 44.0 items/s
+[   874.1s]   ep 0 step 1500/13516 loss 0.9335 | 44.1 items/s
+[   898.5s]   ep 0 step 1600/13516 loss 0.9915 | 44.2 items/s
+[   898.9s] saved checkpoint epoch 0 batch 1600 step 1600
+[   923.1s]   ep 0 step 1700/13516 loss 0.9524 | 43.9 items/s
+[   947.5s]   ep 0 step 1800/13516 loss 0.8369 | 44.0 items/s
+[   971.8s]   ep 0 step 1900/13516 loss 0.7006 | 43.8 items/s
+[   995.8s]   ep 0 step 2000/13516 loss 1.0915 | 44.2 items/s
+[   996.2s] saved checkpoint epoch 0 batch 2000 step 2000
+[  1020.6s]   ep 0 step 2100/13516 loss 0.7758 | 44.3 items/s
+[  1045.0s]   ep 0 step 2200/13516 loss 1.0395 | 44.3 items/s
+[  1068.9s]   ep 0 step 2300/13516 loss 0.8348 | 44.4 items/s
+[  1092.9s]   ep 0 step 2400/13516 loss 1.0596 | 44.7 items/s
+[  1093.4s] saved checkpoint epoch 0 batch 2400 step 2400
+[  1117.5s]   ep 0 step 2500/13516 loss 0.6539 | 44.8 items/s
+[  1141.3s]   ep 0 step 2600/13516 loss 1.0987 | 45.1 items/s
+[  1165.1s]   ep 0 step 2700/13516 loss 0.5819 | 45.1 items/s
+[  1189.2s]   ep 0 step 2800/13516 loss 0.6822 | 45.1 items/s
+[  1189.6s] saved checkpoint epoch 0 batch 2800 step 2800
+[  1213.5s]   ep 0 step 2900/13516 loss 0.6604 | 45.3 items/s
+[  1237.8s]   ep 0 step 3000/13516 loss 1.1154 | 45.5 items/s
+[  1262.1s]   ep 0 step 3100/13516 loss 0.6285 | 45.3 items/s
+[  1286.3s]   ep 0 step 3200/13516 loss 0.6514 | 45.2 items/s
+[  1286.7s] saved checkpoint epoch 0 batch 3200 step 3200
+[  1311.0s]   ep 0 step 3300/13516 loss 0.6252 | 45.0 items/s
+[  1462.0s] valid ep 0: {"lines_ALL": {"n": 1081, "median_ifa": 2.0, "top1": 35.152636447733585, "top5": 65.86493987049029, "top10": 78.35337650323775, "rand_top1": 13.64938691005086, "rand_top5": 38.953889562762754, "rand_top10": 54.335168187641415}, "lines_A": {"n": 463, "median_ifa": 1.0, "top1": 46.868250539956804, "top5": 82.07343412526998, "top10": 92.65658747300216, "rand_top1": 20.719036742056662, "rand_top5": 58.18691678314103, "rand_top10": 78.03858587334102}, "lines_B": {"n": 416, "median_ifa": 2.0, "top1": 32.21153846153847, "top5": 62.74038461538461, "top10": 77.64423076923077, "rand_top1": 11.570175439733575, "rand_top5": 32.50340767818506, "rand_top10": 46.8833407584975}, "lines_C": {"n": 202, "median_ifa": 12.0, "top1": 14.356435643564355, "top5": 35.148514851485146, "top10": 47.02970297029702, "rand_top1": 1.7271299765523507, "rand_top5": 8.154428478352797, "rand_top10": 15.351395029448062}, "function": {"n": 2584, "vulnerable": 1093, "auprc": 0.43052459637185286, "roc_auc": 0.5156038395668308, "spearman_with_tokens": -0.7340020862954699}, "pairs": {"n": 1003, "ties": 112, "ranking_acc_ties_half": 59.421734795613155, "ranking_acc_non_tied": 60.60606060606061}, "same_text_flaw_lines": {"n": 4305, "vul_scored_higher_pct": 51.21951219512195}}
+[  1462.3s] saved best epoch 0
+[  1462.7s] saved checkpoint epoch 1 batch 0 step 3379
+[  1468.0s]   ep 1 step 3400/13516 loss 0.3006 | 35.1 items/s
+[  1492.0s]   ep 1 step 3500/13516 loss 0.7774 | 43.1 items/s
+[  1516.2s]   ep 1 step 3600/13516 loss 0.7015 | 44.4 items/s
+[  1516.6s] saved checkpoint epoch 1 batch 221 step 3600
+[  1540.9s]   ep 1 step 3700/13516 loss 0.8589 | 42.5 items/s
+[  1564.9s]   ep 1 step 3800/13516 loss 0.7378 | 44.4 items/s
+[  1589.0s]   ep 1 step 3900/13516 loss 0.6866 | 44.2 items/s
+[  1613.2s]   ep 1 step 4000/13516 loss 0.8387 | 45.0 items/s
+[  1613.7s] saved checkpoint epoch 1 batch 621 step 4000
+[  1637.9s]   ep 1 step 4100/13516 loss 0.7814 | 45.5 items/s
+[  1661.9s]   ep 1 step 4200/13516 loss 0.8050 | 44.8 items/s
+[  1686.1s]   ep 1 step 4300/13516 loss 0.7861 | 44.7 items/s
+[  1710.4s]   ep 1 step 4400/13516 loss 0.8183 | 45.0 items/s
+[  1710.9s] saved checkpoint epoch 1 batch 1021 step 4400
+[  1735.0s]   ep 1 step 4500/13516 loss 0.5711 | 44.9 items/s
+[  1759.0s]   ep 1 step 4600/13516 loss 0.6779 | 44.7 items/s
+[  1783.6s]   ep 1 step 4700/13516 loss 0.6754 | 44.8 items/s
+[  1807.7s]   ep 1 step 4800/13516 loss 0.7112 | 45.6 items/s
+[  1808.1s] saved checkpoint epoch 1 batch 1421 step 4800
+[  1832.5s]   ep 1 step 4900/13516 loss 0.7184 | 45.4 items/s
+[  1857.2s]   ep 1 step 5000/13516 loss 0.5224 | 45.3 items/s
+[  1881.4s]   ep 1 step 5100/13516 loss 0.6749 | 45.7 items/s
+[  1905.6s]   ep 1 step 5200/13516 loss 0.5251 | 45.4 items/s
+[  1906.0s] saved checkpoint epoch 1 batch 1821 step 5200
+[  1930.4s]   ep 1 step 5300/13516 loss 0.7365 | 45.3 items/s
+[  1954.7s]   ep 1 step 5400/13516 loss 0.6998 | 45.2 items/s
+[  1978.6s]   ep 1 step 5500/13516 loss 0.6116 | 45.0 items/s
+[  2002.8s]   ep 1 step 5600/13516 loss 0.5796 | 45.1 items/s
+[  2003.3s] saved checkpoint epoch 1 batch 2221 step 5600
+[  2027.6s]   ep 1 step 5700/13516 loss 0.5161 | 45.0 items/s
+[  2052.1s]   ep 1 step 5800/13516 loss 0.6099 | 45.2 items/s
+[  2076.2s]   ep 1 step 5900/13516 loss 0.6751 | 45.0 items/s
+[  2100.5s]   ep 1 step 6000/13516 loss 0.5426 | 44.8 items/s
+[  2101.0s] saved checkpoint epoch 1 batch 2621 step 6000
+[  2125.2s]   ep 1 step 6100/13516 loss 0.5835 | 44.9 items/s
+[  2149.6s]   ep 1 step 6200/13516 loss 0.7141 | 45.1 items/s
+[  2173.7s]   ep 1 step 6300/13516 loss 0.4436 | 45.1 items/s
+[  2197.8s]   ep 1 step 6400/13516 loss 0.5662 | 45.2 items/s
+[  2198.3s] saved checkpoint epoch 1 batch 3021 step 6400
+[  2222.5s]   ep 1 step 6500/13516 loss 0.6438 | 44.9 items/s
+[  2246.6s]   ep 1 step 6600/13516 loss 0.5541 | 45.0 items/s
+[  2271.1s]   ep 1 step 6700/13516 loss 0.5361 | 44.8 items/s
+[  2417.4s] valid ep 1: {"lines_ALL": {"n": 1081, "median_ifa": 2.0, "top1": 35.43015726179463, "top5": 64.29232192414432, "top10": 78.07585568917669, "rand_top1": 13.64938691005086, "rand_top5": 38.953889562762754, "rand_top10": 54.335168187641415}, "lines_A": {"n": 463, "median_ifa": 1.0, "top1": 46.436285097192226, "top5": 79.91360691144709, "top10": 94.60043196544277, "rand_top1": 20.719036742056662, "rand_top5": 58.18691678314103, "rand_top10": 78.03858587334102}, "lines_B": {"n": 416, "median_ifa": 2.0, "top1": 30.528846153846157, "top5": 60.09615384615385, "top10": 74.03846153846155, "rand_top1": 11.570175439733575, "rand_top5": 32.50340767818506, "rand_top10": 46.8833407584975}, "lines_C": {"n": 202, "median_ifa": 10.0, "top1": 20.2970297029703, "top5": 37.12871287128713, "top10": 48.51485148514851, "rand_top1": 1.7271299765523507, "rand_top5": 8.154428478352797, "rand_top10": 15.351395029448062}, "function": {"n": 2584, "vulnerable": 1093, "auprc": 0.43160226587894446, "roc_auc": 0.5161386127070443, "spearman_with_tokens": -0.5057227144687241}, "pairs": {"n": 1003, "ties": 67, "ranking_acc_ties_half": 55.68295114656032, "ranking_acc_non_tied": 56.08974358974359}, "same_text_flaw_lines": {"n": 4305, "vul_scored_higher_pct": 52.60162601626016}}
+[  2417.9s] saved checkpoint epoch 2 batch 0 step 6759
+[  2428.0s]   ep 2 step 6800/13516 loss 0.2668 | 46.3 items/s
+[  2428.5s] saved checkpoint epoch 2 batch 41 step 6800
+[  2452.8s]   ep 2 step 6900/13516 loss 0.5049 | 43.8 items/s
+[  2477.0s]   ep 2 step 7000/13516 loss 0.5636 | 45.3 items/s
+[  2501.1s]   ep 2 step 7100/13516 loss 0.4613 | 45.7 items/s
+[  2525.4s]   ep 2 step 7200/13516 loss 0.4790 | 45.9 items/s
+[  2525.9s] saved checkpoint epoch 2 batch 441 step 7200
+[  2550.5s]   ep 2 step 7300/13516 loss 0.4395 | 44.7 items/s
+[  2574.9s]   ep 2 step 7400/13516 loss 0.3778 | 44.6 items/s
+[  2599.3s]   ep 2 step 7500/13516 loss 0.7724 | 44.7 items/s
+[  2623.5s]   ep 2 step 7600/13516 loss 0.5507 | 44.7 items/s
+[  2624.0s] saved checkpoint epoch 2 batch 841 step 7600
+[  2648.1s]   ep 2 step 7700/13516 loss 0.4077 | 44.6 items/s
+[  2672.4s]   ep 2 step 7800/13516 loss 0.6596 | 44.9 items/s
+[  2696.8s]   ep 2 step 7900/13516 loss 0.4479 | 45.5 items/s
+[  2721.0s]   ep 2 step 8000/13516 loss 0.5763 | 45.4 items/s
+[  2721.5s] saved checkpoint epoch 2 batch 1241 step 8000
+[  2745.5s]   ep 2 step 8100/13516 loss 0.6280 | 45.1 items/s
+[  2769.6s]   ep 2 step 8200/13516 loss 0.5312 | 45.1 items/s
+[  2793.5s]   ep 2 step 8300/13516 loss 0.4173 | 45.1 items/s
+[  2817.7s]   ep 2 step 8400/13516 loss 0.6114 | 45.1 items/s
+[  2818.2s] saved checkpoint epoch 2 batch 1641 step 8400
+[  2842.3s]   ep 2 step 8500/13516 loss 0.4653 | 45.1 items/s
+[  2866.4s]   ep 2 step 8600/13516 loss 0.3937 | 44.9 items/s
+[  2890.7s]   ep 2 step 8700/13516 loss 0.3755 | 45.0 items/s
+[  2914.9s]   ep 2 step 8800/13516 loss 0.6869 | 45.2 items/s
+[  2915.3s] saved checkpoint epoch 2 batch 2041 step 8800
+[  2939.8s]   ep 2 step 8900/13516 loss 0.4317 | 45.1 items/s
+[  2964.2s]   ep 2 step 9000/13516 loss 0.7828 | 45.0 items/s
+[  2988.7s]   ep 2 step 9100/13516 loss 0.5156 | 44.8 items/s
+[  3013.0s]   ep 2 step 9200/13516 loss 0.4907 | 44.7 items/s
+[  3013.5s] saved checkpoint epoch 2 batch 2441 step 9200
+[  3037.8s]   ep 2 step 9300/13516 loss 0.4699 | 44.7 items/s
+[  3061.9s]   ep 2 step 9400/13516 loss 0.4554 | 44.7 items/s
+[  3086.0s]   ep 2 step 9500/13516 loss 0.6072 | 44.7 items/s
+[  3109.7s]   ep 2 step 9600/13516 loss 0.5128 | 44.7 items/s
+[  3110.2s] saved checkpoint epoch 2 batch 2841 step 9600
+[  3134.3s]   ep 2 step 9700/13516 loss 0.5303 | 44.7 items/s
+[  3158.4s]   ep 2 step 9800/13516 loss 0.4610 | 44.9 items/s
+[  3182.4s]   ep 2 step 9900/13516 loss 0.3569 | 44.8 items/s
+[  3206.9s]   ep 2 step 10000/13516 loss 0.4224 | 44.8 items/s
+[  3207.3s] saved checkpoint epoch 2 batch 3241 step 10000
+[  3231.0s]   ep 2 step 10100/13516 loss 0.5425 | 44.9 items/s
+[  3373.5s] valid ep 2: {"lines_ALL": {"n": 1081, "median_ifa": 2.0, "top1": 33.672525439407956, "top5": 60.6845513413506, "top10": 74.28307123034227, "rand_top1": 13.64938691005086, "rand_top5": 38.953889562762754, "rand_top10": 54.335168187641415}, "lines_A": {"n": 463, "median_ifa": 1.0, "top1": 44.06047516198704, "top5": 78.40172786177105, "top10": 92.87257019438445, "rand_top1": 20.719036742056662, "rand_top5": 58.18691678314103, "rand_top10": 78.03858587334102}, "lines_B": {"n": 416, "median_ifa": 3.0, "top1": 28.60576923076923, "top5": 54.567307692307686, "top10": 68.99038461538461, "rand_top1": 11.570175439733575, "rand_top5": 32.50340767818506, "rand_top10": 46.8833407584975}, "lines_C": {"n": 202, "median_ifa": 12.5, "top1": 20.2970297029703, "top5": 32.67326732673268, "top10": 42.57425742574257, "rand_top1": 1.7271299765523507, "rand_top5": 8.154428478352797, "rand_top10": 15.351395029448062}, "function": {"n": 2584, "vulnerable": 1093, "auprc": 0.43338355752520563, "roc_auc": 0.512151898889525, "spearman_with_tokens": -0.5338971650366994}, "pairs": {"n": 1003, "ties": 72, "ranking_acc_ties_half": 55.932203389830505, "ranking_acc_non_tied": 56.390977443609025}, "same_text_flaw_lines": {"n": 4305, "vul_scored_higher_pct": 52.950058072009284}}
+[  3374.0s] saved checkpoint epoch 3 batch 0 step 10140
+[  3374.0s] early stop: no improvement for 2 epochs (best epoch 0)
+[  3651.3s] test: {"lines_ALL": {"n": 1037, "median_ifa": 3.0, "top1": 28.061716489874637, "top5": 55.73770491803278, "top10": 70.00964320154291, "rand_top1": 11.433263614523854, "rand_top5": 34.327928788284964, "rand_top10": 48.667007900367594}, "lines_A": {"n": 417, "median_ifa": 1.0, "top1": 42.44604316546763, "top5": 78.41726618705036, "top10": 92.56594724220624, "rand_top1": 20.472506752819026, "rand_top5": 57.83867857756011, "rand_top10": 77.4444301348686}, "lines_B": {"n": 389, "median_ifa": 4.0, "top1": 25.449871465295633, "top5": 51.41388174807198, "top10": 68.38046272493573, "rand_top1": 7.610360620416337, "rand_top5": 25.162195294348066, "rand_top10": 38.59119905130036}, "lines_C": {"n": 231, "median_ifa": 27.0, "top1": 6.493506493506493, "top5": 22.07792207792208, "top10": 32.03463203463203, "rand_top1": 1.5533713030032332, "rand_top5": 7.321381892240428, "rand_top10": 13.685642404697623}, "function": {"n": 2606, "vulnerable": 1061, "auprc": 0.4219990611070445, "roc_auc": 0.5231039289428975, "spearman_with_tokens": -0.7865963404080573}, "pairs": {"n": 979, "ties": 103, "ranking_acc_ties_half": 57.45658835546475, "ranking_acc_non_tied": 58.333333333333336}, "same_text_flaw_lines": {"n": 3737, "vul_scored_higher_pct": 57.46588172330747}}
+[  3651.3s] DONE
+
+$ /usr/bin/python3 /content/IE105/experiments/exp5_line_labels/eval_primevul.py --run /content/exp5/slide_unixcoder-base_1024_s0_conv --primevul /content/exp5/primevul
+[     7.6s] PrimeVul: 564 pairs, 25911 test functions
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+
+Loading weights:   0%|          | 0/197 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 197/197 [00:00<00:00, 25237.57it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: microsoft/unixcoder-base
+Key                 | Status     |  | 
+--------------------+------------+--+-
+pooler.dense.weight | UNEXPECTED |  | 
+pooler.dense.bias   | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (733 > 512). Running this sequence through the model will result in indexing errors
+[   140.3s] paired: {"lines_ALL": {"n": 357, "median_ifa": 6.0, "top1": 18.207282913165265, "top5": 44.25770308123249, "top10": 60.78431372549019, "rand_top1": 5.918633195040236, "rand_top5": 22.60531487329123, "rand_top10": 36.6916096025223}, "lines_A": {"n": 103, "median_ifa": 1.0, "top1": 33.00970873786408, "top5": 66.01941747572816, "top10": 88.3495145631068, "rand_top1": 9.930408281595495, "rand_top5": 39.142328736711626, "rand_top10": 63.513065869009964}, "lines_B": {"n": 122, "median_ifa": 4.5, "top1": 19.672131147540984, "top5": 50.0, "top10": 66.39344262295081, "rand_top1": 6.902678616126441, "rand_top5": 23.858983096552265, "rand_top10": 36.89306172979458}, "lines_C": {"n": 132, "median_ifa": 21.0, "top1": 5.303030303030303, "top5": 21.96969696969697, "top10": 34.090909090909086, "rand_top1": 1.8787364125575947, "rand_top5": 8.542739485638622, "rand_top10": 15.576555398162863}, "function": {"n": 1128, "vulnerable": 564, "auprc": 0.5179624149123645, "roc_auc": 0.5117260198179165, "spearman_with_tokens": -0.6584292973741799}, "pairs": {"n": 564, "ties": 56, "ranking_acc_ties_half": 59.9290780141844, "ranking_acc_non_tied": 61.023622047244096}, "same_text_flaw_lines": {"n": 200, "vul_scored_higher_pct": 56.75}}
+[   631.9s] full test: {"n": 25911, "vulnerable": 695, "auprc": 0.01663157789967463, "roc_auc": 0.23565387854690867, "spearman_with_tokens": -0.7772165913565554}
+[   632.0s] DONE primevul

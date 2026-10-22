@@ -35,7 +35,7 @@ def primevul_rows(primevul_dir, limit=None):
     """-> (pair_rows, test_rows) in train_lines row format; downloads PrimeVul if needed."""
     os.makedirs(primevul_dir, exist_ok=True)
     if not any(f.endswith(".jsonl") for f in os.listdir(primevul_dir)):
-        subprocess.run(f"gdown -q --folder https://drive.google.com/drive/folders/{PRIMEVUL_FOLDER} -O {primevul_dir} --remaining-ok", shell=True)
+        subprocess.run(f"gdown -q --folder https://drive.google.com/drive/folders/{PRIMEVUL_FOLDER} -O {primevul_dir}", shell=True)
     rd = lambda n: [json.loads(l) for l in open(f"{primevul_dir}/primevul_{n}.jsonl")]
     test, paired = rd("test"), rd("test_paired")
     if limit:
@@ -69,7 +69,7 @@ def main():
     cfg = json.load(open(f"{a.run}/results.json"))["args"]
     os.makedirs(a.primevul, exist_ok=True)
     if not any(f.endswith(".jsonl") for f in os.listdir(a.primevul)):
-        subprocess.run(f"gdown -q --folder https://drive.google.com/drive/folders/{PRIMEVUL_FOLDER} -O {a.primevul} --remaining-ok", shell=True)
+        subprocess.run(f"gdown -q --folder https://drive.google.com/drive/folders/{PRIMEVUL_FOLDER} -O {a.primevul}", shell=True)
     rd = lambda n: [json.loads(l) for l in open(f"{a.primevul}/primevul_{n}.jsonl")]
     test, paired = rd("test"), rd("test_paired")
     if a.limit:
