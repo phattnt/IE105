@@ -47,7 +47,7 @@ CONTRAST = "--lam_line 1.0 --lam_fn 1.0 --margin 1"
 CONTRAST_LIGHT = "--lam_line 0.3 --lam_fn 1.0 --margin 1"
 
 # One dict per run. Run name = slide_{model}_{max_len}_s{seed}{tag}, as in results/. Keys: seed, tag, loss, model,
-# max_len, and optionally data (default: SecVulEval line labels), epochs/patience (default 4/2), init (name of an
+# max_len, and optionally bf16 (default True; False for GPUs without bf16 such as T4), data (default: SecVulEval line labels), epochs/patience (default 4/2), init (name of an
 # earlier run in this queue whose ckpt_best.pt initialises the model), extra (more train_lines.py flags).
 # Done: ModernBERT 2048 plain s0 (_conv), contrast s0 (_contrast_conv), light contrast s0 (_contrast03_conv),
 # UniXcoder 1024 plain s0 (_conv).
@@ -70,6 +70,10 @@ RUNS = [
     # 23/10: plain _conv retrained on cleaned line labels (label_noise.py). Same recipe as the original _conv run
     # (colab/run_inner_conv.py: lr 3e-5, default epoch selection top5_same_text), only --data differs
     dict(seed=0, tag="_conv_clean", loss=PLAIN, model=MODERNBERT, max_len=2048, data=DATA_CLEAN, extra="--lr 3e-5"),
+    # 23/10: no Colab Pro units left -> both sides of the clean-label comparison on a free T4 (no bf16: fp16 + GradScaler).
+    # Compare _t4clean with _t4conv only, never with the L4 runs. Run both: --only _t4
+    dict(seed=0, tag="_t4conv", loss=PLAIN, model=MODERNBERT, max_len=2048, extra="--lr 3e-5", bf16=False),
+    dict(seed=0, tag="_t4clean", loss=PLAIN, model=MODERNBERT, max_len=2048, data=DATA_CLEAN, extra="--lr 3e-5", bf16=False),
 ]
 EXTRA_SEEDS = [
     dict(seed=1, tag="_conv", loss=PLAIN, model=MODERNBERT, max_len=2048),
@@ -166,13 +170,14 @@ def main():
              f"--patience {r.get('patience', 2)} --data {r.get('data', DATA)} {r.get('extra', '')}")
         if r.get("init"):
             x += f" --init {ROOT}/{r['init']}/ckpt_best.pt"
-        queue.append((nm, r["seed"], r["tag"], x, r.get("init")))
+        common = COMMON if r.get("bf16", True) else COMMON.replace(" --bf16", "")
+        queue.append((nm, r["seed"], r["tag"], f"{common} {x}", r.get("init")))
     if a.only:
         queue = [q for q in queue if any(o in q[0] for o in a.only)]
     qlog("queue:", ", ".join(q[0] for q in queue))
     if a.dry:
         for nm, s, t, x, _ in queue:
-            print(f"{sys.executable} {D}/train_lines.py {COMMON} {x} --seed {s} --tag {t} --out {ROOT}/{nm}")
+            print(f"{sys.executable} {D}/train_lines.py {x} --seed {s} --tag {t} --out {ROOT}/{nm}")
             print(f"{sys.executable} {D}/eval_primevul.py --run {ROOT}/{nm} --primevul {PRIMEVUL}")
         return
     import torch  # preinstalled on Colab
@@ -195,7 +200,7 @@ def main():
             qlog(f"{nm}: results.json exists, PrimeVul scoring only")
         else:
             qlog(f"start {nm}")
-            rc = stream(f"{sys.executable} {D}/train_lines.py {COMMON} {x} --seed {s} --tag {t} --out {out}", log)
+            rc = stream(f"{sys.executable} {D}/train_lines.py {x} --seed {s} --tag {t} --out {out}", log)
             if rc != 0 or not os.path.exists(f"{out}/results.json"):
                 qlog(f"{nm}: train exit {rc} - moving on (relaunch resumes from ckpt_last.pt)")
                 continue
