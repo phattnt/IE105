@@ -580,6 +580,8 @@ def train(data, out, args):
         m["pairs_debiased"] = pair_acc_debiased(valid, fs)
         if args.select == "top5_pair_debias":
             score = m.get("lines_ALL", {}).get("top5", 0) + m["pairs_debiased"]
+        elif args.select == "last":
+            score = ep
         else:
             score = m.get("lines_ALL", {}).get("top5", 0) + (m["same_text_flaw_lines"]["vul_scored_higher_pct"] or 50)
         curve.append({"epoch": ep, "valid": m, "select_score": score})
@@ -592,7 +594,10 @@ def train(data, out, args):
         if args.patience and ep - best["epoch"] >= args.patience:
             log(f"early stop: no improvement for {args.patience} epochs (best epoch {best['epoch']})")
             break
-    if os.path.exists(ck_best):
+    if args.select == "last" and curve:
+        # test the weights in memory = the last trained epoch (also when resuming a finished run whose ckpt_best is gone)
+        best = dict(best, epoch=curve[-1]["epoch"])
+    elif os.path.exists(ck_best):
         model.load_state_dict({k: v.float() for k, v in torch.load(ck_best, map_location="cpu").items()})
     ls, fs = score_rows(model, tok, test, args.strategy, args, device)
     hv, nt = group_info(test)
@@ -641,9 +646,9 @@ if __name__ == "__main__":
     ap.add_argument("--tag", default="", help="suffix for the run name")
     ap.add_argument("--patience", type=int, default=0, help="stop after this many epochs without a better valid score (0 = off)")
     ap.add_argument("--init", default=None, help="checkpoint (ckpt_best.pt / ckpt_last.pt) to start from, e.g. a stage-1 model")
-    ap.add_argument("--select", choices=["top5_same_text", "top5_pair_debias"], default="top5_same_text",
+    ap.add_argument("--select", choices=["top5_same_text", "top5_pair_debias", "last"], default="top5_same_text",
                     help="epoch selection score on valid: Top-5 + same-text %% (old, biased by one function) or "
-                         "Top-5 + length-debiased pair accuracy")
+                         "Top-5 + length-debiased pair accuracy, or last = no selection, test the last epoch")
     ap.add_argument("--balance_length", action="store_true",
                     help="drop pairs whose fixed version is longer until they are as many as the shorter/equal ones")
     ap.add_argument("--extra_train", default=None, help="second data dir whose train.jsonl is mixed into training (e.g. synth_guards)")

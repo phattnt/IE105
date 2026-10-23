@@ -72,8 +72,13 @@ RUNS = [
     dict(seed=0, tag="_conv_clean", loss=PLAIN, model=MODERNBERT, max_len=2048, data=DATA_CLEAN, extra="--lr 3e-5"),
     # 23/10: no Colab Pro units left -> both sides of the clean-label comparison on a free T4 (no bf16: fp16 + GradScaler).
     # Compare _t4clean with _t4conv only, never with the L4 runs. Run both: --only _t4
-    dict(seed=0, tag="_t4conv", loss=PLAIN, model=MODERNBERT, max_len=2048, extra="--lr 3e-5", bf16=False),
-    dict(seed=0, tag="_t4clean", loss=PLAIN, model=MODERNBERT, max_len=2048, data=DATA_CLEAN, extra="--lr 3e-5", bf16=False),
+    # 23/10 evening: the free VM was reclaimed after ~6 h; _t4conv had finished but its results were lost with the VM and
+    # only its last-epoch checkpoint (after 4 epochs, step 12596) was backed up. Protocol change for BOTH T4 runs:
+    # no epoch selection on valid, the last epoch is tested (--select last); _t4clean trains all 4 epochs (--patience 0).
+    # _t4conv is re-scored from the backed-up ckpt_last.pt (upload it to /content/exp5/<run>/ before launching).
+    dict(seed=0, tag="_t4conv", loss=PLAIN, model=MODERNBERT, max_len=2048, extra="--lr 3e-5 --select last", bf16=False),
+    dict(seed=0, tag="_t4clean", loss=PLAIN, model=MODERNBERT, max_len=2048, data=DATA_CLEAN, extra="--lr 3e-5 --select last",
+         patience=0, bf16=False),
 ]
 EXTRA_SEEDS = [
     dict(seed=1, tag="_conv", loss=PLAIN, model=MODERNBERT, max_len=2048),
@@ -108,11 +113,11 @@ def run_name(seed, tag, model, max_len):
     return f"slide_{model.split('/')[-1]}_{max_len}_s{seed}{tag}"
 
 
-def setup():
+def setup(branch="main"):
     if os.path.isdir(f"{REPO}/.git"):
-        sh(f"git -C {REPO} pull -q")
+        sh(f"git -C {REPO} fetch -q origin && git -C {REPO} checkout -q {branch} && git -C {REPO} pull -q")
     else:
-        sh(f"git clone -q {REPO_URL} {REPO}")
+        sh(f"git clone -q -b {branch} {REPO_URL} {REPO}")
     sh(f"git -C {REPO} log -1 --oneline", check=False)
     sh(f"{sys.executable} -m pip install -q 'transformers>=4.48' gdown datasets scikit-learn")
     os.makedirs(PRIMEVUL, exist_ok=True)
@@ -161,6 +166,7 @@ def main():
     ap.add_argument("--only", nargs="*", default=None, help="run names (or substrings) to keep from the queue")
     ap.add_argument("--dry", action="store_true", help="print the commands, run nothing")
     ap.add_argument("--skip_setup", action="store_true")
+    ap.add_argument("--branch", default="main", help="branch of the repo to train from (default main)")
     a = ap.parse_args()
     os.makedirs(LOGS, exist_ok=True)
     queue = []
@@ -186,7 +192,7 @@ def main():
         sys.exit(1)
     qlog("GPU:", torch.cuda.get_device_name(0), "| bf16:", torch.cuda.is_bf16_supported())
     if not a.skip_setup:
-        setup()
+        setup(a.branch)
     for nm, s, t, x, init in queue:
         out, log = f"{ROOT}/{nm}", f"{LOGS}/{nm}.log"
         if os.path.exists(f"{out}/primevul_results.json"):
