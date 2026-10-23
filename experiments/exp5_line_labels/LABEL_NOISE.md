@@ -71,3 +71,18 @@ python compare_clean.py --data ../../data/secvul_lines --base $B --new $N --boot
 **Luật kết luận (đặt trước khi chạy):** chỉ viết "nhãn sạch giúp" khi CI Top-10 (clean − gốc) nằm hẳn trên 0 **và** chênh tương quan độ dài
 (hàm lỗi có nhãn dòng, ước lượng điểm) ≤ 0. Ngược lại: "không có bằng chứng nhiễu nhãn thừa là nút thắt"; nếu Top-k tăng mà tương quan cũng
 tăng thì ghi rõ có thể do lối tắt độ dài. Đã chạy thử toàn bộ chuỗi với `_s13_conv` làm run giả (khớp số bootstrap trong README).
+
+## Thay đổi 23/10: chạy trên T4 miễn phí, chấm ở epoch cuối (lệch giao thức)
+
+Hết compute unit Colab Pro → cả hai phía chạy trên **T4 miễn phí, fp16** (`_t4conv` = nhãn gốc, `_t4clean` = nhãn đã lọc), cùng công thức
+`_conv` (lr 3e-5, 4 epoch, seed 0) trừ `--bf16`. **Chỉ so `_t4clean` với `_t4conv`**, không so với các run L4: trên valid, `_t4conv` thấp hơn
+`_conv` (L4) 1–2,5 điểm ở cùng epoch chỉ vì đổi máy/kiểu số.
+
+VM miễn phí bị thu hồi sau ~6 giờ: `_t4conv` đã train + chấm xong (valid chọn epoch 1, dừng sau epoch 3) nhưng kết quả mất theo VM; chỉ còn
+checkpoint epoch cuối (sau 4 epoch, bước 12.596). **Lệch giao thức, áp dụng cho CẢ HAI run:**
+- không chọn epoch theo valid; chấm test ở **epoch cuối** (`train_lines.py --select last`). Run gốc `_conv` chọn epoch theo Top-5 + cùng-chữ.
+- `_t4conv`: chấm lại từ checkpoint epoch cuối đã sao lưu (không train lại). `_t4clean`: train lại từ đầu đủ 4 epoch (`--patience 0`),
+  không tiếp từ checkpoint bước 800 vì checkpoint không lưu trạng thái optimizer.
+- Đường valid 4 epoch của `_t4conv` (trước khi VM mất) còn trong log hàng đợi: Top-10 valid 75,1 / 73,9 / 77,2 / 74,5 (epoch 0 / 1 / 2 / 3).
+
+Kết luận vẫn theo luật ở trên, kèm ghi chú: "1 seed, T4 fp16, chấm epoch cuối".
