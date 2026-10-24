@@ -5,6 +5,16 @@ TN1–TN3 chỉ có nhãn hàm, nên định vị dòng phải dựa vào attent
 vá và của hàm lành không liên quan) là 0. Câu hỏi: *giám sát trực tiếp ở mức dòng có định vị tốt hơn không, và có
 phân biệt được bản lỗi với bản đã vá (cùng độ dài, gần như cùng chữ) không?*
 
+## Kiểm toán chuyển miền
+
+[`TRANSFER_ANALYSIS.md`](TRANSFER_ANALYSIS.md) so sánh tự động mọi run đã lưu trên SecVulEval và PrimeVul để
+kiểm tra một cải thiện trong miền có thật sự chuyển sang bộ dữ liệu khác hay không. Báo cáo và JSON được tái tạo
+hoàn toàn từ các artifact đã commit, không cần GPU hay dữ liệu gốc:
+
+```bash
+python experiments/exp5_line_labels/analyze_transfer.py
+```
+
 ## Thiết kế
 
 | | |
