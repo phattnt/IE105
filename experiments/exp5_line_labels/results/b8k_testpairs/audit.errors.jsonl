@@ -1,0 +1,8 @@
+{"idx": 217569, "arm": "audit", "time": "13:31:39", "error": "RuntimeError(\"completions failed after 3 attempts: HTTPError('400 Client Error: Bad Request for url: http://127.0.0.1:8000/v1/completions')\")"}
+{"idx": 195264, "arm": "audit", "time": "13:37:10", "error": "RuntimeError(\"completions failed after 3 attempts: HTTPError('400 Client Error: Bad Request for url: http://127.0.0.1:8000/v1/completions')\")"}
+{"idx": 231012, "arm": "audit", "time": "13:43:45", "error": "RuntimeError(\"completions failed after 3 attempts: HTTPError('400 Client Error: Bad Request for url: http://127.0.0.1:8000/v1/completions')\")"}
+{"idx": 198439, "arm": "audit", "time": "14:09:47", "error": "RuntimeError(\"completions failed after 3 attempts: HTTPError('400 Client Error: Bad Request for url: http://127.0.0.1:8000/v1/completions')\")"}
+{"idx": 292609, "arm": "audit", "time": "14:13:35", "error": "RuntimeError(\"completions failed after 3 attempts: HTTPError('400 Client Error: Bad Request for url: http://127.0.0.1:8000/v1/completions')\")"}
+{"idx": 199778, "arm": "audit", "time": "14:13:40", "error": "RuntimeError(\"completions failed after 3 attempts: HTTPError('400 Client Error: Bad Request for url: http://127.0.0.1:8000/v1/completions')\")"}
+{"idx": 296226, "arm": "audit", "time": "14:15:51", "error": "RuntimeError(\"completions failed after 3 attempts: HTTPError('400 Client Error: Bad Request for url: http://127.0.0.1:8000/v1/completions')\")"}
+{"idx": 326119, "arm": "audit", "time": "14:18:52", "error": "RuntimeError(\"completions failed after 3 attempts: HTTPError('400 Client Error: Bad Request for url: http://127.0.0.1:8000/v1/completions')\")"}

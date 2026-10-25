@@ -1,0 +1,72 @@
+{
+ "trained_on": "SecVulEval (exp5)",
+ "model": "answerdotai/ModernBERT-base",
+ "strategy": "slide",
+ "max_len": 2048,
+ "pairs_and_lines": {
+  "lines_ALL": {
+   "n": 357,
+   "median_ifa": 4.0,
+   "top1": 18.207282913165265,
+   "top5": 50.14005602240896,
+   "top10": 61.62464985994398,
+   "rand_top1": 5.918633195040236,
+   "rand_top5": 22.60531487329123,
+   "rand_top10": 36.6916096025223
+  },
+  "lines_A": {
+   "n": 103,
+   "median_ifa": 1.0,
+   "top1": 37.86407766990291,
+   "top5": 77.66990291262135,
+   "top10": 90.29126213592234,
+   "rand_top1": 9.930408281595495,
+   "rand_top5": 39.142328736711626,
+   "rand_top10": 63.513065869009964
+  },
+  "lines_B": {
+   "n": 122,
+   "median_ifa": 4.5,
+   "top1": 16.39344262295082,
+   "top5": 50.0,
+   "top10": 61.47540983606557,
+   "rand_top1": 6.902678616126441,
+   "rand_top5": 23.858983096552265,
+   "rand_top10": 36.89306172979458
+  },
+  "lines_C": {
+   "n": 132,
+   "median_ifa": 17.0,
+   "top1": 4.545454545454546,
+   "top5": 28.78787878787879,
+   "top10": 39.39393939393939,
+   "rand_top1": 1.8787364125575947,
+   "rand_top5": 8.542739485638622,
+   "rand_top10": 15.576555398162863
+  },
+  "function": {
+   "n": 1128,
+   "vulnerable": 564,
+   "auprc": 0.4999419742208312,
+   "roc_auc": 0.4888665685830693,
+   "spearman_with_tokens": 0.31600950944768563
+  },
+  "pairs": {
+   "n": 564,
+   "ties": 63,
+   "ranking_acc_ties_half": 47.6063829787234,
+   "ranking_acc_non_tied": 47.30538922155689
+  },
+  "same_text_flaw_lines": {
+   "n": 200,
+   "vul_scored_higher_pct": 45.75
+  }
+ },
+ "full_test": {
+  "n": 25911,
+  "vulnerable": 695,
+  "auprc": 0.08448193883713644,
+  "roc_auc": 0.7848468655278822,
+  "spearman_with_tokens": 0.672465666210692
+ }
+}

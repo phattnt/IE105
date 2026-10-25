@@ -1,0 +1,223 @@
+{
+ "train": {
+  "pairs": 4354,
+  "kind_pct": {
+   "modify": 62.0,
+   "add_only": 32.6,
+   "trivial": 3.4,
+   "del_only": 2.0
+  },
+  "b_type_pct": {
+   "other": 44.5,
+   "bounds_check": 23.8,
+   "error_path": 16.4,
+   "null_check": 15.9,
+   "init": 10.1,
+   "overflow": 9.4,
+   "release": 8.3,
+   "lifetime": 1.1
+  },
+  "a_to_b_pct": 60.5,
+  "a_to_b_local_only_pct": 5.9,
+  "a_to_b_needs_outside_pct": 49.6,
+  "a_to_b_field_or_macro_only_pct": 4.9,
+  "outside_source_pct_of_a_to_b": {
+   "callee": 61.9,
+   "local": 43.2,
+   "param": 41.6,
+   "field": 14.1,
+   "macro": 9.1
+  },
+  "by_project": {
+   "other": {
+    "pairs": 2535,
+    "a_to_b_pct": 62.8,
+    "needs_outside_pct": 49.8
+   },
+   "linux": {
+    "pairs": 818,
+    "a_to_b_pct": 57.2,
+    "needs_outside_pct": 48.5
+   },
+   "Chrome": {
+    "pairs": 344,
+    "a_to_b_pct": 48.8,
+    "needs_outside_pct": 44.5
+   },
+   "ImageMagick": {
+    "pairs": 244,
+    "a_to_b_pct": 48.4,
+    "needs_outside_pct": 44.7
+   },
+   "Android": {
+    "pairs": 129,
+    "a_to_b_pct": 65.9,
+    "needs_outside_pct": 51.2
+   },
+   "php-src": {
+    "pairs": 115,
+    "a_to_b_pct": 64.3,
+    "needs_outside_pct": 53.9
+   },
+   "FFmpeg": {
+    "pairs": 93,
+    "a_to_b_pct": 74.2,
+    "needs_outside_pct": 61.3
+   },
+   "tensorflow": {
+    "pairs": 51,
+    "a_to_b_pct": 80.4,
+    "needs_outside_pct": 76.5
+   },
+   "vim": {
+    "pairs": 25,
+    "a_to_b_pct": 76.0,
+    "needs_outside_pct": 60.0
+   }
+  }
+ },
+ "valid": {
+  "pairs": 562,
+  "kind_pct": {
+   "modify": 63.2,
+   "add_only": 33.5,
+   "trivial": 2.5,
+   "del_only": 0.9
+  },
+  "b_type_pct": {
+   "other": 46.1,
+   "bounds_check": 21.2,
+   "error_path": 17.6,
+   "null_check": 14.8,
+   "overflow": 10.1,
+   "release": 9.3,
+   "init": 7.7,
+   "lifetime": 1.6
+  },
+  "a_to_b_pct": 60.7,
+  "a_to_b_local_only_pct": 3.7,
+  "a_to_b_needs_outside_pct": 54.1,
+  "a_to_b_field_or_macro_only_pct": 2.8,
+  "outside_source_pct_of_a_to_b": {
+   "callee": 71.8,
+   "param": 46.3,
+   "local": 44.3,
+   "field": 8.8,
+   "macro": 7.0
+  },
+  "by_project": {
+   "other": {
+    "pairs": 369,
+    "a_to_b_pct": 60.7,
+    "needs_outside_pct": 53.4
+   },
+   "linux": {
+    "pairs": 85,
+    "a_to_b_pct": 57.6,
+    "needs_outside_pct": 52.9
+   },
+   "tensorflow": {
+    "pairs": 58,
+    "a_to_b_pct": 77.6,
+    "needs_outside_pct": 75.9
+   },
+   "php-src": {
+    "pairs": 18,
+    "a_to_b_pct": 38.9,
+    "needs_outside_pct": 16.7
+   },
+   "ImageMagick": {
+    "pairs": 12,
+    "a_to_b_pct": 33.3,
+    "needs_outside_pct": 25.0
+   },
+   "Chrome": {
+    "pairs": 10,
+    "a_to_b_pct": 40.0,
+    "needs_outside_pct": 40.0
+   },
+   "FFmpeg": {
+    "pairs": 5,
+    "a_to_b_pct": 60.0,
+    "needs_outside_pct": 60.0
+   },
+   "vim": {
+    "pairs": 5,
+    "a_to_b_pct": 100.0,
+    "needs_outside_pct": 100.0
+   }
+  }
+ },
+ "test": {
+  "pairs": 564,
+  "kind_pct": {
+   "modify": 58.2,
+   "add_only": 36.3,
+   "trivial": 3.0,
+   "del_only": 2.5
+  },
+  "b_type_pct": {
+   "other": 45.4,
+   "bounds_check": 21.5,
+   "null_check": 16.8,
+   "error_path": 16.3,
+   "init": 8.9,
+   "overflow": 7.6,
+   "release": 6.7,
+   "lifetime": 0.7
+  },
+  "a_to_b_pct": 62.8,
+  "a_to_b_local_only_pct": 5.9,
+  "a_to_b_needs_outside_pct": 52.5,
+  "a_to_b_field_or_macro_only_pct": 4.4,
+  "outside_source_pct_of_a_to_b": {
+   "callee": 67.2,
+   "param": 42.7,
+   "local": 40.1,
+   "field": 13.0,
+   "macro": 9.9
+  },
+  "by_project": {
+   "other": {
+    "pairs": 344,
+    "a_to_b_pct": 64.8,
+    "needs_outside_pct": 52.9
+   },
+   "linux": {
+    "pairs": 75,
+    "a_to_b_pct": 42.7,
+    "needs_outside_pct": 38.7
+   },
+   "tensorflow": {
+    "pairs": 72,
+    "a_to_b_pct": 79.2,
+    "needs_outside_pct": 73.6
+   },
+   "vim": {
+    "pairs": 38,
+    "a_to_b_pct": 57.9,
+    "needs_outside_pct": 42.1
+   },
+   "php-src": {
+    "pairs": 15,
+    "a_to_b_pct": 66.7,
+    "needs_outside_pct": 60.0
+   },
+   "ImageMagick": {
+    "pairs": 10,
+    "a_to_b_pct": 50.0,
+    "needs_outside_pct": 20.0
+   },
+   "Chrome": {
+    "pairs": 7,
+    "a_to_b_pct": 42.9,
+    "needs_outside_pct": 42.9
+   },
+   "FFmpeg": {
+    "pairs": 3,
+    "a_to_b_pct": 66.7,
+    "needs_outside_pct": 66.7
+   }
+  }
+ }
+}

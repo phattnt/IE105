@@ -1,0 +1,754 @@
+
+$ /usr/bin/python3 /content/IE105/experiments/exp5_line_labels/train_lines.py --strategy slide --train_tokens 8192 --bf16 --ckpt_every 400 --model answerdotai/ModernBERT-base --max_len 2048 --lam_line 0 --lam_fn 0 --epochs 10 --patience 3 --data /content/exp5/primevul_lines_b80k --select top5_top10 --eval_every 0.5 --log_every 50 --seed 0 --tag _pv1 --out /content/exp5/slide_ModernBERT-base_2048_s0_pv1
+[     7.3s] data /content/exp5/primevul_lines_b80k -> out /content/exp5/slide_ModernBERT-base_2048_s0_pv1
+[    10.4s] dropped 0 train functions overlapping the PrimeVul test set (incl. pair partners)
+[    10.5s] train 87247 functions (add-only fixes dropped) | valid 4124 | test 1128 | device cuda
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (9176 > 8192). Running this sequence through the model will result in indexing errors
+[  1642.9s] 99220 training views | lines: 16579 flaw / 4643460 clean | pos_weight 20.0
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (895 > 512). Running this sequence through the model will result in indexing errors
+
+Loading weights:   0%|          | 0/134 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 134/134 [00:00<00:00, 5844.99it/s]
+[transformers] [1mModernBertModel LOAD REPORT[0m from: answerdotai/ModernBERT-base
+Key               | Status     |  | 
+------------------+------------+--+-
+decoder.bias      | UNEXPECTED |  | 
+head.norm.weight  | UNEXPECTED |  | 
+head.dense.weight | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[  1670.6s] 7246 batches/epoch, 72460 steps total, warmup 3623 | valid at batches [3623, 7246] of every epoch | select top5_top10 | patience 3 epochs | amp torch.bfloat16 | NVIDIA L4
+[  1670.7s] epoch 0: 7246 batches, starting at batch 0
+[  1694.6s]   ep 0 b 50/7246 step 50/72460 loss 0.6772 | lr 2.76e-07 | 26.5 items/s | mem 7.7 GB | ETA 576 min
+[  1718.6s]   ep 0 b 100/7246 step 100/72460 loss 0.6173 | lr 5.52e-07 | 29.3 items/s | mem 7.9 GB | ETA 577 min
+[  1743.3s]   ep 0 b 150/7246 step 150/72460 loss 0.4236 | lr 8.28e-07 | 29.3 items/s | mem 7.9 GB | ETA 583 min
+[  1767.9s]   ep 0 b 200/7246 step 200/72460 loss 0.2786 | lr 1.10e-06 | 27.7 items/s | mem 7.9 GB | ETA 585 min
+[  1791.7s]   ep 0 b 250/7246 step 250/72460 loss 0.1167 | lr 1.38e-06 | 30.4 items/s | mem 8.0 GB | ETA 582 min
+[  1816.3s]   ep 0 b 300/7246 step 300/72460 loss 0.2639 | lr 1.66e-06 | 29.4 items/s | mem 8.0 GB | ETA 584 min
+[  1841.5s]   ep 0 b 350/7246 step 350/72460 loss 0.2285 | lr 1.93e-06 | 27.5 items/s | mem 8.0 GB | ETA 586 min
+[  1865.8s]   ep 0 b 400/7246 step 400/72460 loss 0.3835 | lr 2.21e-06 | 29.1 items/s | mem 8.0 GB | ETA 586 min
+[  1866.1s] saved checkpoint epoch 0 batch 400 step 400
+[  1890.2s]   ep 0 b 450/7246 step 450/72460 loss 0.4043 | lr 2.48e-06 | 29.1 items/s | mem 8.0 GB | ETA 585 min
+[  1913.8s]   ep 0 b 500/7246 step 500/72460 loss 0.4609 | lr 2.76e-06 | 28.9 items/s | mem 8.0 GB | ETA 583 min
+[  1937.9s]   ep 0 b 550/7246 step 550/72460 loss 0.3056 | lr 3.04e-06 | 28.8 items/s | mem 8.0 GB | ETA 582 min
+[  1961.8s]   ep 0 b 600/7246 step 600/72460 loss 0.4113 | lr 3.31e-06 | 28.8 items/s | mem 8.0 GB | ETA 581 min
+[  1986.0s]   ep 0 b 650/7246 step 650/72460 loss 0.2712 | lr 3.59e-06 | 29.3 items/s | mem 8.0 GB | ETA 580 min
+[  2010.0s]   ep 0 b 700/7246 step 700/72460 loss 0.2585 | lr 3.86e-06 | 29.7 items/s | mem 8.0 GB | ETA 580 min
+[  2034.7s]   ep 0 b 750/7246 step 750/72460 loss 0.4134 | lr 4.14e-06 | 29.5 items/s | mem 8.0 GB | ETA 580 min
+[  2059.1s]   ep 0 b 800/7246 step 800/72460 loss 0.1497 | lr 4.42e-06 | 28.9 items/s | mem 8.0 GB | ETA 580 min
+[  2059.7s] saved checkpoint epoch 0 batch 800 step 800
+[  2084.4s]   ep 0 b 850/7246 step 850/72460 loss 0.2750 | lr 4.69e-06 | 28.5 items/s | mem 8.0 GB | ETA 581 min
+[  2109.2s]   ep 0 b 900/7246 step 900/72460 loss 0.2869 | lr 4.97e-06 | 28.3 items/s | mem 8.0 GB | ETA 581 min
+[  2133.9s]   ep 0 b 950/7246 step 950/72460 loss 0.1878 | lr 5.24e-06 | 28.5 items/s | mem 8.0 GB | ETA 581 min
+[  2158.0s]   ep 0 b 1000/7246 step 1000/72460 loss 0.1961 | lr 5.52e-06 | 28.6 items/s | mem 8.0 GB | ETA 580 min
+[  2181.8s]   ep 0 b 1050/7246 step 1050/72460 loss 0.4145 | lr 5.80e-06 | 28.7 items/s | mem 8.0 GB | ETA 579 min
+[  2205.0s]   ep 0 b 1100/7246 step 1100/72460 loss 0.4445 | lr 6.07e-06 | 28.8 items/s | mem 8.0 GB | ETA 578 min
+[  2229.8s]   ep 0 b 1150/7246 step 1150/72460 loss 0.2134 | lr 6.35e-06 | 28.6 items/s | mem 8.0 GB | ETA 578 min
+[  2254.5s]   ep 0 b 1200/7246 step 1200/72460 loss 0.2517 | lr 6.62e-06 | 28.5 items/s | mem 8.0 GB | ETA 578 min
+[  2255.0s] saved checkpoint epoch 0 batch 1200 step 1200
+[  2279.4s]   ep 0 b 1250/7246 step 1250/72460 loss 0.5099 | lr 6.90e-06 | 28.3 items/s | mem 8.0 GB | ETA 578 min
+[  2303.4s]   ep 0 b 1300/7246 step 1300/72460 loss 0.2069 | lr 7.18e-06 | 28.3 items/s | mem 8.0 GB | ETA 577 min
+[  2327.7s]   ep 0 b 1350/7246 step 1350/72460 loss 0.5082 | lr 7.45e-06 | 28.2 items/s | mem 8.0 GB | ETA 577 min
+[  2352.0s]   ep 0 b 1400/7246 step 1400/72460 loss 0.3160 | lr 7.73e-06 | 28.5 items/s | mem 8.0 GB | ETA 576 min
+[  2376.2s]   ep 0 b 1450/7246 step 1450/72460 loss 0.2701 | lr 8.00e-06 | 28.1 items/s | mem 8.0 GB | ETA 576 min
+[  2400.8s]   ep 0 b 1500/7246 step 1500/72460 loss 0.4588 | lr 8.28e-06 | 28.1 items/s | mem 8.0 GB | ETA 576 min
+[  2425.3s]   ep 0 b 1550/7246 step 1550/72460 loss 0.3254 | lr 8.56e-06 | 27.9 items/s | mem 8.0 GB | ETA 575 min
+[  2449.8s]   ep 0 b 1600/7246 step 1600/72460 loss 0.1441 | lr 8.83e-06 | 27.7 items/s | mem 8.0 GB | ETA 575 min
+[  2450.4s] saved checkpoint epoch 0 batch 1600 step 1600
+[  2474.7s]   ep 0 b 1650/7246 step 1650/72460 loss 0.1549 | lr 9.11e-06 | 27.5 items/s | mem 8.0 GB | ETA 575 min
+[  2499.4s]   ep 0 b 1700/7246 step 1700/72460 loss 0.1977 | lr 9.38e-06 | 27.3 items/s | mem 8.0 GB | ETA 575 min
+[  2523.3s]   ep 0 b 1750/7246 step 1750/72460 loss 0.3202 | lr 9.66e-06 | 27.5 items/s | mem 8.0 GB | ETA 574 min
+[  2547.6s]   ep 0 b 1800/7246 step 1800/72460 loss 0.3470 | lr 9.94e-06 | 27.4 items/s | mem 8.0 GB | ETA 574 min
+[  2571.9s]   ep 0 b 1850/7246 step 1850/72460 loss 0.4451 | lr 1.02e-05 | 27.5 items/s | mem 8.0 GB | ETA 573 min
+[  2595.9s]   ep 0 b 1900/7246 step 1900/72460 loss 0.1400 | lr 1.05e-05 | 27.7 items/s | mem 8.0 GB | ETA 573 min
+[  2620.7s]   ep 0 b 1950/7246 step 1950/72460 loss 0.3065 | lr 1.08e-05 | 27.4 items/s | mem 8.0 GB | ETA 572 min
+[  2644.1s]   ep 0 b 2000/7246 step 2000/72460 loss 0.2552 | lr 1.10e-05 | 27.6 items/s | mem 8.0 GB | ETA 572 min
+[  2644.6s] saved checkpoint epoch 0 batch 2000 step 2000
+[  2669.2s]   ep 0 b 2050/7246 step 2050/72460 loss 0.2759 | lr 1.13e-05 | 27.4 items/s | mem 8.0 GB | ETA 572 min
+[  2693.9s]   ep 0 b 2100/7246 step 2100/72460 loss 0.1945 | lr 1.16e-05 | 27.4 items/s | mem 8.0 GB | ETA 571 min
+[  2718.2s]   ep 0 b 2150/7246 step 2150/72460 loss 0.2431 | lr 1.19e-05 | 27.6 items/s | mem 8.0 GB | ETA 571 min
+[  2742.4s]   ep 0 b 2200/7246 step 2200/72460 loss 0.2715 | lr 1.21e-05 | 27.8 items/s | mem 8.0 GB | ETA 570 min
+[  2767.2s]   ep 0 b 2250/7246 step 2250/72460 loss 0.3578 | lr 1.24e-05 | 27.7 items/s | mem 8.0 GB | ETA 570 min
+[  2791.3s]   ep 0 b 2300/7246 step 2300/72460 loss 0.4124 | lr 1.27e-05 | 27.6 items/s | mem 8.0 GB | ETA 570 min
+[  2815.9s]   ep 0 b 2350/7246 step 2350/72460 loss 0.1528 | lr 1.30e-05 | 27.6 items/s | mem 8.0 GB | ETA 569 min
+[  2840.4s]   ep 0 b 2400/7246 step 2400/72460 loss 0.1364 | lr 1.32e-05 | 27.6 items/s | mem 8.0 GB | ETA 569 min
+[  2840.9s] saved checkpoint epoch 0 batch 2400 step 2400
+[  2865.1s]   ep 0 b 2450/7246 step 2450/72460 loss 0.2846 | lr 1.35e-05 | 27.7 items/s | mem 8.0 GB | ETA 569 min
+[  2889.1s]   ep 0 b 2500/7246 step 2500/72460 loss 0.0885 | lr 1.38e-05 | 27.9 items/s | mem 8.0 GB | ETA 568 min
+[  2913.2s]   ep 0 b 2550/7246 step 2550/72460 loss 0.2602 | lr 1.41e-05 | 28.0 items/s | mem 8.0 GB | ETA 568 min
+[  2937.4s]   ep 0 b 2600/7246 step 2600/72460 loss 0.2439 | lr 1.44e-05 | 28.0 items/s | mem 8.0 GB | ETA 567 min
+[  2961.9s]   ep 0 b 2650/7246 step 2650/72460 loss 0.3680 | lr 1.46e-05 | 28.0 items/s | mem 8.0 GB | ETA 567 min
+[  2986.0s]   ep 0 b 2700/7246 step 2700/72460 loss 0.1588 | lr 1.49e-05 | 28.1 items/s | mem 8.0 GB | ETA 566 min
+[  3010.2s]   ep 0 b 2750/7246 step 2750/72460 loss 0.3849 | lr 1.52e-05 | 27.9 items/s | mem 8.0 GB | ETA 566 min
+[  3033.6s]   ep 0 b 2800/7246 step 2800/72460 loss 0.4207 | lr 1.55e-05 | 28.0 items/s | mem 8.0 GB | ETA 565 min
+[  3034.1s] saved checkpoint epoch 0 batch 2800 step 2800
+[  3057.8s]   ep 0 b 2850/7246 step 2850/72460 loss 0.1575 | lr 1.57e-05 | 28.0 items/s | mem 8.0 GB | ETA 565 min
+[  3081.9s]   ep 0 b 2900/7246 step 2900/72460 loss 0.3445 | lr 1.60e-05 | 28.2 items/s | mem 8.0 GB | ETA 564 min
+[  3105.6s]   ep 0 b 2950/7246 step 2950/72460 loss 0.3391 | lr 1.63e-05 | 28.3 items/s | mem 8.0 GB | ETA 563 min
+[  3130.2s]   ep 0 b 3000/7246 step 3000/72460 loss 0.2205 | lr 1.66e-05 | 28.2 items/s | mem 8.0 GB | ETA 563 min
+[  3154.2s]   ep 0 b 3050/7246 step 3050/72460 loss 0.1677 | lr 1.68e-05 | 28.3 items/s | mem 8.0 GB | ETA 563 min
+[  3178.4s]   ep 0 b 3100/7246 step 3100/72460 loss 0.1931 | lr 1.71e-05 | 28.3 items/s | mem 8.0 GB | ETA 562 min
+[  3202.6s]   ep 0 b 3150/7246 step 3150/72460 loss 0.4486 | lr 1.74e-05 | 28.3 items/s | mem 8.0 GB | ETA 562 min
+[  3227.9s]   ep 0 b 3200/7246 step 3200/72460 loss 0.1667 | lr 1.77e-05 | 28.2 items/s | mem 8.0 GB | ETA 562 min
+[  3228.5s] saved checkpoint epoch 0 batch 3200 step 3200
+[  3253.1s]   ep 0 b 3250/7246 step 3250/72460 loss 0.2458 | lr 1.79e-05 | 28.0 items/s | mem 8.0 GB | ETA 562 min
+[  3277.3s]   ep 0 b 3300/7246 step 3300/72460 loss 0.1782 | lr 1.82e-05 | 27.9 items/s | mem 8.0 GB | ETA 561 min
+[  3301.6s]   ep 0 b 3350/7246 step 3350/72460 loss 0.2898 | lr 1.85e-05 | 27.8 items/s | mem 8.0 GB | ETA 561 min
+[  3325.5s]   ep 0 b 3400/7246 step 3400/72460 loss 0.1992 | lr 1.88e-05 | 27.9 items/s | mem 8.0 GB | ETA 560 min
+[  3349.8s]   ep 0 b 3450/7246 step 3450/72460 loss 0.1912 | lr 1.90e-05 | 27.9 items/s | mem 8.0 GB | ETA 560 min
+[  3374.1s]   ep 0 b 3500/7246 step 3500/72460 loss 0.1694 | lr 1.93e-05 | 28.0 items/s | mem 8.0 GB | ETA 559 min
+[  3398.8s]   ep 0 b 3550/7246 step 3550/72460 loss 0.4572 | lr 1.96e-05 | 28.0 items/s | mem 8.0 GB | ETA 559 min
+[  3423.3s]   ep 0 b 3600/7246 step 3600/72460 loss 0.3025 | lr 1.99e-05 | 27.9 items/s | mem 8.0 GB | ETA 559 min
+[  3423.8s] saved checkpoint epoch 0 batch 3600 step 3600
+[  3595.5s] valid ep 0.50 step 3623 (161s): lines Top-1/5/10 21.5/51.9/66.4 IFA 4 | line BCE 0.5899 | pairs acc 41.4 debiased 56.6 len-matched 45.1 top3mean 41.4 net@50 -1.1 | fn ROC 0.724 debiased 0.563 | select 118.3 (best -1.0 @ ep -1)
+[  3595.5s] valid ep 0.50 full: {"lines_ALL": {"n": 372, "median_ifa": 4.0, "top1": 21.50537634408602, "top5": 51.88172043010753, "top10": 66.39784946236558, "rand_top1": 7.695258369226086, "rand_top5": 27.425834089890994, "rand_top10": 41.31752062853754}, "lines_A": {"n": 125, "median_ifa": 1.0, "top1": 37.6, "top5": 80.0, "top10": 92.0, "rand_top1": 14.073640952931967, "rand_top5": 51.025353466069504, "rand_top10": 73.7188842709588}, "lines_B": {"n": 110, "median_ifa": 5.0, "top1": 17.272727272727273, "top5": 49.09090909090909, "top10": 61.81818181818181, "rand_top1": 7.690824288941915, "rand_top5": 24.154490736989906, "rand_top10": 36.79481967188202}, "lines_C": {"n": 137, "median_ifa": 11.0, "top1": 10.218978102189782, "top5": 28.467153284671532, "top10": 46.715328467153284, "rand_top1": 1.8791264412554538, "rand_top5": 8.5200519497217, "rand_top10": 15.385598365248853}, "function": {"n": 4124, "vulnerable": 562, "auprc": 0.26083518411956697, "roc_auc": 0.7240359388643671, "spearman_with_tokens": 0.6573051376289665}, "pairs": {"n": 562, "ties": 105, "ranking_acc_ties_half": 41.370106761565836, "ranking_acc_non_tied": 39.38730853391685}, "same_text_flaw_lines": {"n": 241, "vul_scored_higher_pct": 46.6804979253112}, "pairs_debiased": 56.58362989323843, "extra": {"line_bce": 0.5899307701021871, "pairs": {"n": 562, "acc": 41.370106761565836, "acc_debiased": 56.58362989323843, "acc_length_matched": 45.07936507936508, "n_length_matched": 315, "acc_top3mean": 41.370106761565836, "length_rule_longer_is_fixed": 86.20996441281139, "P-C_at50": 3.0249110320284696, "P-R_at50": 4.092526690391459, "net_at50": -1.0676156583629894}, "function": {"n": 4124, "vulnerable": 562, "roc_auc": 0.7240359388643671, "roc_auc_debiased": 0.5630733463746426, "roc_auc_top3mean": 0.7437734908414443}}}
+[  3595.8s] saved best epoch 0.50
+[  3597.9s] saved checkpoint epoch 0 batch 3623 step 3623
+[  3611.1s]   ep 0 b 3650/7246 step 3650/72460 loss 0.1337 | lr 2.00e-05 | 25.6 items/s | mem 8.0 GB | ETA 610 min
+[  3635.8s]   ep 0 b 3700/7246 step 3700/72460 loss 0.4835 | lr 2.00e-05 | 25.6 items/s | mem 8.0 GB | ETA 609 min
+[  3659.4s]   ep 0 b 3750/7246 step 3750/72460 loss 0.2028 | lr 2.00e-05 | 25.7 items/s | mem 8.0 GB | ETA 607 min
+[  3683.8s]   ep 0 b 3800/7246 step 3800/72460 loss 0.1903 | lr 1.99e-05 | 25.7 items/s | mem 8.0 GB | ETA 606 min
+[  3707.8s]   ep 0 b 3850/7246 step 3850/72460 loss 0.0723 | lr 1.99e-05 | 25.8 items/s | mem 8.0 GB | ETA 605 min
+[  3733.0s]   ep 0 b 3900/7246 step 3900/72460 loss 0.2514 | lr 1.99e-05 | 25.7 items/s | mem 8.0 GB | ETA 604 min
+[  3758.1s]   ep 0 b 3950/7246 step 3950/72460 loss 0.4867 | lr 1.99e-05 | 25.6 items/s | mem 8.0 GB | ETA 603 min
+[  3783.0s]   ep 0 b 4000/7246 step 4000/72460 loss 0.1758 | lr 1.99e-05 | 25.6 items/s | mem 8.0 GB | ETA 603 min
+[  3783.5s] saved checkpoint epoch 0 batch 4000 step 4000
+[  3807.7s]   ep 0 b 4050/7246 step 4050/72460 loss 0.1615 | lr 1.99e-05 | 25.6 items/s | mem 8.0 GB | ETA 602 min
+[  3832.9s]   ep 0 b 4100/7246 step 4100/72460 loss 0.2456 | lr 1.99e-05 | 25.6 items/s | mem 8.0 GB | ETA 601 min
+[  3857.5s]   ep 0 b 4150/7246 step 4150/72460 loss 0.4548 | lr 1.98e-05 | 25.5 items/s | mem 8.0 GB | ETA 600 min
+[  3881.8s]   ep 0 b 4200/7246 step 4200/72460 loss 0.3504 | lr 1.98e-05 | 25.4 items/s | mem 8.0 GB | ETA 599 min
+[  3906.3s]   ep 0 b 4250/7246 step 4250/72460 loss 0.2350 | lr 1.98e-05 | 25.5 items/s | mem 8.0 GB | ETA 598 min
+[  3930.5s]   ep 0 b 4300/7246 step 4300/72460 loss 0.1176 | lr 1.98e-05 | 25.6 items/s | mem 8.0 GB | ETA 597 min
+[  3955.2s]   ep 0 b 4350/7246 step 4350/72460 loss 0.4208 | lr 1.98e-05 | 25.6 items/s | mem 8.0 GB | ETA 596 min
+[  3979.6s]   ep 0 b 4400/7246 step 4400/72460 loss 0.2636 | lr 1.98e-05 | 25.6 items/s | mem 8.0 GB | ETA 595 min
+[  3980.1s] saved checkpoint epoch 0 batch 4400 step 4400
+[  4004.2s]   ep 0 b 4450/7246 step 4450/72460 loss 0.1091 | lr 1.98e-05 | 25.7 items/s | mem 8.0 GB | ETA 594 min
+[  4028.7s]   ep 0 b 4500/7246 step 4500/72460 loss 0.1292 | lr 1.97e-05 | 25.7 items/s | mem 8.0 GB | ETA 594 min
+[  4053.5s]   ep 0 b 4550/7246 step 4550/72460 loss 0.3277 | lr 1.97e-05 | 25.6 items/s | mem 8.0 GB | ETA 593 min
+[  4077.8s]   ep 0 b 4600/7246 step 4600/72460 loss 0.1953 | lr 1.97e-05 | 25.6 items/s | mem 8.0 GB | ETA 592 min
+[  4103.0s]   ep 0 b 4650/7246 step 4650/72460 loss 0.1750 | lr 1.97e-05 | 25.5 items/s | mem 8.0 GB | ETA 591 min
+[  4126.6s]   ep 0 b 4700/7246 step 4700/72460 loss 0.4467 | lr 1.97e-05 | 25.6 items/s | mem 8.0 GB | ETA 590 min
+[  4150.8s]   ep 0 b 4750/7246 step 4750/72460 loss 0.1938 | lr 1.97e-05 | 25.7 items/s | mem 8.0 GB | ETA 589 min
+[  4174.7s]   ep 0 b 4800/7246 step 4800/72460 loss 0.2667 | lr 1.97e-05 | 25.7 items/s | mem 8.0 GB | ETA 588 min
+[  4175.3s] saved checkpoint epoch 0 batch 4800 step 4800
+[  4200.0s]   ep 0 b 4850/7246 step 4850/72460 loss 0.1260 | lr 1.96e-05 | 25.7 items/s | mem 8.0 GB | ETA 588 min
+[  4224.2s]   ep 0 b 4900/7246 step 4900/72460 loss 0.4385 | lr 1.96e-05 | 25.8 items/s | mem 8.0 GB | ETA 587 min
+[  4248.2s]   ep 0 b 4950/7246 step 4950/72460 loss 0.1881 | lr 1.96e-05 | 25.8 items/s | mem 8.0 GB | ETA 586 min
+[  4271.8s]   ep 0 b 5000/7246 step 5000/72460 loss 0.0940 | lr 1.96e-05 | 26.0 items/s | mem 8.0 GB | ETA 585 min
+[  4295.9s]   ep 0 b 5050/7246 step 5050/72460 loss 0.2240 | lr 1.96e-05 | 26.1 items/s | mem 8.0 GB | ETA 584 min
+[  4320.2s]   ep 0 b 5100/7246 step 5100/72460 loss 0.1147 | lr 1.96e-05 | 26.2 items/s | mem 8.0 GB | ETA 583 min
+[  4344.1s]   ep 0 b 5150/7246 step 5150/72460 loss 0.2897 | lr 1.96e-05 | 26.2 items/s | mem 8.0 GB | ETA 582 min
+[  4368.6s]   ep 0 b 5200/7246 step 5200/72460 loss 0.2437 | lr 1.95e-05 | 26.1 items/s | mem 8.0 GB | ETA 582 min
+[  4369.1s] saved checkpoint epoch 0 batch 5200 step 5200
+[  4394.1s]   ep 0 b 5250/7246 step 5250/72460 loss 0.2142 | lr 1.95e-05 | 26.0 items/s | mem 8.0 GB | ETA 581 min
+[  4418.5s]   ep 0 b 5300/7246 step 5300/72460 loss 0.1926 | lr 1.95e-05 | 26.1 items/s | mem 8.0 GB | ETA 580 min
+[  4443.0s]   ep 0 b 5350/7246 step 5350/72460 loss 0.2304 | lr 1.95e-05 | 26.1 items/s | mem 8.0 GB | ETA 580 min
+[  4467.4s]   ep 0 b 5400/7246 step 5400/72460 loss 0.3555 | lr 1.95e-05 | 26.1 items/s | mem 8.0 GB | ETA 579 min
+[  4491.8s]   ep 0 b 5450/7246 step 5450/72460 loss 0.2310 | lr 1.95e-05 | 26.1 items/s | mem 8.0 GB | ETA 578 min
+[  4516.1s]   ep 0 b 5500/7246 step 5500/72460 loss 0.2968 | lr 1.95e-05 | 26.2 items/s | mem 8.0 GB | ETA 577 min
+[  4541.0s]   ep 0 b 5550/7246 step 5550/72460 loss 0.2811 | lr 1.94e-05 | 26.2 items/s | mem 8.0 GB | ETA 577 min
+[  4564.7s]   ep 0 b 5600/7246 step 5600/72460 loss 0.2240 | lr 1.94e-05 | 26.3 items/s | mem 8.0 GB | ETA 576 min
+[  4565.2s] saved checkpoint epoch 0 batch 5600 step 5600
+[  4590.0s]   ep 0 b 5650/7246 step 5650/72460 loss 0.1471 | lr 1.94e-05 | 26.3 items/s | mem 8.0 GB | ETA 575 min
+[  4614.7s]   ep 0 b 5700/7246 step 5700/72460 loss 0.3861 | lr 1.94e-05 | 26.3 items/s | mem 8.0 GB | ETA 575 min
+[  4638.7s]   ep 0 b 5750/7246 step 5750/72460 loss 0.1323 | lr 1.94e-05 | 26.5 items/s | mem 8.0 GB | ETA 574 min
+[  4662.7s]   ep 0 b 5800/7246 step 5800/72460 loss 0.2036 | lr 1.94e-05 | 26.5 items/s | mem 8.0 GB | ETA 573 min
+[  4686.6s]   ep 0 b 5850/7246 step 5850/72460 loss 0.1486 | lr 1.94e-05 | 26.7 items/s | mem 8.0 GB | ETA 572 min
+[  4711.1s]   ep 0 b 5900/7246 step 5900/72460 loss 0.1196 | lr 1.93e-05 | 26.7 items/s | mem 8.0 GB | ETA 572 min
+[  4735.1s]   ep 0 b 5950/7246 step 5950/72460 loss 0.2777 | lr 1.93e-05 | 26.8 items/s | mem 8.0 GB | ETA 571 min
+[  4759.8s]   ep 0 b 6000/7246 step 6000/72460 loss 0.3685 | lr 1.93e-05 | 26.7 items/s | mem 8.0 GB | ETA 570 min
+[  4760.3s] saved checkpoint epoch 0 batch 6000 step 6000
+[  4784.5s]   ep 0 b 6050/7246 step 6050/72460 loss 0.2548 | lr 1.93e-05 | 26.7 items/s | mem 8.0 GB | ETA 570 min
+[  4808.1s]   ep 0 b 6100/7246 step 6100/72460 loss 0.2333 | lr 1.93e-05 | 26.6 items/s | mem 8.0 GB | ETA 569 min
+[  4832.5s]   ep 0 b 6150/7246 step 6150/72460 loss 0.0982 | lr 1.93e-05 | 26.6 items/s | mem 8.0 GB | ETA 568 min
+[  4856.3s]   ep 0 b 6200/7246 step 6200/72460 loss 0.1716 | lr 1.93e-05 | 26.8 items/s | mem 8.0 GB | ETA 567 min
+[  4880.8s]   ep 0 b 6250/7246 step 6250/72460 loss 0.3688 | lr 1.92e-05 | 26.7 items/s | mem 8.0 GB | ETA 567 min
+[  4905.2s]   ep 0 b 6300/7246 step 6300/72460 loss 0.5451 | lr 1.92e-05 | 26.7 items/s | mem 8.0 GB | ETA 566 min
+[  4929.8s]   ep 0 b 6350/7246 step 6350/72460 loss 0.3885 | lr 1.92e-05 | 26.7 items/s | mem 8.0 GB | ETA 566 min
+[  4954.1s]   ep 0 b 6400/7246 step 6400/72460 loss 0.2156 | lr 1.92e-05 | 26.8 items/s | mem 8.0 GB | ETA 565 min
+[  4954.7s] saved checkpoint epoch 0 batch 6400 step 6400
+[  4978.9s]   ep 0 b 6450/7246 step 6450/72460 loss 0.5207 | lr 1.92e-05 | 26.8 items/s | mem 8.0 GB | ETA 564 min
+[  5003.0s]   ep 0 b 6500/7246 step 6500/72460 loss 0.3052 | lr 1.92e-05 | 26.9 items/s | mem 8.0 GB | ETA 564 min
+[  5027.3s]   ep 0 b 6550/7246 step 6550/72460 loss 0.1641 | lr 1.91e-05 | 26.9 items/s | mem 8.0 GB | ETA 563 min
+[  5051.9s]   ep 0 b 6600/7246 step 6600/72460 loss 0.1780 | lr 1.91e-05 | 26.9 items/s | mem 8.0 GB | ETA 562 min
+[  5076.4s]   ep 0 b 6650/7246 step 6650/72460 loss 0.1396 | lr 1.91e-05 | 26.9 items/s | mem 8.0 GB | ETA 562 min
+[  5101.2s]   ep 0 b 6700/7246 step 6700/72460 loss 0.1450 | lr 1.91e-05 | 26.9 items/s | mem 8.0 GB | ETA 561 min
+[  5125.4s]   ep 0 b 6750/7246 step 6750/72460 loss 0.1416 | lr 1.91e-05 | 26.9 items/s | mem 8.0 GB | ETA 561 min
+[  5150.1s]   ep 0 b 6800/7246 step 6800/72460 loss 0.3079 | lr 1.91e-05 | 26.9 items/s | mem 8.0 GB | ETA 560 min
+[  5150.6s] saved checkpoint epoch 0 batch 6800 step 6800
+[  5174.4s]   ep 0 b 6850/7246 step 6850/72460 loss 0.4488 | lr 1.91e-05 | 26.9 items/s | mem 8.0 GB | ETA 559 min
+[  5198.5s]   ep 0 b 6900/7246 step 6900/72460 loss 0.1376 | lr 1.90e-05 | 26.9 items/s | mem 8.0 GB | ETA 559 min
+[  5223.0s]   ep 0 b 6950/7246 step 6950/72460 loss 0.1175 | lr 1.90e-05 | 26.9 items/s | mem 8.0 GB | ETA 558 min
+[  5247.5s]   ep 0 b 7000/7246 step 7000/72460 loss 0.2231 | lr 1.90e-05 | 26.9 items/s | mem 8.0 GB | ETA 557 min
+[  5272.0s]   ep 0 b 7050/7246 step 7050/72460 loss 0.1762 | lr 1.90e-05 | 26.9 items/s | mem 8.0 GB | ETA 557 min
+[  5296.0s]   ep 0 b 7100/7246 step 7100/72460 loss 0.2268 | lr 1.90e-05 | 26.9 items/s | mem 8.0 GB | ETA 556 min
+[  5320.7s]   ep 0 b 7150/7246 step 7150/72460 loss 0.1451 | lr 1.90e-05 | 26.9 items/s | mem 8.0 GB | ETA 556 min
+[  5345.0s]   ep 0 b 7200/7246 step 7200/72460 loss 0.1532 | lr 1.90e-05 | 26.8 items/s | mem 8.0 GB | ETA 555 min
+[  5345.6s] saved checkpoint epoch 0 batch 7200 step 7200
+[  5529.4s] valid ep 1.00 step 7246 (162s): lines Top-1/5/10 21.0/53.8/66.7 IFA 4 | line BCE 0.5124 | pairs acc 44.3 debiased 57.7 len-matched 48.4 top3mean 45.3 net@50 -2.0 | fn ROC 0.744 debiased 0.603 | select 120.4 (best 118.3 @ ep 0.5)
+[  5529.4s] valid ep 1.00 full: {"lines_ALL": {"n": 372, "median_ifa": 4.0, "top1": 20.967741935483872, "top5": 53.76344086021505, "top10": 66.66666666666666, "rand_top1": 7.695258369226086, "rand_top5": 27.425834089890994, "rand_top10": 41.31752062853754}, "lines_A": {"n": 125, "median_ifa": 1.0, "top1": 34.4, "top5": 81.6, "top10": 92.80000000000001, "rand_top1": 14.073640952931967, "rand_top5": 51.025353466069504, "rand_top10": 73.7188842709588}, "lines_B": {"n": 110, "median_ifa": 4.0, "top1": 21.818181818181817, "top5": 50.90909090909091, "top10": 63.63636363636363, "rand_top1": 7.690824288941915, "rand_top5": 24.154490736989906, "rand_top10": 36.79481967188202}, "lines_C": {"n": 137, "median_ifa": 12.0, "top1": 8.02919708029197, "top5": 30.656934306569344, "top10": 45.25547445255474, "rand_top1": 1.8791264412554538, "rand_top5": 8.5200519497217, "rand_top10": 15.385598365248853}, "function": {"n": 4124, "vulnerable": 562, "auprc": 0.2809305613845643, "roc_auc": 0.7442268228693145, "spearman_with_tokens": 0.65252822793706}, "pairs": {"n": 562, "ties": 60, "ranking_acc_ties_half": 44.30604982206406, "ranking_acc_non_tied": 43.625498007968126}, "same_text_flaw_lines": {"n": 241, "vul_scored_higher_pct": 38.796680497925315}, "pairs_debiased": 57.65124555160142, "extra": {"line_bce": 0.5123837432851404, "pairs": {"n": 562, "acc": 44.30604982206406, "acc_debiased": 57.65124555160143, "acc_length_matched": 48.41269841269841, "n_length_matched": 315, "acc_top3mean": 45.2846975088968, "length_rule_longer_is_fixed": 86.20996441281139, "P-C_at50": 2.6690391459074734, "P-R_at50": 4.6263345195729535, "net_at50": -1.9572953736654801}, "function": {"n": 4124, "vulnerable": 562, "roc_auc": 0.7442268228693145, "roc_auc_debiased": 0.603284271901307, "roc_auc_top3mean": 0.7517791096608927}}}
+[  5530.0s] saved best epoch 1.00
+[  5531.6s] saved checkpoint epoch 1 batch 0 step 7246
+[  5531.7s] epoch 1: 7244 batches, starting at batch 0
+[  5533.7s]   ep 1 b 4/7244 step 7250/72460 loss 0.1824 | lr 1.89e-05 | 25.2 items/s | mem 8.0 GB | ETA 527 min
+[  5558.6s]   ep 1 b 54/7244 step 7300/72460 loss 0.2618 | lr 1.89e-05 | 28.3 items/s | mem 8.0 GB | ETA 542 min
+[  5584.2s]   ep 1 b 104/7244 step 7350/72460 loss 0.1914 | lr 1.89e-05 | 22.9 items/s | mem 8.0 GB | ETA 548 min
+[  5608.7s]   ep 1 b 154/7244 step 7400/72460 loss 0.2735 | lr 1.89e-05 | 23.1 items/s | mem 8.0 GB | ETA 542 min
+[  5633.3s]   ep 1 b 204/7244 step 7450/72460 loss 0.2008 | lr 1.89e-05 | 23.8 items/s | mem 8.0 GB | ETA 539 min
+[  5657.9s]   ep 1 b 254/7244 step 7500/72460 loss 0.4656 | lr 1.89e-05 | 23.7 items/s | mem 8.0 GB | ETA 538 min
+[  5682.1s]   ep 1 b 304/7244 step 7550/72460 loss 0.2627 | lr 1.89e-05 | 23.3 items/s | mem 8.0 GB | ETA 535 min
+[  5706.7s]   ep 1 b 354/7244 step 7600/72460 loss 0.1181 | lr 1.88e-05 | 23.8 items/s | mem 8.0 GB | ETA 534 min
+[  5707.2s] saved checkpoint epoch 1 batch 354 step 7600
+[  5731.7s]   ep 1 b 404/7244 step 7650/72460 loss 0.2004 | lr 1.88e-05 | 25.0 items/s | mem 8.0 GB | ETA 535 min
+[  5756.3s]   ep 1 b 454/7244 step 7700/72460 loss 0.1099 | lr 1.88e-05 | 25.5 items/s | mem 8.0 GB | ETA 534 min
+[  5781.1s]   ep 1 b 504/7244 step 7750/72460 loss 0.3913 | lr 1.88e-05 | 24.9 items/s | mem 8.0 GB | ETA 534 min
+[  5806.1s]   ep 1 b 554/7244 step 7800/72460 loss 0.1364 | lr 1.88e-05 | 24.8 items/s | mem 8.0 GB | ETA 534 min
+[  5830.9s]   ep 1 b 604/7244 step 7850/72460 loss 0.1969 | lr 1.88e-05 | 24.7 items/s | mem 8.0 GB | ETA 533 min
+[  5855.5s]   ep 1 b 654/7244 step 7900/72460 loss 0.0774 | lr 1.88e-05 | 24.4 items/s | mem 8.0 GB | ETA 533 min
+[  5880.6s]   ep 1 b 704/7244 step 7950/72460 loss 0.1565 | lr 1.87e-05 | 24.0 items/s | mem 8.0 GB | ETA 533 min
+[  5905.1s]   ep 1 b 754/7244 step 8000/72460 loss 0.2454 | lr 1.87e-05 | 25.0 items/s | mem 8.0 GB | ETA 532 min
+[  5905.6s] saved checkpoint epoch 1 batch 754 step 8000
+[  5929.9s]   ep 1 b 804/7244 step 8050/72460 loss 0.2825 | lr 1.87e-05 | 24.9 items/s | mem 8.0 GB | ETA 532 min
+[  5954.7s]   ep 1 b 854/7244 step 8100/72460 loss 0.3787 | lr 1.87e-05 | 24.8 items/s | mem 8.0 GB | ETA 531 min
+[  5979.2s]   ep 1 b 904/7244 step 8150/72460 loss 0.1907 | lr 1.87e-05 | 25.4 items/s | mem 8.0 GB | ETA 531 min
+[  6003.3s]   ep 1 b 954/7244 step 8200/72460 loss 0.1044 | lr 1.87e-05 | 25.9 items/s | mem 8.0 GB | ETA 529 min
+[  6027.7s]   ep 1 b 1004/7244 step 8250/72460 loss 0.1431 | lr 1.87e-05 | 26.0 items/s | mem 8.0 GB | ETA 529 min
+[  6052.1s]   ep 1 b 1054/7244 step 8300/72460 loss 0.2440 | lr 1.86e-05 | 25.9 items/s | mem 8.0 GB | ETA 528 min
+[  6075.8s]   ep 1 b 1104/7244 step 8350/72460 loss 0.2468 | lr 1.86e-05 | 26.3 items/s | mem 8.0 GB | ETA 527 min
+[  6100.0s]   ep 1 b 1154/7244 step 8400/72460 loss 0.0799 | lr 1.86e-05 | 26.6 items/s | mem 8.0 GB | ETA 526 min
+[  6100.5s] saved checkpoint epoch 1 batch 1154 step 8400
+[  6125.3s]   ep 1 b 1204/7244 step 8450/72460 loss 0.4054 | lr 1.86e-05 | 26.3 items/s | mem 8.0 GB | ETA 526 min
+[  6149.2s]   ep 1 b 1254/7244 step 8500/72460 loss 0.1707 | lr 1.86e-05 | 26.8 items/s | mem 8.0 GB | ETA 525 min
+[  6173.5s]   ep 1 b 1304/7244 step 8550/72460 loss 0.1643 | lr 1.86e-05 | 26.7 items/s | mem 8.0 GB | ETA 524 min
+[  6198.4s]   ep 1 b 1354/7244 step 8600/72460 loss 0.2112 | lr 1.86e-05 | 26.5 items/s | mem 8.0 GB | ETA 524 min
+[  6222.4s]   ep 1 b 1404/7244 step 8650/72460 loss 0.0949 | lr 1.85e-05 | 26.3 items/s | mem 8.0 GB | ETA 523 min
+[  6246.7s]   ep 1 b 1454/7244 step 8700/72460 loss 0.1092 | lr 1.85e-05 | 26.5 items/s | mem 8.0 GB | ETA 523 min
+[  6271.3s]   ep 1 b 1504/7244 step 8750/72460 loss 0.4638 | lr 1.85e-05 | 26.4 items/s | mem 8.0 GB | ETA 522 min
+[  6295.5s]   ep 1 b 1554/7244 step 8800/72460 loss 0.1658 | lr 1.85e-05 | 26.4 items/s | mem 8.0 GB | ETA 521 min
+[  6296.1s] saved checkpoint epoch 1 batch 1554 step 8800
+[  6320.5s]   ep 1 b 1604/7244 step 8850/72460 loss 0.3327 | lr 1.85e-05 | 26.6 items/s | mem 8.0 GB | ETA 521 min
+[  6344.1s]   ep 1 b 1654/7244 step 8900/72460 loss 0.1137 | lr 1.85e-05 | 27.1 items/s | mem 8.0 GB | ETA 520 min
+[  6368.5s]   ep 1 b 1704/7244 step 8950/72460 loss 0.5230 | lr 1.85e-05 | 26.9 items/s | mem 8.0 GB | ETA 520 min
+[  6391.9s]   ep 1 b 1754/7244 step 9000/72460 loss 0.2495 | lr 1.84e-05 | 27.3 items/s | mem 8.0 GB | ETA 519 min
+[  6416.3s]   ep 1 b 1804/7244 step 9050/72460 loss 0.4639 | lr 1.84e-05 | 27.2 items/s | mem 8.0 GB | ETA 518 min
+[  6440.4s]   ep 1 b 1854/7244 step 9100/72460 loss 0.2875 | lr 1.84e-05 | 27.3 items/s | mem 8.0 GB | ETA 518 min
+[  6463.6s]   ep 1 b 1904/7244 step 9150/72460 loss 0.1643 | lr 1.84e-05 | 27.8 items/s | mem 8.0 GB | ETA 516 min
+[  6488.6s]   ep 1 b 1954/7244 step 9200/72460 loss 0.1044 | lr 1.84e-05 | 27.6 items/s | mem 8.0 GB | ETA 516 min
+[  6489.1s] saved checkpoint epoch 1 batch 1954 step 9200
+[  6513.3s]   ep 1 b 2004/7244 step 9250/72460 loss 0.2887 | lr 1.84e-05 | 27.5 items/s | mem 8.0 GB | ETA 516 min
+[  6538.1s]   ep 1 b 2054/7244 step 9300/72460 loss 0.0964 | lr 1.84e-05 | 27.5 items/s | mem 8.0 GB | ETA 516 min
+[  6562.7s]   ep 1 b 2104/7244 step 9350/72460 loss 0.1604 | lr 1.83e-05 | 27.6 items/s | mem 8.0 GB | ETA 515 min
+[  6587.4s]   ep 1 b 2154/7244 step 9400/72460 loss 0.2074 | lr 1.83e-05 | 27.6 items/s | mem 8.0 GB | ETA 515 min
+[  6611.9s]   ep 1 b 2204/7244 step 9450/72460 loss 0.1378 | lr 1.83e-05 | 27.6 items/s | mem 8.0 GB | ETA 515 min
+[  6636.3s]   ep 1 b 2254/7244 step 9500/72460 loss 0.5177 | lr 1.83e-05 | 27.5 items/s | mem 8.0 GB | ETA 514 min
+[  6661.0s]   ep 1 b 2304/7244 step 9550/72460 loss 0.1937 | lr 1.83e-05 | 27.5 items/s | mem 8.0 GB | ETA 514 min
+[  6685.7s]   ep 1 b 2354/7244 step 9600/72460 loss 0.2669 | lr 1.83e-05 | 27.7 items/s | mem 8.0 GB | ETA 514 min
+[  6686.3s] saved checkpoint epoch 1 batch 2354 step 9600
+[  6710.3s]   ep 1 b 2404/7244 step 9650/72460 loss 0.2100 | lr 1.82e-05 | 27.8 items/s | mem 8.0 GB | ETA 513 min
+[  6734.1s]   ep 1 b 2454/7244 step 9700/72460 loss 0.2432 | lr 1.82e-05 | 27.9 items/s | mem 8.0 GB | ETA 512 min
+[  6758.7s]   ep 1 b 2504/7244 step 9750/72460 loss 0.3559 | lr 1.82e-05 | 27.9 items/s | mem 8.0 GB | ETA 512 min
+[  6783.0s]   ep 1 b 2554/7244 step 9800/72460 loss 0.0956 | lr 1.82e-05 | 28.0 items/s | mem 8.0 GB | ETA 512 min
+[  6807.0s]   ep 1 b 2604/7244 step 9850/72460 loss 0.0777 | lr 1.82e-05 | 28.1 items/s | mem 8.0 GB | ETA 511 min
+[  6831.1s]   ep 1 b 2654/7244 step 9900/72460 loss 0.1000 | lr 1.82e-05 | 28.2 items/s | mem 8.0 GB | ETA 510 min
+[  6855.5s]   ep 1 b 2704/7244 step 9950/72460 loss 0.1342 | lr 1.82e-05 | 28.2 items/s | mem 8.0 GB | ETA 510 min
+[  6879.1s]   ep 1 b 2754/7244 step 10000/72460 loss 0.2985 | lr 1.81e-05 | 28.2 items/s | mem 8.0 GB | ETA 509 min
+[  6879.6s] saved checkpoint epoch 1 batch 2754 step 10000
+[  6903.9s]   ep 1 b 2804/7244 step 10050/72460 loss 0.2939 | lr 1.81e-05 | 28.2 items/s | mem 8.0 GB | ETA 509 min
+[  6928.3s]   ep 1 b 2854/7244 step 10100/72460 loss 0.2134 | lr 1.81e-05 | 28.2 items/s | mem 8.0 GB | ETA 509 min
+[  6952.7s]   ep 1 b 2904/7244 step 10150/72460 loss 0.0788 | lr 1.81e-05 | 28.1 items/s | mem 8.0 GB | ETA 508 min
+[  6976.9s]   ep 1 b 2954/7244 step 10200/72460 loss 0.1084 | lr 1.81e-05 | 28.1 items/s | mem 8.0 GB | ETA 508 min
+[  7001.1s]   ep 1 b 3004/7244 step 10250/72460 loss 0.1999 | lr 1.81e-05 | 28.1 items/s | mem 8.0 GB | ETA 507 min
+[  7026.0s]   ep 1 b 3054/7244 step 10300/72460 loss 0.2174 | lr 1.81e-05 | 27.9 items/s | mem 8.0 GB | ETA 507 min
+[  7049.8s]   ep 1 b 3104/7244 step 10350/72460 loss 0.1146 | lr 1.80e-05 | 28.1 items/s | mem 8.0 GB | ETA 506 min
+[  7074.0s]   ep 1 b 3154/7244 step 10400/72460 loss 0.1635 | lr 1.80e-05 | 28.1 items/s | mem 8.0 GB | ETA 506 min
+[  7074.5s] saved checkpoint epoch 1 batch 3154 step 10400
+[  7098.1s]   ep 1 b 3204/7244 step 10450/72460 loss 0.1454 | lr 1.80e-05 | 28.1 items/s | mem 8.0 GB | ETA 505 min
+[  7122.6s]   ep 1 b 3254/7244 step 10500/72460 loss 0.1651 | lr 1.80e-05 | 28.1 items/s | mem 8.0 GB | ETA 505 min
+[  7147.4s]   ep 1 b 3304/7244 step 10550/72460 loss 0.2322 | lr 1.80e-05 | 28.0 items/s | mem 8.0 GB | ETA 505 min
+[  7171.3s]   ep 1 b 3354/7244 step 10600/72460 loss 0.0973 | lr 1.80e-05 | 28.1 items/s | mem 8.0 GB | ETA 504 min
+[  7195.9s]   ep 1 b 3404/7244 step 10650/72460 loss 0.2352 | lr 1.80e-05 | 28.0 items/s | mem 8.0 GB | ETA 504 min
+[  7220.1s]   ep 1 b 3454/7244 step 10700/72460 loss 0.2770 | lr 1.79e-05 | 28.1 items/s | mem 8.0 GB | ETA 503 min
+[  7244.3s]   ep 1 b 3504/7244 step 10750/72460 loss 0.2932 | lr 1.79e-05 | 28.1 items/s | mem 8.0 GB | ETA 503 min
+[  7268.8s]   ep 1 b 3554/7244 step 10800/72460 loss 0.2151 | lr 1.79e-05 | 28.0 items/s | mem 8.0 GB | ETA 502 min
+[  7269.4s] saved checkpoint epoch 1 batch 3554 step 10800
+[  7293.8s]   ep 1 b 3604/7244 step 10850/72460 loss 0.2973 | lr 1.79e-05 | 28.0 items/s | mem 8.0 GB | ETA 502 min
+[  7464.2s] valid ep 1.50 step 10869 (161s): lines Top-1/5/10 23.9/53.8/66.4 IFA 4 | line BCE 0.5905 | pairs acc 48.9 debiased 57.9 len-matched 50.3 top3mean 43.3 net@50 -0.7 | fn ROC 0.723 debiased 0.587 | select 120.2 (best 120.4 @ ep 1.0)
+[  7464.2s] valid ep 1.50 full: {"lines_ALL": {"n": 372, "median_ifa": 3.5, "top1": 23.9247311827957, "top5": 53.76344086021505, "top10": 66.39784946236558, "rand_top1": 7.695258369226086, "rand_top5": 27.425834089890994, "rand_top10": 41.31752062853754}, "lines_A": {"n": 125, "median_ifa": 1.0, "top1": 37.6, "top5": 78.4, "top10": 91.2, "rand_top1": 14.073640952931967, "rand_top5": 51.025353466069504, "rand_top10": 73.7188842709588}, "lines_B": {"n": 110, "median_ifa": 4.0, "top1": 19.090909090909093, "top5": 51.81818181818182, "top10": 64.54545454545455, "rand_top1": 7.690824288941915, "rand_top5": 24.154490736989906, "rand_top10": 36.79481967188202}, "lines_C": {"n": 137, "median_ifa": 13.0, "top1": 15.328467153284672, "top5": 32.846715328467155, "top10": 45.25547445255474, "rand_top1": 1.8791264412554538, "rand_top5": 8.5200519497217, "rand_top10": 15.385598365248853}, "function": {"n": 4124, "vulnerable": 562, "auprc": 0.262731341189401, "roc_auc": 0.723123530105243, "spearman_with_tokens": 0.5768510110247788}, "pairs": {"n": 562, "ties": 66, "ranking_acc_ties_half": 48.93238434163701, "ranking_acc_non_tied": 48.79032258064516}, "same_text_flaw_lines": {"n": 241, "vul_scored_higher_pct": 51.45228215767634}, "pairs_debiased": 57.91814946619217, "extra": {"line_bce": 0.5905043556229483, "pairs": {"n": 562, "acc": 48.93238434163701, "acc_debiased": 57.91814946619217, "acc_length_matched": 50.317460317460316, "n_length_matched": 315, "acc_top3mean": 43.32740213523132, "length_rule_longer_is_fixed": 86.20996441281139, "P-C_at50": 4.448398576512456, "P-R_at50": 5.160142348754448, "net_at50": -0.7117437722419927}, "function": {"n": 4124, "vulnerable": 562, "roc_auc": 0.723123530105243, "roc_auc_debiased": 0.5873187421197655, "roc_auc_top3mean": 0.7345060354353286}}}
+[  7465.8s] saved checkpoint epoch 1 batch 3623 step 10869
+[  7480.6s]   ep 1 b 3654/7244 step 10900/72460 loss 0.1095 | lr 1.79e-05 | 25.9 items/s | mem 8.0 GB | ETA 547 min
+[  7505.3s]   ep 1 b 3704/7244 step 10950/72460 loss 0.1655 | lr 1.79e-05 | 25.8 items/s | mem 8.0 GB | ETA 546 min
+[  7529.7s]   ep 1 b 3754/7244 step 11000/72460 loss 0.2326 | lr 1.79e-05 | 25.9 items/s | mem 8.0 GB | ETA 545 min
+[  7553.7s]   ep 1 b 3804/7244 step 11050/72460 loss 0.2317 | lr 1.78e-05 | 25.9 items/s | mem 8.0 GB | ETA 544 min
+[  7577.2s]   ep 1 b 3854/7244 step 11100/72460 loss 0.1514 | lr 1.78e-05 | 26.0 items/s | mem 8.0 GB | ETA 543 min
+[  7601.5s]   ep 1 b 3904/7244 step 11150/72460 loss 0.1032 | lr 1.78e-05 | 26.0 items/s | mem 8.0 GB | ETA 542 min
+[  7625.9s]   ep 1 b 3954/7244 step 11200/72460 loss 0.1030 | lr 1.78e-05 | 26.1 items/s | mem 8.0 GB | ETA 541 min
+[  7626.4s] saved checkpoint epoch 1 batch 3954 step 11200
+[  7650.7s]   ep 1 b 4004/7244 step 11250/72460 loss 0.1412 | lr 1.78e-05 | 26.1 items/s | mem 8.0 GB | ETA 540 min
+[  7675.3s]   ep 1 b 4054/7244 step 11300/72460 loss 0.1325 | lr 1.78e-05 | 26.1 items/s | mem 8.0 GB | ETA 539 min
+[  7699.1s]   ep 1 b 4104/7244 step 11350/72460 loss 0.4907 | lr 1.78e-05 | 26.2 items/s | mem 8.0 GB | ETA 538 min
+[  7724.4s]   ep 1 b 4154/7244 step 11400/72460 loss 0.0577 | lr 1.77e-05 | 26.2 items/s | mem 8.0 GB | ETA 537 min
+[  7749.2s]   ep 1 b 4204/7244 step 11450/72460 loss 0.1314 | lr 1.77e-05 | 26.1 items/s | mem 8.0 GB | ETA 536 min
+[  7773.6s]   ep 1 b 4254/7244 step 11500/72460 loss 0.1831 | lr 1.77e-05 | 26.0 items/s | mem 8.0 GB | ETA 535 min
+[  7798.2s]   ep 1 b 4304/7244 step 11550/72460 loss 0.0687 | lr 1.77e-05 | 26.0 items/s | mem 8.0 GB | ETA 535 min
+[  7822.7s]   ep 1 b 4354/7244 step 11600/72460 loss 0.1594 | lr 1.77e-05 | 26.2 items/s | mem 8.0 GB | ETA 534 min
+[  7823.2s] saved checkpoint epoch 1 batch 4354 step 11600
+[  7848.1s]   ep 1 b 4404/7244 step 11650/72460 loss 0.1486 | lr 1.77e-05 | 26.1 items/s | mem 8.0 GB | ETA 533 min
+[  7872.2s]   ep 1 b 4454/7244 step 11700/72460 loss 0.1296 | lr 1.77e-05 | 26.2 items/s | mem 8.0 GB | ETA 532 min
+[  7896.3s]   ep 1 b 4504/7244 step 11750/72460 loss 0.2386 | lr 1.76e-05 | 26.2 items/s | mem 8.0 GB | ETA 531 min
+[  7920.3s]   ep 1 b 4554/7244 step 11800/72460 loss 0.3050 | lr 1.76e-05 | 26.3 items/s | mem 8.0 GB | ETA 530 min
+[  7944.2s]   ep 1 b 4604/7244 step 11850/72460 loss 0.1222 | lr 1.76e-05 | 26.4 items/s | mem 8.0 GB | ETA 529 min
+[  7968.3s]   ep 1 b 4654/7244 step 11900/72460 loss 0.4815 | lr 1.76e-05 | 26.5 items/s | mem 8.0 GB | ETA 528 min
+[  7992.4s]   ep 1 b 4704/7244 step 11950/72460 loss 0.1646 | lr 1.76e-05 | 26.4 items/s | mem 8.0 GB | ETA 528 min
+[  8016.6s]   ep 1 b 4754/7244 step 12000/72460 loss 0.3386 | lr 1.76e-05 | 26.4 items/s | mem 8.0 GB | ETA 527 min
+[  8017.2s] saved checkpoint epoch 1 batch 4754 step 12000
+[  8040.5s]   ep 1 b 4804/7244 step 12050/72460 loss 0.3356 | lr 1.76e-05 | 26.6 items/s | mem 8.0 GB | ETA 526 min
+[  8064.1s]   ep 1 b 4854/7244 step 12100/72460 loss 0.2672 | lr 1.75e-05 | 26.6 items/s | mem 8.0 GB | ETA 525 min
+[  8088.8s]   ep 1 b 4904/7244 step 12150/72460 loss 0.2036 | lr 1.75e-05 | 26.5 items/s | mem 8.0 GB | ETA 524 min
+[  8112.9s]   ep 1 b 4954/7244 step 12200/72460 loss 0.1582 | lr 1.75e-05 | 26.6 items/s | mem 8.0 GB | ETA 523 min
+[  8136.9s]   ep 1 b 5004/7244 step 12250/72460 loss 0.0775 | lr 1.75e-05 | 26.8 items/s | mem 8.0 GB | ETA 522 min
+[  8162.0s]   ep 1 b 5054/7244 step 12300/72460 loss 0.1227 | lr 1.75e-05 | 26.8 items/s | mem 8.0 GB | ETA 522 min
+[  8186.6s]   ep 1 b 5104/7244 step 12350/72460 loss 0.1151 | lr 1.75e-05 | 26.8 items/s | mem 8.0 GB | ETA 521 min
+[  8210.8s]   ep 1 b 5154/7244 step 12400/72460 loss 0.1990 | lr 1.74e-05 | 26.8 items/s | mem 8.0 GB | ETA 520 min
+[  8211.3s] saved checkpoint epoch 1 batch 5154 step 12400
+[  8235.5s]   ep 1 b 5204/7244 step 12450/72460 loss 0.1642 | lr 1.74e-05 | 26.8 items/s | mem 8.0 GB | ETA 520 min
+[  8259.9s]   ep 1 b 5254/7244 step 12500/72460 loss 0.2179 | lr 1.74e-05 | 26.8 items/s | mem 8.0 GB | ETA 519 min
+[  8284.3s]   ep 1 b 5304/7244 step 12550/72460 loss 0.4949 | lr 1.74e-05 | 26.8 items/s | mem 8.0 GB | ETA 518 min
+[  8308.8s]   ep 1 b 5354/7244 step 12600/72460 loss 0.2993 | lr 1.74e-05 | 26.7 items/s | mem 8.0 GB | ETA 517 min
+[  8333.2s]   ep 1 b 5404/7244 step 12650/72460 loss 0.1115 | lr 1.74e-05 | 26.7 items/s | mem 8.0 GB | ETA 517 min
+[  8357.4s]   ep 1 b 5454/7244 step 12700/72460 loss 0.1788 | lr 1.74e-05 | 26.7 items/s | mem 8.0 GB | ETA 516 min
+[  8381.8s]   ep 1 b 5504/7244 step 12750/72460 loss 0.1648 | lr 1.73e-05 | 26.7 items/s | mem 8.0 GB | ETA 515 min
+[  8406.2s]   ep 1 b 5554/7244 step 12800/72460 loss 0.0613 | lr 1.73e-05 | 26.6 items/s | mem 8.0 GB | ETA 515 min
+[  8406.7s] saved checkpoint epoch 1 batch 5554 step 12800
+[  8430.7s]   ep 1 b 5604/7244 step 12850/72460 loss 0.1780 | lr 1.73e-05 | 26.8 items/s | mem 8.0 GB | ETA 514 min
+[  8454.6s]   ep 1 b 5654/7244 step 12900/72460 loss 0.1754 | lr 1.73e-05 | 26.8 items/s | mem 8.0 GB | ETA 513 min
+[  8479.5s]   ep 1 b 5704/7244 step 12950/72460 loss 0.2944 | lr 1.73e-05 | 26.7 items/s | mem 8.0 GB | ETA 513 min
+[  8503.7s]   ep 1 b 5754/7244 step 13000/72460 loss 0.1587 | lr 1.73e-05 | 26.7 items/s | mem 8.0 GB | ETA 512 min
+[  8528.3s]   ep 1 b 5804/7244 step 13050/72460 loss 0.2050 | lr 1.73e-05 | 26.7 items/s | mem 8.0 GB | ETA 511 min
+[  8553.3s]   ep 1 b 5854/7244 step 13100/72460 loss 0.0868 | lr 1.72e-05 | 26.6 items/s | mem 8.0 GB | ETA 511 min
+[  8578.0s]   ep 1 b 5904/7244 step 13150/72460 loss 0.1197 | lr 1.72e-05 | 26.6 items/s | mem 8.0 GB | ETA 510 min
+[  8602.2s]   ep 1 b 5954/7244 step 13200/72460 loss 0.1693 | lr 1.72e-05 | 26.7 items/s | mem 8.0 GB | ETA 509 min
+[  8602.8s] saved checkpoint epoch 1 batch 5954 step 13200
+[  8626.8s]   ep 1 b 6004/7244 step 13250/72460 loss 0.1264 | lr 1.72e-05 | 26.7 items/s | mem 8.0 GB | ETA 509 min
+[  8651.5s]   ep 1 b 6054/7244 step 13300/72460 loss 0.1314 | lr 1.72e-05 | 26.7 items/s | mem 8.0 GB | ETA 508 min
+[  8675.8s]   ep 1 b 6104/7244 step 13350/72460 loss 0.2055 | lr 1.72e-05 | 26.7 items/s | mem 8.0 GB | ETA 507 min
+[  8699.8s]   ep 1 b 6154/7244 step 13400/72460 loss 0.1877 | lr 1.72e-05 | 26.8 items/s | mem 8.0 GB | ETA 507 min
+[  8724.4s]   ep 1 b 6204/7244 step 13450/72460 loss 0.1897 | lr 1.71e-05 | 26.7 items/s | mem 8.0 GB | ETA 506 min
+[  8748.1s]   ep 1 b 6254/7244 step 13500/72460 loss 0.0988 | lr 1.71e-05 | 26.8 items/s | mem 8.0 GB | ETA 505 min
+[  8773.0s]   ep 1 b 6304/7244 step 13550/72460 loss 0.3039 | lr 1.71e-05 | 26.8 items/s | mem 8.0 GB | ETA 505 min
+[  8797.2s]   ep 1 b 6354/7244 step 13600/72460 loss 0.1887 | lr 1.71e-05 | 26.8 items/s | mem 8.0 GB | ETA 504 min
+[  8797.8s] saved checkpoint epoch 1 batch 6354 step 13600
+[  8822.2s]   ep 1 b 6404/7244 step 13650/72460 loss 0.0879 | lr 1.71e-05 | 26.8 items/s | mem 8.0 GB | ETA 504 min
+[  8846.6s]   ep 1 b 6454/7244 step 13700/72460 loss 0.1667 | lr 1.71e-05 | 26.7 items/s | mem 8.0 GB | ETA 503 min
+[  8871.0s]   ep 1 b 6504/7244 step 13750/72460 loss 0.1900 | lr 1.71e-05 | 26.8 items/s | mem 8.0 GB | ETA 502 min
+[  8895.1s]   ep 1 b 6554/7244 step 13800/72460 loss 0.1807 | lr 1.70e-05 | 26.8 items/s | mem 8.0 GB | ETA 502 min
+[  8919.5s]   ep 1 b 6604/7244 step 13850/72460 loss 0.0956 | lr 1.70e-05 | 26.7 items/s | mem 8.0 GB | ETA 501 min
+[  8943.5s]   ep 1 b 6654/7244 step 13900/72460 loss 0.1612 | lr 1.70e-05 | 26.8 items/s | mem 8.0 GB | ETA 500 min
+[  8967.5s]   ep 1 b 6704/7244 step 13950/72460 loss 0.1165 | lr 1.70e-05 | 26.8 items/s | mem 8.0 GB | ETA 500 min
+[  8991.7s]   ep 1 b 6754/7244 step 14000/72460 loss 0.1170 | lr 1.70e-05 | 26.9 items/s | mem 8.0 GB | ETA 499 min
+[  8992.2s] saved checkpoint epoch 1 batch 6754 step 14000
+[  9016.7s]   ep 1 b 6804/7244 step 14050/72460 loss 0.1773 | lr 1.70e-05 | 26.9 items/s | mem 8.0 GB | ETA 499 min
+[  9041.5s]   ep 1 b 6854/7244 step 14100/72460 loss 0.1477 | lr 1.70e-05 | 26.9 items/s | mem 8.0 GB | ETA 498 min
+[  9065.4s]   ep 1 b 6904/7244 step 14150/72460 loss 0.5182 | lr 1.69e-05 | 26.9 items/s | mem 8.0 GB | ETA 497 min
+[  9089.3s]   ep 1 b 6954/7244 step 14200/72460 loss 0.1590 | lr 1.69e-05 | 27.0 items/s | mem 8.0 GB | ETA 497 min
+[  9114.1s]   ep 1 b 7004/7244 step 14250/72460 loss 0.2071 | lr 1.69e-05 | 26.9 items/s | mem 8.0 GB | ETA 496 min
+[  9138.2s]   ep 1 b 7054/7244 step 14300/72460 loss 0.2657 | lr 1.69e-05 | 26.9 items/s | mem 8.0 GB | ETA 496 min
+[  9162.5s]   ep 1 b 7104/7244 step 14350/72460 loss 0.1894 | lr 1.69e-05 | 26.9 items/s | mem 8.0 GB | ETA 495 min
+[  9187.4s]   ep 1 b 7154/7244 step 14400/72460 loss 0.0835 | lr 1.69e-05 | 26.9 items/s | mem 8.0 GB | ETA 494 min
+[  9187.9s] saved checkpoint epoch 1 batch 7154 step 14400
+[  9212.3s]   ep 1 b 7204/7244 step 14450/72460 loss 0.1033 | lr 1.69e-05 | 26.8 items/s | mem 8.0 GB | ETA 494 min
+[  9231.9s] saved checkpoint epoch 2 batch 0 step 14490
+[  9232.0s] epoch 2: 7243 batches, starting at batch 0
+[  9236.9s]   ep 2 b 10/7243 step 14500/72460 loss 0.1190 | lr 1.68e-05 | 20.2 items/s | mem 8.0 GB | ETA 473 min
+[  9261.2s]   ep 2 b 60/7243 step 14550/72460 loss 0.0830 | lr 1.68e-05 | 31.4 items/s | mem 8.0 GB | ETA 469 min
+[  9285.5s]   ep 2 b 110/7243 step 14600/72460 loss 0.1881 | lr 1.68e-05 | 30.8 items/s | mem 8.0 GB | ETA 469 min
+[  9310.0s]   ep 2 b 160/7243 step 14650/72460 loss 0.0946 | lr 1.68e-05 | 28.6 items/s | mem 8.0 GB | ETA 470 min
+[  9334.3s]   ep 2 b 210/7243 step 14700/72460 loss 0.2010 | lr 1.68e-05 | 27.8 items/s | mem 8.0 GB | ETA 469 min
+[  9359.2s]   ep 2 b 260/7243 step 14750/72460 loss 0.1522 | lr 1.68e-05 | 26.7 items/s | mem 8.0 GB | ETA 470 min
+[  9383.6s]   ep 2 b 310/7243 step 14800/72460 loss 0.0811 | lr 1.68e-05 | 26.5 items/s | mem 8.0 GB | ETA 470 min
+[  9384.1s] saved checkpoint epoch 2 batch 310 step 14800
+[  9408.5s]   ep 2 b 360/7243 step 14850/72460 loss 0.2521 | lr 1.67e-05 | 26.9 items/s | mem 8.0 GB | ETA 471 min
+[  9433.3s]   ep 2 b 410/7243 step 14900/72460 loss 0.3715 | lr 1.67e-05 | 26.1 items/s | mem 8.0 GB | ETA 471 min
+[  9457.7s]   ep 2 b 460/7243 step 14950/72460 loss 0.1097 | lr 1.67e-05 | 27.2 items/s | mem 8.0 GB | ETA 470 min
+[  9481.5s]   ep 2 b 510/7243 step 15000/72460 loss 0.1345 | lr 1.67e-05 | 27.3 items/s | mem 8.0 GB | ETA 468 min
+[  9505.6s]   ep 2 b 560/7243 step 15050/72460 loss 0.1585 | lr 1.67e-05 | 26.9 items/s | mem 8.0 GB | ETA 467 min
+[  9529.9s]   ep 2 b 610/7243 step 15100/72460 loss 0.1090 | lr 1.67e-05 | 27.0 items/s | mem 8.0 GB | ETA 467 min
+[  9553.9s]   ep 2 b 660/7243 step 15150/72460 loss 0.1109 | lr 1.67e-05 | 27.1 items/s | mem 8.0 GB | ETA 466 min
+[  9577.9s]   ep 2 b 710/7243 step 15200/72460 loss 0.2450 | lr 1.66e-05 | 27.4 items/s | mem 8.0 GB | ETA 465 min
+[  9578.5s] saved checkpoint epoch 2 batch 710 step 15200
+[  9602.8s]   ep 2 b 760/7243 step 15250/72460 loss 0.1096 | lr 1.66e-05 | 27.8 items/s | mem 8.0 GB | ETA 465 min
+[  9627.4s]   ep 2 b 810/7243 step 15300/72460 loss 0.0796 | lr 1.66e-05 | 27.9 items/s | mem 8.0 GB | ETA 465 min
+[  9651.9s]   ep 2 b 860/7243 step 15350/72460 loss 0.0976 | lr 1.66e-05 | 27.3 items/s | mem 8.0 GB | ETA 465 min
+[  9676.4s]   ep 2 b 910/7243 step 15400/72460 loss 0.1895 | lr 1.66e-05 | 27.5 items/s | mem 8.0 GB | ETA 464 min
+[  9700.9s]   ep 2 b 960/7243 step 15450/72460 loss 0.1619 | lr 1.66e-05 | 27.2 items/s | mem 8.0 GB | ETA 464 min
+[  9725.2s]   ep 2 b 1010/7243 step 15500/72460 loss 0.2163 | lr 1.65e-05 | 27.3 items/s | mem 8.0 GB | ETA 464 min
+[  9749.1s]   ep 2 b 1060/7243 step 15550/72460 loss 0.0798 | lr 1.65e-05 | 27.9 items/s | mem 8.0 GB | ETA 463 min
+[  9773.8s]   ep 2 b 1110/7243 step 15600/72460 loss 0.2538 | lr 1.65e-05 | 27.8 items/s | mem 8.0 GB | ETA 463 min
+[  9774.3s] saved checkpoint epoch 2 batch 1110 step 15600
+[  9798.6s]   ep 2 b 1160/7243 step 15650/72460 loss 0.2342 | lr 1.65e-05 | 27.6 items/s | mem 8.0 GB | ETA 462 min
+[  9822.8s]   ep 2 b 1210/7243 step 15700/72460 loss 0.0987 | lr 1.65e-05 | 27.6 items/s | mem 8.0 GB | ETA 462 min
+[  9847.7s]   ep 2 b 1260/7243 step 15750/72460 loss 0.2165 | lr 1.65e-05 | 27.5 items/s | mem 8.0 GB | ETA 462 min
+[  9872.0s]   ep 2 b 1310/7243 step 15800/72460 loss 0.2925 | lr 1.65e-05 | 27.7 items/s | mem 8.0 GB | ETA 461 min
+[  9896.0s]   ep 2 b 1360/7243 step 15850/72460 loss 0.2341 | lr 1.64e-05 | 27.6 items/s | mem 8.0 GB | ETA 461 min
+[  9920.6s]   ep 2 b 1410/7243 step 15900/72460 loss 0.1008 | lr 1.64e-05 | 27.5 items/s | mem 8.0 GB | ETA 460 min
+[  9945.1s]   ep 2 b 1460/7243 step 15950/72460 loss 0.0707 | lr 1.64e-05 | 27.8 items/s | mem 8.0 GB | ETA 460 min
+[  9969.7s]   ep 2 b 1510/7243 step 16000/72460 loss 0.0908 | lr 1.64e-05 | 27.9 items/s | mem 8.0 GB | ETA 460 min
+[  9970.3s] saved checkpoint epoch 2 batch 1510 step 16000
+[  9994.6s]   ep 2 b 1560/7243 step 16050/72460 loss 0.1796 | lr 1.64e-05 | 27.7 items/s | mem 8.0 GB | ETA 460 min
+[ 10018.7s]   ep 2 b 1610/7243 step 16100/72460 loss 0.0759 | lr 1.64e-05 | 28.1 items/s | mem 8.0 GB | ETA 459 min
+[ 10043.1s]   ep 2 b 1660/7243 step 16150/72460 loss 0.0981 | lr 1.64e-05 | 28.1 items/s | mem 8.0 GB | ETA 459 min
+[ 10067.3s]   ep 2 b 1710/7243 step 16200/72460 loss 0.0841 | lr 1.63e-05 | 27.9 items/s | mem 8.0 GB | ETA 458 min
+[ 10092.0s]   ep 2 b 1760/7243 step 16250/72460 loss 0.0558 | lr 1.63e-05 | 27.7 items/s | mem 8.0 GB | ETA 458 min
+[ 10116.8s]   ep 2 b 1810/7243 step 16300/72460 loss 0.0505 | lr 1.63e-05 | 27.5 items/s | mem 8.0 GB | ETA 458 min
+[ 10140.5s]   ep 2 b 1860/7243 step 16350/72460 loss 0.0682 | lr 1.63e-05 | 27.4 items/s | mem 8.0 GB | ETA 457 min
+[ 10164.9s]   ep 2 b 1910/7243 step 16400/72460 loss 0.0991 | lr 1.63e-05 | 27.6 items/s | mem 8.0 GB | ETA 456 min
+[ 10165.4s] saved checkpoint epoch 2 batch 1910 step 16400
+[ 10189.8s]   ep 2 b 1960/7243 step 16450/72460 loss 0.1809 | lr 1.63e-05 | 27.6 items/s | mem 8.0 GB | ETA 456 min
+[ 10213.7s]   ep 2 b 2010/7243 step 16500/72460 loss 0.1006 | lr 1.63e-05 | 27.6 items/s | mem 8.0 GB | ETA 455 min
+[ 10237.7s]   ep 2 b 2060/7243 step 16550/72460 loss 0.1806 | lr 1.62e-05 | 27.7 items/s | mem 8.0 GB | ETA 455 min
+[ 10262.0s]   ep 2 b 2110/7243 step 16600/72460 loss 0.0572 | lr 1.62e-05 | 27.6 items/s | mem 8.0 GB | ETA 454 min
+[ 10286.6s]   ep 2 b 2160/7243 step 16650/72460 loss 0.1085 | lr 1.62e-05 | 27.5 items/s | mem 8.0 GB | ETA 454 min
+[ 10311.5s]   ep 2 b 2210/7243 step 16700/72460 loss 0.3577 | lr 1.62e-05 | 27.4 items/s | mem 8.0 GB | ETA 454 min
+[ 10335.1s]   ep 2 b 2260/7243 step 16750/72460 loss 0.2712 | lr 1.62e-05 | 27.5 items/s | mem 8.0 GB | ETA 453 min
+[ 10359.5s]   ep 2 b 2310/7243 step 16800/72460 loss 0.0726 | lr 1.62e-05 | 27.4 items/s | mem 8.0 GB | ETA 453 min
+[ 10360.1s] saved checkpoint epoch 2 batch 2310 step 16800
+[ 10384.0s]   ep 2 b 2360/7243 step 16850/72460 loss 0.0953 | lr 1.62e-05 | 27.5 items/s | mem 8.0 GB | ETA 452 min
+[ 10408.4s]   ep 2 b 2410/7243 step 16900/72460 loss 0.3680 | lr 1.61e-05 | 27.5 items/s | mem 8.0 GB | ETA 452 min
+[ 10433.2s]   ep 2 b 2460/7243 step 16950/72460 loss 0.2661 | lr 1.61e-05 | 27.6 items/s | mem 8.0 GB | ETA 452 min
+[ 10457.5s]   ep 2 b 2510/7243 step 17000/72460 loss 0.0787 | lr 1.61e-05 | 27.5 items/s | mem 8.0 GB | ETA 451 min
+[ 10481.3s]   ep 2 b 2560/7243 step 17050/72460 loss 0.5258 | lr 1.61e-05 | 27.5 items/s | mem 8.0 GB | ETA 451 min
+[ 10506.4s]   ep 2 b 2610/7243 step 17100/72460 loss 0.2773 | lr 1.61e-05 | 27.4 items/s | mem 8.0 GB | ETA 450 min
+[ 10530.6s]   ep 2 b 2660/7243 step 17150/72460 loss 0.0841 | lr 1.61e-05 | 27.5 items/s | mem 8.0 GB | ETA 450 min
+[ 10555.9s]   ep 2 b 2710/7243 step 17200/72460 loss 0.1333 | lr 1.61e-05 | 27.3 items/s | mem 8.0 GB | ETA 450 min
+[ 10556.4s] saved checkpoint epoch 2 batch 2710 step 17200
+
+$ /usr/bin/python3 /content/IE105/experiments/exp5_line_labels/train_lines.py --strategy slide --train_tokens 8192 --bf16 --ckpt_every 400 --model answerdotai/ModernBERT-base --max_len 2048 --lam_line 0 --lam_fn 0 --epochs 10 --patience 3 --data /content/exp5/primevul_lines_b80k --select top5_top10 --eval_every 0.5 --log_every 50 --seed 0 --tag _pv1 --out /content/exp5/slide_ModernBERT-base_2048_s0_pv1
+[     7.3s] data /content/exp5/primevul_lines_b80k -> out /content/exp5/slide_ModernBERT-base_2048_s0_pv1
+[    10.4s] dropped 0 train functions overlapping the PrimeVul test set (incl. pair partners)
+[    10.5s] train 87247 functions (add-only fixes dropped) | valid 4124 | test 1128 | device cuda
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (9176 > 8192). Running this sequence through the model will result in indexing errors
+
+$ /usr/bin/python3 /content/IE105/experiments/exp5_line_labels/train_lines.py --strategy slide --train_tokens 8192 --bf16 --ckpt_every 400 --model answerdotai/ModernBERT-base --max_len 2048 --lam_line 0 --lam_fn 0 --epochs 10 --patience 3 --data /content/exp5/primevul_lines_b80k --select top5_top10 --eval_every 0.5 --log_every 50 --seed 0 --tag _pv1 --out /content/exp5/slide_ModernBERT-base_2048_s0_pv1
+[     7.4s] data /content/exp5/primevul_lines_b80k -> out /content/exp5/slide_ModernBERT-base_2048_s0_pv1
+[    10.5s] dropped 0 train functions overlapping the PrimeVul test set (incl. pair partners)
+[    10.6s] train 87247 functions (add-only fixes dropped) | valid 4124 | test 1128 | device cuda
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (9176 > 8192). Running this sequence through the model will result in indexing errors
+[  1649.1s] 99220 training views | lines: 16579 flaw / 4643460 clean | pos_weight 20.0
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (895 > 512). Running this sequence through the model will result in indexing errors
+
+Loading weights:   0%|          | 0/134 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 134/134 [00:00<00:00, 5539.87it/s]
+[transformers] [1mModernBertModel LOAD REPORT[0m from: answerdotai/ModernBERT-base
+Key               | Status     |  | 
+------------------+------------+--+-
+head.dense.weight | UNEXPECTED |  | 
+decoder.bias      | UNEXPECTED |  | 
+head.norm.weight  | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[  1676.6s] 7246 batches/epoch, 72460 steps total, warmup 3623 | valid at batches [3623, 7246] of every epoch | select top5_top10 | patience 3 epochs | amp torch.bfloat16 | NVIDIA L4
+/content/IE105/experiments/exp5_line_labels/train_lines.py:626: UserWarning: Detected call of `lr_scheduler.step()` before `optimizer.step()`. In PyTorch 1.1.0 and later, you should call them in the opposite order: `optimizer.step()` before `lr_scheduler.step()`.  Failure to do this will result in PyTorch skipping the first value of the learning rate schedule. See more details at https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate
+  sched.step()
+[  1677.1s] RESUMED epoch 2 batch 2710 step 17200
+[  1677.2s] epoch 2: 7243 batches, starting at batch 2710, valid at batches [3622, 7243]
+[  1701.0s]   ep 2 b 2760/7243 step 17250/72460 loss 0.5053 | lr 1.60e-05 | 25.3 items/s | mem 7.9 GB | ETA 439 min
+[  1725.6s]   ep 2 b 2810/7243 step 17300/72460 loss 0.0409 | lr 1.60e-05 | 23.9 items/s | mem 7.9 GB | ETA 445 min
+[  1750.8s]   ep 2 b 2860/7243 step 17350/72460 loss 0.1645 | lr 1.60e-05 | 22.1 items/s | mem 7.9 GB | ETA 451 min
+[  1775.7s]   ep 2 b 2910/7243 step 17400/72460 loss 0.2885 | lr 1.60e-05 | 23.0 items/s | mem 7.9 GB | ETA 452 min
+[  1799.4s]   ep 2 b 2960/7243 step 17450/72460 loss 0.2573 | lr 1.60e-05 | 23.8 items/s | mem 7.9 GB | ETA 448 min
+[  1823.5s]   ep 2 b 3010/7243 step 17500/72460 loss 0.0621 | lr 1.60e-05 | 25.4 items/s | mem 7.9 GB | ETA 447 min
+[  1848.1s]   ep 2 b 3060/7243 step 17550/72460 loss 0.2308 | lr 1.60e-05 | 24.9 items/s | mem 7.9 GB | ETA 447 min
+[  1872.1s]   ep 2 b 3110/7243 step 17600/72460 loss 0.0910 | lr 1.59e-05 | 25.8 items/s | mem 7.9 GB | ETA 446 min
+[  1872.6s] saved checkpoint epoch 2 batch 3110 step 17600
+[  1896.1s]   ep 2 b 3160/7243 step 17650/72460 loss 0.2059 | lr 1.59e-05 | 27.3 items/s | mem 7.9 GB | ETA 444 min
+[  1920.0s]   ep 2 b 3210/7243 step 17700/72460 loss 0.1946 | lr 1.59e-05 | 28.3 items/s | mem 7.9 GB | ETA 443 min
+[  1944.5s]   ep 2 b 3260/7243 step 17750/72460 loss 0.1797 | lr 1.59e-05 | 27.6 items/s | mem 7.9 GB | ETA 443 min
+[  1968.2s]   ep 2 b 3310/7243 step 17800/72460 loss 0.0707 | lr 1.59e-05 | 29.2 items/s | mem 7.9 GB | ETA 442 min
+[  1992.9s]   ep 2 b 3360/7243 step 17850/72460 loss 0.0938 | lr 1.59e-05 | 28.3 items/s | mem 7.9 GB | ETA 442 min
+[  2017.5s]   ep 2 b 3410/7243 step 17900/72460 loss 0.0855 | lr 1.59e-05 | 27.7 items/s | mem 7.9 GB | ETA 442 min
+[  2041.8s]   ep 2 b 3460/7243 step 17950/72460 loss 0.0887 | lr 1.58e-05 | 27.4 items/s | mem 7.9 GB | ETA 442 min
+[  2066.7s]   ep 2 b 3510/7243 step 18000/72460 loss 0.1442 | lr 1.58e-05 | 27.3 items/s | mem 7.9 GB | ETA 442 min
+[  2067.3s] saved checkpoint epoch 2 batch 3510 step 18000
+[  2090.1s]   ep 2 b 3560/7243 step 18050/72460 loss 0.3700 | lr 1.58e-05 | 27.8 items/s | mem 7.9 GB | ETA 441 min
+[  2114.4s]   ep 2 b 3610/7243 step 18100/72460 loss 0.1572 | lr 1.58e-05 | 27.7 items/s | mem 7.9 GB | ETA 440 min
+[  2281.1s] valid ep 2.50 step 18112 (161s): lines Top-1/5/10 22.8/49.2/61.6 IFA 5 | line BCE 0.6617 | pairs acc 44.3 debiased 52.5 len-matched 43.3 top3mean 43.9 net@50 -1.4 | fn ROC 0.734 debiased 0.587 | select 110.8 (best 120.4 @ ep 1.0)
+[  2281.1s] valid ep 2.50 full: {"lines_ALL": {"n": 372, "median_ifa": 5.0, "top1": 22.849462365591396, "top5": 49.193548387096776, "top10": 61.55913978494624, "rand_top1": 7.695258369226086, "rand_top5": 27.425834089890994, "rand_top10": 41.31752062853754}, "lines_A": {"n": 125, "median_ifa": 1.0, "top1": 37.6, "top5": 79.2, "top10": 86.4, "rand_top1": 14.073640952931967, "rand_top5": 51.025353466069504, "rand_top10": 73.7188842709588}, "lines_B": {"n": 110, "median_ifa": 6.0, "top1": 21.818181818181817, "top5": 41.81818181818181, "top10": 62.727272727272734, "rand_top1": 7.690824288941915, "rand_top5": 24.154490736989906, "rand_top10": 36.79481967188202}, "lines_C": {"n": 137, "median_ifa": 18.0, "top1": 10.218978102189782, "top5": 27.73722627737226, "top10": 37.95620437956204, "rand_top1": 1.8791264412554538, "rand_top5": 8.5200519497217, "rand_top10": 15.385598365248853}, "function": {"n": 4124, "vulnerable": 562, "auprc": 0.28804453607199776, "roc_auc": 0.7340187347265822, "spearman_with_tokens": 0.6710375852593587}, "pairs": {"n": 562, "ties": 26, "ranking_acc_ties_half": 44.30604982206406, "ranking_acc_non_tied": 44.02985074626866}, "same_text_flaw_lines": {"n": 241, "vul_scored_higher_pct": 47.71784232365145}, "pairs_debiased": 52.49110320284697, "extra": {"line_bce": 0.6616976055457976, "pairs": {"n": 562, "acc": 44.30604982206406, "acc_debiased": 52.49110320284698, "acc_length_matched": 43.333333333333336, "n_length_matched": 315, "acc_top3mean": 43.861209964412815, "length_rule_longer_is_fixed": 86.20996441281139, "P-C_at50": 5.6939501779359425, "P-R_at50": 7.11743772241993, "net_at50": -1.4234875444839867}, "function": {"n": 4124, "vulnerable": 562, "roc_auc": 0.7340187347265822, "roc_auc_debiased": 0.5872403144300955, "roc_auc_top3mean": 0.7439106144135107}}}
+[  2283.3s] saved checkpoint epoch 2 batch 3622 step 18112
+[  2301.1s]   ep 2 b 3660/7243 step 18150/72460 loss 0.1785 | lr 1.58e-05 | 20.9 items/s | mem 7.9 GB | ETA 594 min
+[  2326.1s]   ep 2 b 3710/7243 step 18200/72460 loss 0.1640 | lr 1.58e-05 | 21.0 items/s | mem 7.9 GB | ETA 587 min
+[  2350.4s]   ep 2 b 3760/7243 step 18250/72460 loss 0.2012 | lr 1.58e-05 | 21.2 items/s | mem 7.9 GB | ETA 579 min
+[  2374.8s]   ep 2 b 3810/7243 step 18300/72460 loss 0.1932 | lr 1.57e-05 | 21.4 items/s | mem 7.9 GB | ETA 572 min
+[  2399.0s]   ep 2 b 3860/7243 step 18350/72460 loss 0.1426 | lr 1.57e-05 | 21.9 items/s | mem 7.9 GB | ETA 566 min
+[  2423.5s]   ep 2 b 3910/7243 step 18400/72460 loss 0.1668 | lr 1.57e-05 | 22.2 items/s | mem 7.9 GB | ETA 560 min
+[  2424.0s] saved checkpoint epoch 2 batch 3910 step 18400
+[  2449.3s]   ep 2 b 3960/7243 step 18450/72460 loss 0.0941 | lr 1.57e-05 | 22.0 items/s | mem 7.9 GB | ETA 556 min
+[  2473.6s]   ep 2 b 4010/7243 step 18500/72460 loss 0.3424 | lr 1.57e-05 | 22.0 items/s | mem 7.9 GB | ETA 551 min
+[  2498.3s]   ep 2 b 4060/7243 step 18550/72460 loss 0.1018 | lr 1.57e-05 | 21.9 items/s | mem 7.9 GB | ETA 546 min
+[  2522.4s]   ep 2 b 4110/7243 step 18600/72460 loss 0.0829 | lr 1.56e-05 | 22.3 items/s | mem 7.9 GB | ETA 542 min
+[  2546.2s]   ep 2 b 4160/7243 step 18650/72460 loss 0.1432 | lr 1.56e-05 | 22.8 items/s | mem 7.9 GB | ETA 537 min
+[  2570.1s]   ep 2 b 4210/7243 step 18700/72460 loss 0.1151 | lr 1.56e-05 | 23.1 items/s | mem 7.9 GB | ETA 533 min
+[  2593.4s]   ep 2 b 4260/7243 step 18750/72460 loss 0.1772 | lr 1.56e-05 | 23.5 items/s | mem 7.9 GB | ETA 529 min
+[  2618.2s]   ep 2 b 4310/7243 step 18800/72460 loss 0.1880 | lr 1.56e-05 | 23.4 items/s | mem 7.9 GB | ETA 526 min
+[  2618.8s] saved checkpoint epoch 2 batch 4310 step 18800
+[  2642.9s]   ep 2 b 4360/7243 step 18850/72460 loss 0.0813 | lr 1.56e-05 | 23.6 items/s | mem 7.9 GB | ETA 523 min
+[  2667.1s]   ep 2 b 4410/7243 step 18900/72460 loss 0.1206 | lr 1.56e-05 | 23.9 items/s | mem 7.9 GB | ETA 520 min
+[  2691.5s]   ep 2 b 4460/7243 step 18950/72460 loss 0.0705 | lr 1.55e-05 | 24.0 items/s | mem 7.9 GB | ETA 517 min
+[  2716.1s]   ep 2 b 4510/7243 step 19000/72460 loss 0.4450 | lr 1.55e-05 | 24.0 items/s | mem 7.9 GB | ETA 514 min
+[  2740.8s]   ep 2 b 4560/7243 step 19050/72460 loss 0.1949 | lr 1.55e-05 | 24.0 items/s | mem 7.9 GB | ETA 512 min
+[  2765.7s]   ep 2 b 4610/7243 step 19100/72460 loss 0.0848 | lr 1.55e-05 | 24.3 items/s | mem 7.9 GB | ETA 509 min
+[  2790.1s]   ep 2 b 4660/7243 step 19150/72460 loss 0.0923 | lr 1.55e-05 | 24.3 items/s | mem 7.9 GB | ETA 507 min
+[  2813.6s]   ep 2 b 4710/7243 step 19200/72460 loss 0.0187 | lr 1.55e-05 | 24.7 items/s | mem 7.9 GB | ETA 504 min
+[  2814.2s] saved checkpoint epoch 2 batch 4710 step 19200
+[  2839.1s]   ep 2 b 4760/7243 step 19250/72460 loss 0.2592 | lr 1.55e-05 | 24.6 items/s | mem 7.9 GB | ETA 503 min
+[  2863.5s]   ep 2 b 4810/7243 step 19300/72460 loss 0.3603 | lr 1.54e-05 | 24.6 items/s | mem 7.9 GB | ETA 501 min
+[  2887.8s]   ep 2 b 4860/7243 step 19350/72460 loss 0.0607 | lr 1.54e-05 | 24.8 items/s | mem 7.9 GB | ETA 498 min
+[  2911.4s]   ep 2 b 4910/7243 step 19400/72460 loss 0.0965 | lr 1.54e-05 | 24.8 items/s | mem 7.9 GB | ETA 496 min
+[  2935.6s]   ep 2 b 4960/7243 step 19450/72460 loss 0.0946 | lr 1.54e-05 | 24.9 items/s | mem 7.9 GB | ETA 494 min
+[  2959.2s]   ep 2 b 5010/7243 step 19500/72460 loss 0.1502 | lr 1.54e-05 | 25.0 items/s | mem 7.9 GB | ETA 492 min
+[  2984.1s]   ep 2 b 5060/7243 step 19550/72460 loss 0.1012 | lr 1.54e-05 | 24.9 items/s | mem 7.9 GB | ETA 490 min
+[  3008.7s]   ep 2 b 5110/7243 step 19600/72460 loss 0.2101 | lr 1.54e-05 | 25.0 items/s | mem 7.9 GB | ETA 489 min
+[  3009.2s] saved checkpoint epoch 2 batch 5110 step 19600
+[  3033.7s]   ep 2 b 5160/7243 step 19650/72460 loss 0.4566 | lr 1.53e-05 | 25.0 items/s | mem 7.9 GB | ETA 487 min
+[  3058.0s]   ep 2 b 5210/7243 step 19700/72460 loss 0.3249 | lr 1.53e-05 | 25.1 items/s | mem 7.9 GB | ETA 486 min
+[  3082.5s]   ep 2 b 5260/7243 step 19750/72460 loss 0.2116 | lr 1.53e-05 | 25.1 items/s | mem 7.9 GB | ETA 484 min
+[  3112.8s]   ep 2 b 5310/7243 step 19800/72460 loss 0.1304 | lr 1.53e-05 | 25.0 items/s | mem 7.9 GB | ETA 485 min
+[  3143.6s]   ep 2 b 5360/7243 step 19850/72460 loss 0.3137 | lr 1.53e-05 | 24.8 items/s | mem 7.9 GB | ETA 485 min
+[  3175.5s]   ep 2 b 5410/7243 step 19900/72460 loss 0.0956 | lr 1.53e-05 | 24.7 items/s | mem 7.9 GB | ETA 486 min
+[  3200.1s]   ep 2 b 5460/7243 step 19950/72460 loss 0.1403 | lr 1.53e-05 | 24.7 items/s | mem 7.9 GB | ETA 485 min
+[  3223.9s]   ep 2 b 5510/7243 step 20000/72460 loss 0.3241 | lr 1.52e-05 | 24.9 items/s | mem 7.9 GB | ETA 483 min
+[  3224.4s] saved checkpoint epoch 2 batch 5510 step 20000
+[  3249.3s]   ep 2 b 5560/7243 step 20050/72460 loss 0.0906 | lr 1.52e-05 | 24.9 items/s | mem 7.9 GB | ETA 482 min
+[  3273.9s]   ep 2 b 5610/7243 step 20100/72460 loss 0.1104 | lr 1.52e-05 | 25.1 items/s | mem 7.9 GB | ETA 480 min
+[  3298.2s]   ep 2 b 5660/7243 step 20150/72460 loss 0.1664 | lr 1.52e-05 | 25.2 items/s | mem 8.0 GB | ETA 479 min
+[  3322.7s]   ep 2 b 5710/7243 step 20200/72460 loss 0.0567 | lr 1.52e-05 | 25.2 items/s | mem 8.0 GB | ETA 478 min
+[  3346.8s]   ep 2 b 5760/7243 step 20250/72460 loss 0.2572 | lr 1.52e-05 | 25.3 items/s | mem 8.0 GB | ETA 476 min
+[  3371.6s]   ep 2 b 5810/7243 step 20300/72460 loss 0.1986 | lr 1.52e-05 | 25.2 items/s | mem 8.0 GB | ETA 475 min
+[  3396.6s]   ep 2 b 5860/7243 step 20350/72460 loss 0.0830 | lr 1.51e-05 | 25.1 items/s | mem 8.0 GB | ETA 474 min
+[  3421.5s]   ep 2 b 5910/7243 step 20400/72460 loss 0.2629 | lr 1.51e-05 | 25.1 items/s | mem 8.0 GB | ETA 473 min
+[  3421.9s] saved checkpoint epoch 2 batch 5910 step 20400
+[  3446.3s]   ep 2 b 5960/7243 step 20450/72460 loss 0.1708 | lr 1.51e-05 | 25.2 items/s | mem 8.0 GB | ETA 472 min
+[  3469.8s]   ep 2 b 6010/7243 step 20500/72460 loss 0.2068 | lr 1.51e-05 | 25.4 items/s | mem 8.0 GB | ETA 470 min
+[  3493.6s]   ep 2 b 6060/7243 step 20550/72460 loss 0.2175 | lr 1.51e-05 | 25.5 items/s | mem 8.0 GB | ETA 469 min
+[  3517.9s]   ep 2 b 6110/7243 step 20600/72460 loss 0.2068 | lr 1.51e-05 | 25.6 items/s | mem 8.0 GB | ETA 468 min
+[  3542.1s]   ep 2 b 6160/7243 step 20650/72460 loss 0.1894 | lr 1.51e-05 | 25.7 items/s | mem 8.0 GB | ETA 467 min
+[  3565.8s]   ep 2 b 6210/7243 step 20700/72460 loss 0.5806 | lr 1.50e-05 | 25.8 items/s | mem 8.0 GB | ETA 466 min
+[  3590.4s]   ep 2 b 6260/7243 step 20750/72460 loss 0.0674 | lr 1.50e-05 | 25.8 items/s | mem 8.0 GB | ETA 464 min
+[  3614.9s]   ep 2 b 6310/7243 step 20800/72460 loss 0.2482 | lr 1.50e-05 | 25.8 items/s | mem 8.0 GB | ETA 463 min
+[  3615.4s] saved checkpoint epoch 2 batch 6310 step 20800
+[  3639.3s]   ep 2 b 6360/7243 step 20850/72460 loss 0.0935 | lr 1.50e-05 | 25.9 items/s | mem 8.0 GB | ETA 462 min
+[  3664.4s]   ep 2 b 6410/7243 step 20900/72460 loss 0.0941 | lr 1.50e-05 | 25.8 items/s | mem 8.0 GB | ETA 462 min
+[  3688.6s]   ep 2 b 6460/7243 step 20950/72460 loss 0.1407 | lr 1.50e-05 | 25.8 items/s | mem 8.0 GB | ETA 460 min
+[  3713.0s]   ep 2 b 6510/7243 step 21000/72460 loss 0.2191 | lr 1.50e-05 | 25.8 items/s | mem 8.0 GB | ETA 459 min
+[  3737.5s]   ep 2 b 6560/7243 step 21050/72460 loss 0.0822 | lr 1.49e-05 | 25.7 items/s | mem 8.0 GB | ETA 459 min
+[  3761.4s]   ep 2 b 6610/7243 step 21100/72460 loss 0.3961 | lr 1.49e-05 | 25.7 items/s | mem 8.0 GB | ETA 457 min
+[  3785.8s]   ep 2 b 6660/7243 step 21150/72460 loss 0.1069 | lr 1.49e-05 | 25.8 items/s | mem 8.0 GB | ETA 457 min
+[  3809.7s]   ep 2 b 6710/7243 step 21200/72460 loss 0.0972 | lr 1.49e-05 | 25.8 items/s | mem 8.0 GB | ETA 455 min
+[  3810.2s] saved checkpoint epoch 2 batch 6710 step 21200
+[  3834.5s]   ep 2 b 6760/7243 step 21250/72460 loss 0.0420 | lr 1.49e-05 | 25.9 items/s | mem 8.0 GB | ETA 455 min
+[  3858.3s]   ep 2 b 6810/7243 step 21300/72460 loss 0.1536 | lr 1.49e-05 | 26.2 items/s | mem 8.0 GB | ETA 454 min
+[  3882.9s]   ep 2 b 6860/7243 step 21350/72460 loss 0.1430 | lr 1.48e-05 | 26.2 items/s | mem 8.0 GB | ETA 453 min
+[  3906.9s]   ep 2 b 6910/7243 step 21400/72460 loss 0.2597 | lr 1.48e-05 | 26.4 items/s | mem 8.0 GB | ETA 452 min
+[  3930.5s]   ep 2 b 6960/7243 step 21450/72460 loss 0.1923 | lr 1.48e-05 | 26.5 items/s | mem 8.0 GB | ETA 451 min
+[  3954.7s]   ep 2 b 7010/7243 step 21500/72460 loss 0.1175 | lr 1.48e-05 | 26.5 items/s | mem 8.0 GB | ETA 450 min
+[  3979.1s]   ep 2 b 7060/7243 step 21550/72460 loss 0.1187 | lr 1.48e-05 | 26.5 items/s | mem 8.0 GB | ETA 449 min
+[  4003.1s]   ep 2 b 7110/7243 step 21600/72460 loss 0.1143 | lr 1.48e-05 | 26.4 items/s | mem 8.0 GB | ETA 448 min
+[  4003.6s] saved checkpoint epoch 2 batch 7110 step 21600
+[  4028.0s]   ep 2 b 7160/7243 step 21650/72460 loss 0.0781 | lr 1.48e-05 | 26.5 items/s | mem 8.0 GB | ETA 447 min
+[  4053.1s]   ep 2 b 7210/7243 step 21700/72460 loss 0.0661 | lr 1.47e-05 | 26.4 items/s | mem 8.0 GB | ETA 447 min
+[  4231.1s] valid ep 3.00 step 21733 (162s): lines Top-1/5/10 22.3/51.9/62.9 IFA 4 | line BCE 0.6450 | pairs acc 46.8 debiased 53.6 len-matched 46.7 top3mean 47.3 net@50 -3.7 | fn ROC 0.732 debiased 0.592 | select 114.8 (best 120.4 @ ep 1.0)
+[  4231.1s] valid ep 3.00 full: {"lines_ALL": {"n": 372, "median_ifa": 4.0, "top1": 22.311827956989248, "top5": 51.88172043010753, "top10": 62.903225806451616, "rand_top1": 7.695258369226086, "rand_top5": 27.425834089890994, "rand_top10": 41.31752062853754}, "lines_A": {"n": 125, "median_ifa": 1.0, "top1": 36.8, "top5": 79.2, "top10": 87.2, "rand_top1": 14.073640952931967, "rand_top5": 51.025353466069504, "rand_top10": 73.7188842709588}, "lines_B": {"n": 110, "median_ifa": 4.5, "top1": 22.727272727272727, "top5": 50.0, "top10": 60.0, "rand_top1": 7.690824288941915, "rand_top5": 24.154490736989906, "rand_top10": 36.79481967188202}, "lines_C": {"n": 137, "median_ifa": 14.0, "top1": 8.75912408759124, "top5": 28.467153284671532, "top10": 43.06569343065693, "rand_top1": 1.8791264412554538, "rand_top5": 8.5200519497217, "rand_top10": 15.385598365248853}, "function": {"n": 4124, "vulnerable": 562, "auprc": 0.2727290460609272, "roc_auc": 0.7318684672731741, "spearman_with_tokens": 0.6430303651645847}, "pairs": {"n": 562, "ties": 32, "ranking_acc_ties_half": 46.79715302491103, "ranking_acc_non_tied": 46.60377358490566}, "same_text_flaw_lines": {"n": 241, "vul_scored_higher_pct": 48.96265560165975}, "pairs_debiased": 53.64768683274021, "extra": {"line_bce": 0.6450212799183102, "pairs": {"n": 562, "acc": 46.79715302491103, "acc_debiased": 53.64768683274021, "acc_length_matched": 46.666666666666664, "n_length_matched": 315, "acc_top3mean": 47.330960854092524, "length_rule_longer_is_fixed": 86.20996441281139, "P-C_at50": 5.160142348754448, "P-R_at50": 8.896797153024911, "net_at50": -3.7366548042704633}, "function": {"n": 4124, "vulnerable": 562, "roc_auc": 0.7318684672731741, "roc_auc_debiased": 0.5924587530297066, "roc_auc_top3mean": 0.7478999362587695}}}
+[  4232.9s] saved checkpoint epoch 3 batch 0 step 21733
+[  4233.0s] epoch 3: 7244 batches, starting at batch 0, valid at batches [3622, 7244]
+[  4241.5s]   ep 3 b 17/7244 step 21750/72460 loss 0.1092 | lr 1.47e-05 | 14.6 items/s | mem 8.0 GB | ETA 424 min
+[  4266.6s]   ep 3 b 67/7244 step 21800/72460 loss 0.0694 | lr 1.47e-05 | 20.7 items/s | mem 8.0 GB | ETA 423 min
+[  4290.8s]   ep 3 b 117/7244 step 21850/72460 loss 0.0486 | lr 1.47e-05 | 22.9 items/s | mem 8.0 GB | ETA 417 min
+[  4314.8s]   ep 3 b 167/7244 step 21900/72460 loss 0.1291 | lr 1.47e-05 | 24.6 items/s | mem 8.0 GB | ETA 412 min
+[  4339.0s]   ep 3 b 217/7244 step 21950/72460 loss 0.0769 | lr 1.47e-05 | 26.1 items/s | mem 8.0 GB | ETA 411 min
+[  4363.7s]   ep 3 b 267/7244 step 22000/72460 loss 0.0938 | lr 1.47e-05 | 28.1 items/s | mem 8.0 GB | ETA 412 min
+[  4364.3s] saved checkpoint epoch 3 batch 267 step 22000
+[  4387.9s]   ep 3 b 317/7244 step 22050/72460 loss 0.3125 | lr 1.46e-05 | 32.1 items/s | mem 8.0 GB | ETA 411 min
+[  4411.9s]   ep 3 b 367/7244 step 22100/72460 loss 0.2306 | lr 1.46e-05 | 32.1 items/s | mem 8.0 GB | ETA 409 min
+[  4435.9s]   ep 3 b 417/7244 step 22150/72460 loss 0.1932 | lr 1.46e-05 | 32.6 items/s | mem 8.0 GB | ETA 408 min
+[  4460.1s]   ep 3 b 467/7244 step 22200/72460 loss 0.0527 | lr 1.46e-05 | 32.6 items/s | mem 8.0 GB | ETA 407 min
+[  4484.8s]   ep 3 b 517/7244 step 22250/72460 loss 0.0826 | lr 1.46e-05 | 32.8 items/s | mem 8.0 GB | ETA 408 min
+[  4509.0s]   ep 3 b 567/7244 step 22300/72460 loss 0.0957 | lr 1.46e-05 | 31.8 items/s | mem 8.0 GB | ETA 407 min
+[  4534.3s]   ep 3 b 617/7244 step 22350/72460 loss 0.0857 | lr 1.46e-05 | 30.4 items/s | mem 8.0 GB | ETA 408 min
+[  4559.1s]   ep 3 b 667/7244 step 22400/72460 loss 0.1855 | lr 1.45e-05 | 29.8 items/s | mem 8.0 GB | ETA 408 min
+[  4559.6s] saved checkpoint epoch 3 batch 667 step 22400
+[  4584.0s]   ep 3 b 717/7244 step 22450/72460 loss 0.1537 | lr 1.45e-05 | 29.2 items/s | mem 8.0 GB | ETA 408 min
+[  4608.3s]   ep 3 b 767/7244 step 22500/72460 loss 0.0584 | lr 1.45e-05 | 29.2 items/s | mem 8.0 GB | ETA 407 min
+[  4632.4s]   ep 3 b 817/7244 step 22550/72460 loss 0.0274 | lr 1.45e-05 | 29.6 items/s | mem 8.0 GB | ETA 407 min
+[  4656.6s]   ep 3 b 867/7244 step 22600/72460 loss 0.0694 | lr 1.45e-05 | 29.3 items/s | mem 8.0 GB | ETA 406 min
+[  4680.7s]   ep 3 b 917/7244 step 22650/72460 loss 0.1234 | lr 1.45e-05 | 29.2 items/s | mem 8.0 GB | ETA 405 min
+[  4705.3s]   ep 3 b 967/7244 step 22700/72460 loss 0.2840 | lr 1.45e-05 | 29.1 items/s | mem 8.0 GB | ETA 405 min
+[  4729.8s]   ep 3 b 1017/7244 step 22750/72460 loss 0.0954 | lr 1.44e-05 | 28.7 items/s | mem 8.0 GB | ETA 405 min
+[  4754.3s]   ep 3 b 1067/7244 step 22800/72460 loss 0.3054 | lr 1.44e-05 | 28.7 items/s | mem 8.0 GB | ETA 404 min
+[  4754.9s] saved checkpoint epoch 3 batch 1067 step 22800
+[  4778.6s]   ep 3 b 1117/7244 step 22850/72460 loss 0.3965 | lr 1.44e-05 | 29.1 items/s | mem 8.0 GB | ETA 404 min
+[  4803.1s]   ep 3 b 1167/7244 step 22900/72460 loss 0.0228 | lr 1.44e-05 | 29.2 items/s | mem 8.0 GB | ETA 404 min
+[  4827.1s]   ep 3 b 1217/7244 step 22950/72460 loss 0.0534 | lr 1.44e-05 | 29.4 items/s | mem 8.0 GB | ETA 403 min
+[  4851.5s]   ep 3 b 1267/7244 step 23000/72460 loss 0.0456 | lr 1.44e-05 | 29.3 items/s | mem 8.0 GB | ETA 402 min
+[  4876.3s]   ep 3 b 1317/7244 step 23050/72460 loss 0.1033 | lr 1.44e-05 | 29.4 items/s | mem 8.0 GB | ETA 402 min
+[  4901.0s]   ep 3 b 1367/7244 step 23100/72460 loss 0.0481 | lr 1.43e-05 | 29.2 items/s | mem 8.0 GB | ETA 402 min
+[  4924.3s]   ep 3 b 1417/7244 step 23150/72460 loss 0.0469 | lr 1.43e-05 | 29.3 items/s | mem 8.0 GB | ETA 401 min
+[  4948.2s]   ep 3 b 1467/7244 step 23200/72460 loss 0.1228 | lr 1.43e-05 | 29.5 items/s | mem 8.0 GB | ETA 400 min
+[  4948.7s] saved checkpoint epoch 3 batch 1467 step 23200
+[  4973.0s]   ep 3 b 1517/7244 step 23250/72460 loss 0.0284 | lr 1.43e-05 | 29.7 items/s | mem 8.0 GB | ETA 400 min
+[  4997.4s]   ep 3 b 1567/7244 step 23300/72460 loss 0.0373 | lr 1.43e-05 | 29.7 items/s | mem 8.0 GB | ETA 400 min
+[  5021.2s]   ep 3 b 1617/7244 step 23350/72460 loss 0.0798 | lr 1.43e-05 | 29.9 items/s | mem 8.0 GB | ETA 399 min
+[  5045.7s]   ep 3 b 1667/7244 step 23400/72460 loss 0.0659 | lr 1.43e-05 | 30.1 items/s | mem 8.0 GB | ETA 399 min
+[  5070.3s]   ep 3 b 1717/7244 step 23450/72460 loss 0.0359 | lr 1.42e-05 | 30.1 items/s | mem 8.0 GB | ETA 398 min
+[  5094.3s]   ep 3 b 1767/7244 step 23500/72460 loss 0.0599 | lr 1.42e-05 | 30.3 items/s | mem 8.0 GB | ETA 398 min
+[  5119.2s]   ep 3 b 1817/7244 step 23550/72460 loss 0.0766 | lr 1.42e-05 | 29.9 items/s | mem 8.0 GB | ETA 398 min
+[  5144.1s]   ep 3 b 1867/7244 step 23600/72460 loss 0.0525 | lr 1.42e-05 | 29.6 items/s | mem 8.0 GB | ETA 397 min
+[  5144.6s] saved checkpoint epoch 3 batch 1867 step 23600
+[  5169.0s]   ep 3 b 1917/7244 step 23650/72460 loss 0.2203 | lr 1.42e-05 | 29.5 items/s | mem 8.0 GB | ETA 397 min
+[  5192.6s]   ep 3 b 1967/7244 step 23700/72460 loss 0.0883 | lr 1.42e-05 | 29.5 items/s | mem 8.0 GB | ETA 396 min
+[  5217.3s]   ep 3 b 2017/7244 step 23750/72460 loss 0.0767 | lr 1.42e-05 | 29.6 items/s | mem 8.0 GB | ETA 396 min
+[  5241.5s]   ep 3 b 2067/7244 step 23800/72460 loss 0.2574 | lr 1.41e-05 | 29.5 items/s | mem 8.0 GB | ETA 396 min
+[  5265.6s]   ep 3 b 2117/7244 step 23850/72460 loss 0.2080 | lr 1.41e-05 | 29.6 items/s | mem 8.0 GB | ETA 395 min
+[  5290.2s]   ep 3 b 2167/7244 step 23900/72460 loss 0.0670 | lr 1.41e-05 | 29.6 items/s | mem 8.0 GB | ETA 395 min
+[  5314.1s]   ep 3 b 2217/7244 step 23950/72460 loss 0.1931 | lr 1.41e-05 | 29.7 items/s | mem 8.0 GB | ETA 394 min
+[  5338.4s]   ep 3 b 2267/7244 step 24000/72460 loss 0.2284 | lr 1.41e-05 | 29.6 items/s | mem 8.0 GB | ETA 394 min
+[  5339.0s] saved checkpoint epoch 3 batch 2267 step 24000
+[  5363.2s]   ep 3 b 2317/7244 step 24050/72460 loss 0.1668 | lr 1.41e-05 | 29.4 items/s | mem 8.0 GB | ETA 394 min
+[  5387.4s]   ep 3 b 2367/7244 step 24100/72460 loss 0.0254 | lr 1.41e-05 | 29.6 items/s | mem 8.0 GB | ETA 393 min
+[  5412.1s]   ep 3 b 2417/7244 step 24150/72460 loss 0.0925 | lr 1.40e-05 | 29.4 items/s | mem 8.0 GB | ETA 393 min
+[  5437.2s]   ep 3 b 2467/7244 step 24200/72460 loss 0.1477 | lr 1.40e-05 | 29.2 items/s | mem 8.0 GB | ETA 393 min
+[  5461.1s]   ep 3 b 2517/7244 step 24250/72460 loss 0.2300 | lr 1.40e-05 | 29.2 items/s | mem 8.0 GB | ETA 392 min
+[  5485.4s]   ep 3 b 2567/7244 step 24300/72460 loss 0.1082 | lr 1.40e-05 | 29.2 items/s | mem 8.0 GB | ETA 392 min
+[  5510.8s]   ep 3 b 2617/7244 step 24350/72460 loss 0.1893 | lr 1.40e-05 | 28.9 items/s | mem 8.0 GB | ETA 391 min
+[  5535.6s]   ep 3 b 2667/7244 step 24400/72460 loss 0.0569 | lr 1.40e-05 | 28.8 items/s | mem 8.0 GB | ETA 391 min
+[  5536.2s] saved checkpoint epoch 3 batch 2667 step 24400
+[  5560.6s]   ep 3 b 2717/7244 step 24450/72460 loss 0.1158 | lr 1.39e-05 | 28.6 items/s | mem 8.0 GB | ETA 391 min
+[  5584.9s]   ep 3 b 2767/7244 step 24500/72460 loss 0.3684 | lr 1.39e-05 | 28.6 items/s | mem 8.0 GB | ETA 391 min
+[  5609.1s]   ep 3 b 2817/7244 step 24550/72460 loss 0.0804 | lr 1.39e-05 | 28.6 items/s | mem 8.0 GB | ETA 390 min
+[  5633.2s]   ep 3 b 2867/7244 step 24600/72460 loss 0.3184 | lr 1.39e-05 | 28.6 items/s | mem 8.0 GB | ETA 390 min
+[  5657.8s]   ep 3 b 2917/7244 step 24650/72460 loss 0.1510 | lr 1.39e-05 | 28.6 items/s | mem 8.0 GB | ETA 389 min
+[  5682.8s]   ep 3 b 2967/7244 step 24700/72460 loss 0.0679 | lr 1.39e-05 | 28.5 items/s | mem 8.0 GB | ETA 389 min
+[  5707.5s]   ep 3 b 3017/7244 step 24750/72460 loss 0.0672 | lr 1.39e-05 | 28.4 items/s | mem 8.0 GB | ETA 389 min
+[  5731.7s]   ep 3 b 3067/7244 step 24800/72460 loss 0.0889 | lr 1.38e-05 | 28.5 items/s | mem 8.0 GB | ETA 388 min
+[  5732.3s] saved checkpoint epoch 3 batch 3067 step 24800
+[  5756.0s]   ep 3 b 3117/7244 step 24850/72460 loss 0.0527 | lr 1.38e-05 | 28.6 items/s | mem 8.0 GB | ETA 388 min
+[  5780.6s]   ep 3 b 3167/7244 step 24900/72460 loss 0.1566 | lr 1.38e-05 | 28.6 items/s | mem 8.0 GB | ETA 387 min
+[  5805.1s]   ep 3 b 3217/7244 step 24950/72460 loss 0.0751 | lr 1.38e-05 | 28.6 items/s | mem 8.0 GB | ETA 387 min
+[  5829.8s]   ep 3 b 3267/7244 step 25000/72460 loss 0.1875 | lr 1.38e-05 | 28.4 items/s | mem 8.0 GB | ETA 387 min
+[  5853.6s]   ep 3 b 3317/7244 step 25050/72460 loss 0.0600 | lr 1.38e-05 | 28.3 items/s | mem 8.0 GB | ETA 386 min
+[  5878.2s]   ep 3 b 3367/7244 step 25100/72460 loss 0.0385 | lr 1.38e-05 | 28.3 items/s | mem 8.0 GB | ETA 386 min
+[  5903.0s]   ep 3 b 3417/7244 step 25150/72460 loss 0.0222 | lr 1.37e-05 | 28.3 items/s | mem 8.0 GB | ETA 385 min
+[  5927.7s]   ep 3 b 3467/7244 step 25200/72460 loss 0.1293 | lr 1.37e-05 | 28.1 items/s | mem 8.0 GB | ETA 385 min
+[  5928.2s] saved checkpoint epoch 3 batch 3467 step 25200
+[  5952.5s]   ep 3 b 3517/7244 step 25250/72460 loss 0.1498 | lr 1.37e-05 | 28.0 items/s | mem 8.0 GB | ETA 385 min
+[  5976.6s]   ep 3 b 3567/7244 step 25300/72460 loss 0.0713 | lr 1.37e-05 | 28.3 items/s | mem 8.0 GB | ETA 384 min
+[  6000.2s]   ep 3 b 3617/7244 step 25350/72460 loss 0.1233 | lr 1.37e-05 | 28.4 items/s | mem 8.0 GB | ETA 384 min
+[  6165.0s] valid ep 3.50 step 25355 (162s): lines Top-1/5/10 18.5/45.4/61.3 IFA 6 | line BCE 0.6247 | pairs acc 48.5 debiased 55.3 len-matched 48.7 top3mean 44.6 net@50 -1.4 | fn ROC 0.749 debiased 0.594 | select 106.7 (best 120.4 @ ep 1.0)
+[  6165.0s] valid ep 3.50 full: {"lines_ALL": {"n": 372, "median_ifa": 6.0, "top1": 18.548387096774192, "top5": 45.43010752688172, "top10": 61.29032258064516, "rand_top1": 7.695258369226086, "rand_top5": 27.425834089890994, "rand_top10": 41.31752062853754}, "lines_A": {"n": 125, "median_ifa": 2.0, "top1": 28.000000000000004, "top5": 72.8, "top10": 88.8, "rand_top1": 14.073640952931967, "rand_top5": 51.025353466069504, "rand_top10": 73.7188842709588}, "lines_B": {"n": 110, "median_ifa": 7.0, "top1": 21.818181818181817, "top5": 42.72727272727273, "top10": 58.18181818181818, "rand_top1": 7.690824288941915, "rand_top5": 24.154490736989906, "rand_top10": 36.79481967188202}, "lines_C": {"n": 137, "median_ifa": 17.0, "top1": 7.2992700729927, "top5": 22.62773722627737, "top10": 38.68613138686132, "rand_top1": 1.8791264412554538, "rand_top5": 8.5200519497217, "rand_top10": 15.385598365248853}, "function": {"n": 4124, "vulnerable": 562, "auprc": 0.2953518899510434, "roc_auc": 0.7486949532531006, "spearman_with_tokens": 0.7320953736700164}, "pairs": {"n": 562, "ties": 29, "ranking_acc_ties_half": 48.487544483985765, "ranking_acc_non_tied": 48.405253283302066}, "same_text_flaw_lines": {"n": 241, "vul_scored_higher_pct": 46.2655601659751}, "pairs_debiased": 55.338078291814945, "extra": {"line_bce": 0.6247069865636071, "pairs": {"n": 562, "acc": 48.487544483985765, "acc_debiased": 55.33807829181495, "acc_length_matched": 48.73015873015873, "n_length_matched": 315, "acc_top3mean": 44.5729537366548, "length_rule_longer_is_fixed": 86.20996441281139, "P-C_at50": 4.6263345195729535, "P-R_at50": 6.049822064056939, "net_at50": -1.423487544483986}, "function": {"n": 4124, "vulnerable": 562, "roc_auc": 0.7486949532531006, "roc_auc_debiased": 0.5943727383352548, "roc_auc_top3mean": 0.7567442817722061}}}
+[  6166.7s] saved checkpoint epoch 3 batch 3622 step 25355
+[  6188.5s]   ep 3 b 3667/7244 step 25400/72460 loss 0.1972 | lr 1.37e-05 | 26.0 items/s | mem 8.0 GB | ETA 418 min
+[  6213.2s]   ep 3 b 3717/7244 step 25450/72460 loss 0.0670 | lr 1.37e-05 | 25.9 items/s | mem 8.0 GB | ETA 417 min
+[  6237.9s]   ep 3 b 3767/7244 step 25500/72460 loss 0.0734 | lr 1.36e-05 | 25.9 items/s | mem 8.0 GB | ETA 417 min
+[  6262.0s]   ep 3 b 3817/7244 step 25550/72460 loss 0.1131 | lr 1.36e-05 | 25.8 items/s | mem 8.0 GB | ETA 416 min
+[  6286.0s]   ep 3 b 3867/7244 step 25600/72460 loss 0.0648 | lr 1.36e-05 | 26.0 items/s | mem 8.0 GB | ETA 415 min
+[  6286.5s] saved checkpoint epoch 3 batch 3867 step 25600
+[  6311.6s]   ep 3 b 3917/7244 step 25650/72460 loss 0.1837 | lr 1.36e-05 | 26.0 items/s | mem 8.0 GB | ETA 414 min
+[  6336.1s]   ep 3 b 3967/7244 step 25700/72460 loss 0.0601 | lr 1.36e-05 | 25.9 items/s | mem 8.0 GB | ETA 413 min
+[  6360.8s]   ep 3 b 4017/7244 step 25750/72460 loss 0.0409 | lr 1.36e-05 | 25.9 items/s | mem 8.0 GB | ETA 412 min
+[  6385.4s]   ep 3 b 4067/7244 step 25800/72460 loss 0.1306 | lr 1.36e-05 | 25.9 items/s | mem 8.0 GB | ETA 412 min
+[  6410.0s]   ep 3 b 4117/7244 step 25850/72460 loss 0.0960 | lr 1.35e-05 | 26.0 items/s | mem 8.0 GB | ETA 411 min
+[  6434.7s]   ep 3 b 4167/7244 step 25900/72460 loss 0.0651 | lr 1.35e-05 | 25.9 items/s | mem 8.0 GB | ETA 410 min
+[  6459.3s]   ep 3 b 4217/7244 step 25950/72460 loss 0.0968 | lr 1.35e-05 | 25.9 items/s | mem 8.0 GB | ETA 409 min
+[  6483.6s]   ep 3 b 4267/7244 step 26000/72460 loss 0.0269 | lr 1.35e-05 | 25.8 items/s | mem 8.0 GB | ETA 408 min
+[  6484.1s] saved checkpoint epoch 3 batch 4267 step 26000
+[  6508.1s]   ep 3 b 4317/7244 step 26050/72460 loss 0.1243 | lr 1.35e-05 | 26.0 items/s | mem 8.0 GB | ETA 408 min
+[  6532.1s]   ep 3 b 4367/7244 step 26100/72460 loss 0.1102 | lr 1.35e-05 | 26.1 items/s | mem 8.0 GB | ETA 407 min
+[  6556.1s]   ep 3 b 4417/7244 step 26150/72460 loss 0.0824 | lr 1.35e-05 | 26.2 items/s | mem 8.0 GB | ETA 406 min
+[  6580.3s]   ep 3 b 4467/7244 step 26200/72460 loss 0.1868 | lr 1.34e-05 | 26.2 items/s | mem 8.0 GB | ETA 405 min
+[  6603.7s]   ep 3 b 4517/7244 step 26250/72460 loss 0.1006 | lr 1.34e-05 | 26.2 items/s | mem 8.0 GB | ETA 404 min
+[  6627.4s]   ep 3 b 4567/7244 step 26300/72460 loss 0.1589 | lr 1.34e-05 | 26.3 items/s | mem 8.0 GB | ETA 403 min
+[  6651.6s]   ep 3 b 4617/7244 step 26350/72460 loss 0.0723 | lr 1.34e-05 | 26.3 items/s | mem 8.0 GB | ETA 403 min
+[  6675.7s]   ep 3 b 4667/7244 step 26400/72460 loss 0.0783 | lr 1.34e-05 | 26.3 items/s | mem 8.0 GB | ETA 402 min
+[  6676.3s] saved checkpoint epoch 3 batch 4667 step 26400
+[  6699.8s]   ep 3 b 4717/7244 step 26450/72460 loss 0.1896 | lr 1.34e-05 | 26.4 items/s | mem 8.0 GB | ETA 401 min
+[  6724.7s]   ep 3 b 4767/7244 step 26500/72460 loss 0.1660 | lr 1.34e-05 | 26.4 items/s | mem 8.0 GB | ETA 400 min
+[  6748.9s]   ep 3 b 4817/7244 step 26550/72460 loss 0.1613 | lr 1.33e-05 | 26.4 items/s | mem 8.0 GB | ETA 400 min
+[  6773.3s]   ep 3 b 4867/7244 step 26600/72460 loss 0.0372 | lr 1.33e-05 | 26.3 items/s | mem 8.0 GB | ETA 399 min
+[  6797.8s]   ep 3 b 4917/7244 step 26650/72460 loss 0.1166 | lr 1.33e-05 | 26.4 items/s | mem 8.0 GB | ETA 398 min
+[  6822.1s]   ep 3 b 4967/7244 step 26700/72460 loss 0.0849 | lr 1.33e-05 | 26.4 items/s | mem 8.0 GB | ETA 398 min
+[  6846.8s]   ep 3 b 5017/7244 step 26750/72460 loss 0.1322 | lr 1.33e-05 | 26.4 items/s | mem 8.0 GB | ETA 397 min
+[  6871.2s]   ep 3 b 5067/7244 step 26800/72460 loss 0.0932 | lr 1.33e-05 | 26.4 items/s | mem 8.0 GB | ETA 396 min
+[  6871.7s] saved checkpoint epoch 3 batch 5067 step 26800
+[  6896.5s]   ep 3 b 5117/7244 step 26850/72460 loss 0.0941 | lr 1.33e-05 | 26.4 items/s | mem 8.0 GB | ETA 396 min
+[  6920.8s]   ep 3 b 5167/7244 step 26900/72460 loss 0.1085 | lr 1.32e-05 | 26.5 items/s | mem 8.0 GB | ETA 395 min
+[  6945.5s]   ep 3 b 5217/7244 step 26950/72460 loss 0.5050 | lr 1.32e-05 | 26.4 items/s | mem 8.0 GB | ETA 394 min
+[  6970.0s]   ep 3 b 5267/7244 step 27000/72460 loss 0.0639 | lr 1.32e-05 | 26.3 items/s | mem 8.0 GB | ETA 394 min
+[  6993.9s]   ep 3 b 5317/7244 step 27050/72460 loss 0.0550 | lr 1.32e-05 | 26.3 items/s | mem 8.0 GB | ETA 393 min
+[  7018.1s]   ep 3 b 5367/7244 step 27100/72460 loss 0.0925 | lr 1.32e-05 | 26.4 items/s | mem 8.0 GB | ETA 392 min
+[  7042.4s]   ep 3 b 5417/7244 step 27150/72460 loss 0.0482 | lr 1.32e-05 | 26.4 items/s | mem 8.0 GB | ETA 392 min
+[  7066.2s]   ep 3 b 5467/7244 step 27200/72460 loss 0.2308 | lr 1.31e-05 | 26.4 items/s | mem 8.0 GB | ETA 391 min
+[  7066.7s] saved checkpoint epoch 3 batch 5467 step 27200
+[  7090.9s]   ep 3 b 5517/7244 step 27250/72460 loss 0.0203 | lr 1.31e-05 | 26.4 items/s | mem 8.0 GB | ETA 390 min
+[  7115.7s]   ep 3 b 5567/7244 step 27300/72460 loss 0.1179 | lr 1.31e-05 | 26.3 items/s | mem 8.0 GB | ETA 390 min
+[  7140.1s]   ep 3 b 5617/7244 step 27350/72460 loss 0.0202 | lr 1.31e-05 | 26.4 items/s | mem 8.0 GB | ETA 389 min
+[  7163.6s]   ep 3 b 5667/7244 step 27400/72460 loss 0.2248 | lr 1.31e-05 | 26.4 items/s | mem 8.0 GB | ETA 388 min
+[  7188.3s]   ep 3 b 5717/7244 step 27450/72460 loss 0.0755 | lr 1.31e-05 | 26.4 items/s | mem 8.0 GB | ETA 388 min
+[  7212.9s]   ep 3 b 5767/7244 step 27500/72460 loss 0.2033 | lr 1.31e-05 | 26.4 items/s | mem 8.0 GB | ETA 387 min
+[  7237.2s]   ep 3 b 5817/7244 step 27550/72460 loss 0.0825 | lr 1.30e-05 | 26.5 items/s | mem 8.0 GB | ETA 387 min
+[  7261.8s]   ep 3 b 5867/7244 step 27600/72460 loss 0.1799 | lr 1.30e-05 | 26.5 items/s | mem 8.0 GB | ETA 386 min
+[  7262.4s] saved checkpoint epoch 3 batch 5867 step 27600
+[  7286.7s]   ep 3 b 5917/7244 step 27650/72460 loss 0.0542 | lr 1.30e-05 | 26.5 items/s | mem 8.0 GB | ETA 385 min
+[  7310.5s]   ep 3 b 5967/7244 step 27700/72460 loss 0.0415 | lr 1.30e-05 | 26.6 items/s | mem 8.0 GB | ETA 385 min
+[  7334.6s]   ep 3 b 6017/7244 step 27750/72460 loss 0.2042 | lr 1.30e-05 | 26.7 items/s | mem 8.0 GB | ETA 384 min
+[  7358.7s]   ep 3 b 6067/7244 step 27800/72460 loss 0.0737 | lr 1.30e-05 | 26.7 items/s | mem 8.0 GB | ETA 383 min
+[  7383.2s]   ep 3 b 6117/7244 step 27850/72460 loss 0.0702 | lr 1.30e-05 | 26.7 items/s | mem 8.0 GB | ETA 383 min
+[  7407.0s]   ep 3 b 6167/7244 step 27900/72460 loss 0.1009 | lr 1.29e-05 | 26.8 items/s | mem 8.0 GB | ETA 382 min
+[  7431.0s]   ep 3 b 6217/7244 step 27950/72460 loss 0.1830 | lr 1.29e-05 | 26.8 items/s | mem 8.0 GB | ETA 382 min
+[  7456.4s]   ep 3 b 6267/7244 step 28000/72460 loss 0.3674 | lr 1.29e-05 | 26.8 items/s | mem 8.0 GB | ETA 381 min
+[  7457.0s] saved checkpoint epoch 3 batch 6267 step 28000
+[  7481.9s]   ep 3 b 6317/7244 step 28050/72460 loss 0.0412 | lr 1.29e-05 | 26.7 items/s | mem 8.0 GB | ETA 381 min
+[  7505.8s]   ep 3 b 6367/7244 step 28100/72460 loss 0.0840 | lr 1.29e-05 | 26.8 items/s | mem 8.0 GB | ETA 380 min
+[  7530.1s]   ep 3 b 6417/7244 step 28150/72460 loss 0.2970 | lr 1.29e-05 | 26.8 items/s | mem 8.0 GB | ETA 379 min
+[  7554.9s]   ep 3 b 6467/7244 step 28200/72460 loss 0.1639 | lr 1.29e-05 | 26.7 items/s | mem 8.0 GB | ETA 379 min
+[  7579.2s]   ep 3 b 6517/7244 step 28250/72460 loss 0.0732 | lr 1.28e-05 | 26.7 items/s | mem 8.0 GB | ETA 378 min
+[  7603.2s]   ep 3 b 6567/7244 step 28300/72460 loss 0.0401 | lr 1.28e-05 | 26.8 items/s | mem 8.0 GB | ETA 378 min
+[  7627.6s]   ep 3 b 6617/7244 step 28350/72460 loss 0.6057 | lr 1.28e-05 | 26.8 items/s | mem 8.0 GB | ETA 377 min
+[  7651.9s]   ep 3 b 6667/7244 step 28400/72460 loss 0.0469 | lr 1.28e-05 | 26.8 items/s | mem 8.0 GB | ETA 377 min
+[  7652.4s] saved checkpoint epoch 3 batch 6667 step 28400
+[  7676.9s]   ep 3 b 6717/7244 step 28450/72460 loss 0.1291 | lr 1.28e-05 | 26.8 items/s | mem 8.0 GB | ETA 376 min
+[  7701.7s]   ep 3 b 6767/7244 step 28500/72460 loss 0.0418 | lr 1.28e-05 | 26.8 items/s | mem 8.0 GB | ETA 376 min
+[  7726.4s]   ep 3 b 6817/7244 step 28550/72460 loss 0.3062 | lr 1.28e-05 | 26.7 items/s | mem 8.0 GB | ETA 375 min
+[  7750.3s]   ep 3 b 6867/7244 step 28600/72460 loss 0.1059 | lr 1.27e-05 | 26.8 items/s | mem 8.0 GB | ETA 374 min
+[  7774.1s]   ep 3 b 6917/7244 step 28650/72460 loss 0.0596 | lr 1.27e-05 | 26.8 items/s | mem 8.0 GB | ETA 374 min
+[  7798.4s]   ep 3 b 6967/7244 step 28700/72460 loss 0.2371 | lr 1.27e-05 | 26.8 items/s | mem 8.0 GB | ETA 373 min
+[  7823.6s]   ep 3 b 7017/7244 step 28750/72460 loss 0.0844 | lr 1.27e-05 | 26.8 items/s | mem 8.0 GB | ETA 373 min
+[  7847.9s]   ep 3 b 7067/7244 step 28800/72460 loss 0.0827 | lr 1.27e-05 | 26.8 items/s | mem 8.0 GB | ETA 372 min
+[  7848.4s] saved checkpoint epoch 3 batch 7067 step 28800
+[  7872.5s]   ep 3 b 7117/7244 step 28850/72460 loss 0.1199 | lr 1.27e-05 | 26.9 items/s | mem 8.0 GB | ETA 372 min
+[  7896.3s]   ep 3 b 7167/7244 step 28900/72460 loss 0.0447 | lr 1.27e-05 | 26.8 items/s | mem 8.0 GB | ETA 371 min
+[  7921.2s]   ep 3 b 7217/7244 step 28950/72460 loss 0.5932 | lr 1.26e-05 | 26.8 items/s | mem 8.0 GB | ETA 371 min
+[  8178.2s] valid ep 4.00 step 28977 (244s): lines Top-1/5/10 22.0/47.6/61.0 IFA 5 | line BCE 0.7653 | pairs acc 47.8 debiased 53.5 len-matched 49.4 top3mean 45.9 net@50 -1.6 | fn ROC 0.732 debiased 0.601 | select 108.6 (best 120.4 @ ep 1.0)
+[  8178.2s] valid ep 4.00 full: {"lines_ALL": {"n": 372, "median_ifa": 5.0, "top1": 22.043010752688172, "top5": 47.58064516129033, "top10": 61.02150537634409, "rand_top1": 7.695258369226086, "rand_top5": 27.425834089890994, "rand_top10": 41.31752062853754}, "lines_A": {"n": 125, "median_ifa": 1.0, "top1": 39.2, "top5": 77.60000000000001, "top10": 90.4, "rand_top1": 14.073640952931967, "rand_top5": 51.025353466069504, "rand_top10": 73.7188842709588}, "lines_B": {"n": 110, "median_ifa": 6.0, "top1": 18.181818181818183, "top5": 40.909090909090914, "top10": 55.45454545454545, "rand_top1": 7.690824288941915, "rand_top5": 24.154490736989906, "rand_top10": 36.79481967188202}, "lines_C": {"n": 137, "median_ifa": 17.0, "top1": 9.48905109489051, "top5": 25.547445255474454, "top10": 38.68613138686132, "rand_top1": 1.8791264412554538, "rand_top5": 8.5200519497217, "rand_top10": 15.385598365248853}, "function": {"n": 4124, "vulnerable": 562, "auprc": 0.2900696028206211, "roc_auc": 0.7319491428902551, "spearman_with_tokens": 0.6059651355249839}, "pairs": {"n": 562, "ties": 31, "ranking_acc_ties_half": 47.77580071174377, "ranking_acc_non_tied": 47.64595103578154}, "same_text_flaw_lines": {"n": 241, "vul_scored_higher_pct": 55.18672199170125}, "pairs_debiased": 53.469750889679716, "extra": {"line_bce": 0.7652990437248361, "pairs": {"n": 562, "acc": 47.77580071174377, "acc_debiased": 53.469750889679716, "acc_length_matched": 49.36507936507937, "n_length_matched": 315, "acc_top3mean": 45.90747330960854, "length_rule_longer_is_fixed": 86.20996441281139, "P-C_at50": 5.5160142348754455, "P-R_at50": 7.11743772241993, "net_at50": -1.6014234875444844}, "function": {"n": 4124, "vulnerable": 562, "roc_auc": 0.7319491428902551, "roc_auc_debiased": 0.6012476496670071, "roc_auc_top3mean": 0.7429100369459358}}}
+[  8181.2s] saved checkpoint epoch 4 batch 0 step 28977
+[  8181.2s] early stop: no improvement for 3 epochs (best epoch 1.0)
+[  8364.8s] test: {"lines_ALL": {"n": 357, "median_ifa": 4.0, "top1": 18.207282913165265, "top5": 50.14005602240896, "top10": 61.62464985994398, "rand_top1": 5.918633195040236, "rand_top5": 22.60531487329123, "rand_top10": 36.6916096025223}, "lines_A": {"n": 103, "median_ifa": 1.0, "top1": 37.86407766990291, "top5": 77.66990291262135, "top10": 90.29126213592234, "rand_top1": 9.930408281595495, "rand_top5": 39.142328736711626, "rand_top10": 63.513065869009964}, "lines_B": {"n": 122, "median_ifa": 4.5, "top1": 16.39344262295082, "top5": 50.0, "top10": 61.47540983606557, "rand_top1": 6.902678616126441, "rand_top5": 23.858983096552265, "rand_top10": 36.89306172979458}, "lines_C": {"n": 132, "median_ifa": 17.0, "top1": 4.545454545454546, "top5": 28.78787878787879, "top10": 39.39393939393939, "rand_top1": 1.8787364125575947, "rand_top5": 8.542739485638622, "rand_top10": 15.576555398162863}, "function": {"n": 1128, "vulnerable": 564, "auprc": 0.49994184698857536, "roc_auc": 0.4888665685830693, "spearman_with_tokens": 0.31600950944768563}, "pairs": {"n": 564, "ties": 63, "ranking_acc_ties_half": 47.6063829787234, "ranking_acc_non_tied": 47.30538922155689}, "same_text_flaw_lines": {"n": 200, "vul_scored_higher_pct": 45.75}, "extra": {"line_bce": 0.5983576382290877, "pairs": {"n": 564, "acc": 47.6063829787234, "acc_debiased": 55.85106382978723, "acc_length_matched": 48.6646884272997, "n_length_matched": 337, "acc_top3mean": 46.01063829787234, "length_rule_longer_is_fixed": 86.96808510638297, "P-C_at50": 2.127659574468085, "P-R_at50": 3.723404255319149, "net_at50": -1.5957446808510638}, "function": {"n": 1128, "vulnerable": 564, "roc_auc": 0.4888665685830693, "roc_auc_debiased": 0.4960483627584126, "roc_auc_top3mean": 0.4891243523967607}}}
+[  8366.3s] DONE
+
+$ /usr/bin/python3 /content/IE105/experiments/exp5_line_labels/eval_primevul.py --run /content/exp5/slide_ModernBERT-base_2048_s0_pv1 --primevul /content/exp5/primevul
+[     7.7s] PrimeVul: 564 pairs, 25911 test functions
+
+Loading weights:   0%|          | 0/134 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 134/134 [00:00<00:00, 4307.72it/s]
+[transformers] [1mModernBertModel LOAD REPORT[0m from: answerdotai/ModernBERT-base
+Key               | Status     |  | 
+------------------+------------+--+-
+head.norm.weight  | UNEXPECTED |  | 
+head.dense.weight | UNEXPECTED |  | 
+decoder.bias      | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (10246 > 8192). Running this sequence through the model will result in indexing errors
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (733 > 512). Running this sequence through the model will result in indexing errors
+[   277.9s] paired: {"lines_ALL": {"n": 357, "median_ifa": 4.0, "top1": 18.207282913165265, "top5": 50.14005602240896, "top10": 61.62464985994398, "rand_top1": 5.918633195040236, "rand_top5": 22.60531487329123, "rand_top10": 36.6916096025223}, "lines_A": {"n": 103, "median_ifa": 1.0, "top1": 37.86407766990291, "top5": 77.66990291262135, "top10": 90.29126213592234, "rand_top1": 9.930408281595495, "rand_top5": 39.142328736711626, "rand_top10": 63.513065869009964}, "lines_B": {"n": 122, "median_ifa": 4.5, "top1": 16.39344262295082, "top5": 50.0, "top10": 61.47540983606557, "rand_top1": 6.902678616126441, "rand_top5": 23.858983096552265, "rand_top10": 36.89306172979458}, "lines_C": {"n": 132, "median_ifa": 17.0, "top1": 4.545454545454546, "top5": 28.78787878787879, "top10": 39.39393939393939, "rand_top1": 1.8787364125575947, "rand_top5": 8.542739485638622, "rand_top10": 15.576555398162863}, "function": {"n": 1128, "vulnerable": 564, "auprc": 0.4999419742208312, "roc_auc": 0.4888665685830693, "spearman_with_tokens": 0.31600950944768563}, "pairs": {"n": 564, "ties": 63, "ranking_acc_ties_half": 47.6063829787234, "ranking_acc_non_tied": 47.30538922155689}, "same_text_flaw_lines": {"n": 200, "vul_scored_higher_pct": 45.75}}
+[   995.6s] full test: {"n": 25911, "vulnerable": 695, "auprc": 0.08448193883713644, "roc_auc": 0.7848468655278822, "spearman_with_tokens": 0.672465666210692}
+[   995.7s] DONE primevul

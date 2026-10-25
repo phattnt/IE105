@@ -1,0 +1,32 @@
+{
+ "audit": {
+  "n": 1108,
+  "answered": 1107,
+  "answer_rate": 99.9,
+  "parsed_leniently": 3,
+  "modes": {
+   "think_complete": 649,
+   "think_forced": 411,
+   "think_reanswer": 48
+  },
+  "transport_errors": {
+   "logged": 8,
+   "still_unanswered": 8
+  },
+  "cut_functions": 43,
+  "flag_rate": 89.6,
+  "verdict_probability_consistent": 99.3,
+  "gen_tokens": {
+   "mean": 7231,
+   "median": 8362,
+   "max": 9543
+  },
+  "lines": {
+   "n_vul_with_flaw_lines": 351,
+   "a_missing_sink_is_a_flaw_line": 29.3,
+   "any_sink_is_a_flaw_line": 35.3,
+   "a_missing_sink_is_a_hint_line": 0.0,
+   "missing_sinks_per_function": 2.94
+  }
+ }
+}

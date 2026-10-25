@@ -1,0 +1,10 @@
+{
+ "ckpt": "/content/exp5/eval_pv1_best/ckpt_best.pt",
+ "full_test": {
+  "n": 25911,
+  "vulnerable": 695,
+  "auprc": 0.08448319681273482,
+  "roc_auc": 0.7848486914782894,
+  "spearman_with_tokens": 0.6724596140463537
+ }
+}

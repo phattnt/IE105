@@ -1,0 +1,16 @@
+$ /usr/bin/python3 /content/IE105/experiments/exp5_line_labels/eval_ckpt.py --ckpt /content/exp5/eval_pv1_best/ckpt_best.pt --data /content/exp5/primevul_lines_b80k --out /content/exp5/eval_pv1_best --model answerdotai/ModernBERT-base --max_len 2048 --strategy slide --bf16 --eval_tokens 16384 --primevul /content/exp5/primevul
+Loading weights:   0%|          | 0/134 [00:00<?, ?it/s]Loading weights: 100%|██████████| 134/134 [00:00<00:00, 4498.67it/s]
+[transformers] [1mModernBertModel LOAD REPORT[0m from: answerdotai/ModernBERT-base
+Key               | Status     |  | 
+------------------+------------+--+-
+head.norm.weight  | UNEXPECTED |  | 
+head.dense.weight | UNEXPECTED |  | 
+decoder.bias      | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[     9.5s] loaded /content/exp5/eval_pv1_best/ckpt_best.pt | answerdotai/ModernBERT-base slide 2048 | device cuda
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (10246 > 8192). Running this sequence through the model will result in indexing errors
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (733 > 512). Running this sequence through the model will result in indexing errors
+[   274.4s] test (1128 functions, 265s): {"lines_ALL": {"n": 357, "median_ifa": 4.0, "top1": 18.207282913165265, "top5": 50.14005602240896, "top10": 61.62464985994398, "rand_top1": 5.918633195040236, "rand_top5": 22.60531487329123, "rand_top10": 36.6916096025223}, "lines_A": {"n": 103, "median_ifa": 1.0, "top1": 37.86407766990291, "top5": 77.66990291262135, "top10": 90.29126213592234, "rand_top1": 9.930408281595495, "rand_top5": 39.142328736711626, "rand_top10": 63.513065869009964}, "lines_B": {"n": 122, "median_ifa": 4.5, "top1": 16.39344262295082, "top5": 50.0, "top10": 61.47540983606557, "rand_top1": 6.902678616126441, "rand_top5": 23.858983096552265, "rand_top10": 36.89306172979458}, "lines_C": {"n": 132, "median_ifa": 17.0, "top1": 4.545454545454546, "top5": 28.78787878787879, "top10": 39.39393939393939, "rand_top1": 1.8787364125575947, "rand_top5": 8.542739485638622, "rand_top10": 15.576555398162863}, "function": {"n": 1128, "vulnerable": 564, "auprc": 0.49994184698857536, "roc_auc": 0.4888665685830693, "spearman_with_tokens": 0.3160033056418965}, "pairs": {"n": 564, "ties": 63, "ranking_acc_ties_half": 47.6063829787234, "ranking_acc_non_tied": 47.30538922155689}, "same_text_flaw_lines": {"n": 200, "vul_scored_higher_pct": 45.75}, "extra": {"line_bce": 0.5983559420174154, "pairs": {"n": 564, "acc": 47.6063829787234, "acc_debiased": 55.85106382978723, "acc_length_matched": 48.6646884272997, "n_length_matched": 337, "acc_top3mean": 46.01063829787234, "length_rule_longer_is_fixed": 86.96808510638297, "P-C_at50": 2.127659574468085, "P-R_at50": 3.723404255319149, "net_at50": -1.5957446808510638}, "function": {"n": 1128, "vulnerable": 564, "roc_auc": 0.4888665685830693, "roc_auc_debiased": 0.4960483627584126, "roc_auc_top3mean": 0.4891243523967607}}}
+[   274.4s] DONE test

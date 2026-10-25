@@ -1,0 +1,334 @@
+{
+ "audit_hint": {
+  "pairs": {
+   "all": {
+    "n": 20,
+    "rank_acc": 55.00000000000001,
+    "rank_acc_ci": [
+     40.0,
+     70.0
+    ],
+    "rank_acc_debiased": 60.0,
+    "length_rule_longer_is_fixed": 60.0,
+    "t0": {
+     "threshold": 0.0,
+     "flag_rate": 50.0,
+     "P-C": 20.0,
+     "P-V": 35.0,
+     "P-B": 35.0,
+     "P-R": 10.0,
+     "net": 10.0,
+     "net_ci": [
+      -15.0,
+      30.0
+     ],
+     "null_P-C": 25.0,
+     "null_net": 0.0
+    },
+    "t_median": {
+     "threshold": 0.675,
+     "flag_rate": 50.0,
+     "P-C": 20.0,
+     "P-V": 35.0,
+     "P-B": 35.0,
+     "P-R": 10.0,
+     "net": 10.0,
+     "net_ci": [
+      -10.124999999999993,
+      30.0
+     ],
+     "null_P-C": 25.0,
+     "null_net": 0.0
+    }
+   },
+   "length_matched_5pct": {
+    "n": 12,
+    "rank_acc": 54.166666666666664,
+    "rank_acc_ci": [
+     33.22916666666667,
+     75.0
+    ],
+    "rank_acc_debiased": 58.333333333333336,
+    "length_rule_longer_is_fixed": 58.333333333333336,
+    "t0": {
+     "threshold": 0.0,
+     "flag_rate": 50.0,
+     "P-C": 16.666666666666664,
+     "P-V": 33.33333333333333,
+     "P-B": 33.33333333333333,
+     "P-R": 16.666666666666664,
+     "net": 0.0,
+     "net_ci": [
+      -33.33333333333333,
+      33.33333333333333
+     ],
+     "null_P-C": 25.0,
+     "null_net": 0.0
+    },
+    "t_median": {
+     "threshold": 0.675,
+     "flag_rate": 50.0,
+     "P-C": 16.666666666666664,
+     "P-V": 33.33333333333333,
+     "P-B": 33.33333333333333,
+     "P-R": 16.666666666666664,
+     "net": 0.0,
+     "net_ci": [
+      -33.33333333333333,
+      33.33333333333333
+     ],
+     "null_P-C": 25.0,
+     "null_net": 0.0
+    }
+   },
+   "patch_adds_code": {
+    "n": 12,
+    "rank_acc": 54.166666666666664,
+    "rank_acc_ci": [
+     33.33333333333333,
+     75.0
+    ],
+    "rank_acc_debiased": 50.0,
+    "length_rule_longer_is_fixed": 100.0,
+    "t0": {
+     "threshold": 0.0,
+     "flag_rate": 54.166666666666664,
+     "P-C": 25.0,
+     "P-V": 33.33333333333333,
+     "P-B": 25.0,
+     "P-R": 16.666666666666664,
+     "net": 8.333333333333332,
+     "net_ci": [
+      -25.0,
+      41.66666666666667
+     ],
+     "null_P-C": 24.82638888888889,
+     "null_net": 0.0
+    },
+    "t_median": {
+     "threshold": 1.35,
+     "flag_rate": 33.33333333333333,
+     "P-C": 25.0,
+     "P-V": 16.666666666666664,
+     "P-B": 50.0,
+     "P-R": 8.333333333333332,
+     "net": 16.666666666666664,
+     "net_ci": [
+      -16.666666666666664,
+      50.0
+     ],
+     "null_P-C": 22.222222222222225,
+     "null_net": 0.0
+    }
+   },
+   "patch_removes_code": {
+    "n": 8,
+    "rank_acc": 56.25,
+    "rank_acc_ci": [
+     37.5,
+     75.0
+    ],
+    "rank_acc_debiased": 75.0,
+    "length_rule_longer_is_fixed": 0.0,
+    "t0": {
+     "threshold": 0.0,
+     "flag_rate": 43.75,
+     "P-C": 12.5,
+     "P-V": 37.5,
+     "P-B": 50.0,
+     "P-R": 0.0,
+     "net": 12.5,
+     "net_ci": [
+      0.0,
+      37.5
+     ],
+     "null_P-C": 24.609375,
+     "null_net": 0.0
+    },
+    "t_median": {
+     "threshold": -1.5,
+     "flag_rate": 43.75,
+     "P-C": 12.5,
+     "P-V": 37.5,
+     "P-B": 50.0,
+     "P-R": 0.0,
+     "net": 12.5,
+     "net_ci": [
+      0.0,
+      37.5
+     ],
+     "null_P-C": 24.609375,
+     "null_net": 0.0
+    }
+   }
+  },
+  "pairs_scored": 20,
+  "pairs_total": 564
+ },
+ "audit_hint_nt": {
+  "pairs": {
+   "all": {
+    "n": 20,
+    "rank_acc": 52.5,
+    "rank_acc_ci": [
+     42.5,
+     62.5
+    ],
+    "rank_acc_debiased": 40.0,
+    "length_rule_longer_is_fixed": 60.0,
+    "t0": {
+     "threshold": 0.0,
+     "flag_rate": 67.5,
+     "P-C": 15.0,
+     "P-V": 55.00000000000001,
+     "P-B": 20.0,
+     "P-R": 10.0,
+     "net": 5.0,
+     "net_ci": [
+      -20.0,
+      25.0
+     ],
+     "null_P-C": 21.9375,
+     "null_net": 0.0
+    },
+    "t_median": {
+     "threshold": 1.45,
+     "flag_rate": 5.0,
+     "P-C": 0.0,
+     "P-V": 5.0,
+     "P-B": 95.0,
+     "P-R": 0.0,
+     "net": 0.0,
+     "net_ci": [
+      0.0,
+      0.0
+     ],
+     "null_P-C": 4.75,
+     "null_net": 0.0
+    }
+   },
+   "length_matched_5pct": {
+    "n": 12,
+    "rank_acc": 41.66666666666667,
+    "rank_acc_ci": [
+     29.166666666666668,
+     50.0
+    ],
+    "rank_acc_debiased": 41.66666666666667,
+    "length_rule_longer_is_fixed": 58.333333333333336,
+    "t0": {
+     "threshold": 0.0,
+     "flag_rate": 66.66666666666666,
+     "P-C": 0.0,
+     "P-V": 58.333333333333336,
+     "P-B": 25.0,
+     "P-R": 16.666666666666664,
+     "net": -16.666666666666664,
+     "net_ci": [
+      -41.66666666666667,
+      0.0
+     ],
+     "null_P-C": 22.222222222222225,
+     "null_net": 0.0
+    },
+    "t_median": {
+     "threshold": 1.45,
+     "flag_rate": 8.333333333333332,
+     "P-C": 0.0,
+     "P-V": 8.333333333333332,
+     "P-B": 91.66666666666666,
+     "P-R": 0.0,
+     "net": 0.0,
+     "net_ci": [
+      0.0,
+      0.0
+     ],
+     "null_P-C": 7.638888888888888,
+     "null_net": 0.0
+    }
+   },
+   "patch_adds_code": {
+    "n": 12,
+    "rank_acc": 50.0,
+    "rank_acc_ci": [
+     37.5,
+     62.5
+    ],
+    "rank_acc_debiased": 58.333333333333336,
+    "length_rule_longer_is_fixed": 100.0,
+    "t0": {
+     "threshold": 0.0,
+     "flag_rate": 66.66666666666666,
+     "P-C": 8.333333333333332,
+     "P-V": 58.333333333333336,
+     "P-B": 25.0,
+     "P-R": 8.333333333333332,
+     "net": 0.0,
+     "net_ci": [
+      -25.0,
+      25.0
+     ],
+     "null_P-C": 22.222222222222225,
+     "null_net": 0.0
+    },
+    "t_median": {
+     "threshold": 1.45,
+     "flag_rate": 0.0,
+     "P-C": 0.0,
+     "P-V": 0.0,
+     "P-B": 100.0,
+     "P-R": 0.0,
+     "net": 0.0,
+     "net_ci": [
+      0.0,
+      0.0
+     ],
+     "null_P-C": 0.0,
+     "null_net": 0.0
+    }
+   },
+   "patch_removes_code": {
+    "n": 8,
+    "rank_acc": 56.25,
+    "rank_acc_ci": [
+     37.5,
+     75.0
+    ],
+    "rank_acc_debiased": 75.0,
+    "length_rule_longer_is_fixed": 0.0,
+    "t0": {
+     "threshold": 0.0,
+     "flag_rate": 68.75,
+     "P-C": 25.0,
+     "P-V": 50.0,
+     "P-B": 12.5,
+     "P-R": 12.5,
+     "net": 12.5,
+     "net_ci": [
+      -25.0,
+      50.0
+     ],
+     "null_P-C": 21.484375,
+     "null_net": 0.0
+    },
+    "t_median": {
+     "threshold": 1.45,
+     "flag_rate": 12.5,
+     "P-C": 0.0,
+     "P-V": 12.5,
+     "P-B": 87.5,
+     "P-R": 0.0,
+     "net": 0.0,
+     "net_ci": [
+      0.0,
+      0.0
+     ],
+     "null_P-C": 10.9375,
+     "null_net": 0.0
+    }
+   }
+  },
+  "pairs_scored": 20,
+  "pairs_total": 564
+ }
+}

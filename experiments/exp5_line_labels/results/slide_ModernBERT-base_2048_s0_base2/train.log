@@ -1,0 +1,322 @@
+== 2026-10-24 17:31:09 UTC start base
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Generating train split:   0%|          | 0/25440 [00:00<?, ? examples/s]Generating train split:  35%|███▌      | 9000/25440 [00:00<00:00, 73043.50 examples/s]Generating train split:  94%|█████████▍| 24000/25440 [00:00<00:00, 111724.93 examples/s]Generating train split: 100%|██████████| 25440/25440 [00:00<00:00, 108191.15 examples/s]
+{
+ "statements_missed": 0,
+ "vulnerable": 10998,
+ "vulnerable_with_lines": 10172,
+ "pairs": 10024,
+ "big_projects_in_train": [
+  "Android",
+  "Chrome",
+  "linux",
+  "tensorflow"
+ ],
+ "train_functions": 20250,
+ "train_vulnerable": 8844,
+ "train_pairs": 8042,
+ "train_projects": 437,
+ "train_in_primevul_test": 540,
+ "valid_functions": 2584,
+ "valid_vulnerable": 1093,
+ "valid_pairs": 1003,
+ "valid_projects": 128,
+ "valid_in_primevul_test": 24,
+ "test_functions": 2606,
+ "test_vulnerable": 1061,
+ "test_pairs": 979,
+ "test_projects": 142,
+ "test_in_primevul_test": 216
+}
+[     7.5s] data /content/exp5/secvul_lines -> out /content/exp5/slide_ModernBERT-base_2048_s0_base2
+[     9.6s] dropped 679 train functions overlapping the PrimeVul test set (incl. pair partners)
+[    10.0s] train 18795 functions (add-only fixes dropped) | valid 2584 | test 2606 | device cuda
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (8233 > 8192). Running this sequence through the model will result in indexing errors
+[   480.6s] training views built in 471s
+[   481.7s] train cache written (125 MB)
+[   481.8s] 25066 training views | lines: 45320 flaw / 1929087 clean | pos_weight 20.0
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (730 > 512). Running this sequence through the model will result in indexing errors
+Loading weights:   0%|          | 0/134 [00:00<?, ?it/s]Loading weights: 100%|██████████| 134/134 [00:00<00:00, 5639.82it/s]
+[transformers] [1mModernBertModel LOAD REPORT[0m from: answerdotai/ModernBERT-base
+Key               | Status     |  | 
+------------------+------------+--+-
+head.dense.weight | UNEXPECTED |  | 
+decoder.bias      | UNEXPECTED |  | 
+head.norm.weight  | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[   508.0s] 3149 batches/epoch, 6298 steps total, warmup 314 | valid at batches [787, 1574, 2362, 3149] of every epoch | select top5_top10 | patience 0 epochs | amp torch.bfloat16 | NVIDIA L4
+[   508.0s] epoch 0: 3149 batches, starting at batch 0, valid at batches [787, 1574, 2362, 3149]
+[   555.7s]   ep 0 b 100/3149 step 100/6298 loss 1.1075 | lr 9.55e-06 | 16.7 items/s | mem 7.8 GB | ETA 49 min
+[   604.9s]   ep 0 b 200/3149 step 200/6298 loss 0.7470 | lr 1.91e-05 | 15.5 items/s | mem 7.9 GB | ETA 49 min
+[   653.5s]   ep 0 b 300/3149 step 300/6298 loss 1.1573 | lr 2.87e-05 | 15.8 items/s | mem 7.9 GB | ETA 48 min
+[   702.9s]   ep 0 b 400/3149 step 400/6298 loss 0.8002 | lr 2.96e-05 | 15.7 items/s | mem 7.9 GB | ETA 48 min
+[   703.3s] saved checkpoint epoch 0 batch 400 step 400
+[   752.4s]   ep 0 b 500/3149 step 500/6298 loss 1.0434 | lr 2.91e-05 | 15.2 items/s | mem 7.9 GB | ETA 47 min
+[   800.9s]   ep 0 b 600/3149 step 600/6298 loss 1.0283 | lr 2.86e-05 | 16.4 items/s | mem 7.9 GB | ETA 46 min
+[   849.3s]   ep 0 b 700/3149 step 700/6298 loss 0.6044 | lr 2.81e-05 | 16.9 items/s | mem 7.9 GB | ETA 45 min
+[  1088.5s] valid ep 0.25 step 787 (197s): lines Top-1/5/10 28.0/56.4/72.0 IFA 3 | line BCE 1.8167 | pairs acc 61.0 debiased 51.9 len-matched 58.3 top3mean 59.7 net@50 +2.1 | fn ROC 0.510 debiased 0.519 | select 128.4 (best -1.0 @ ep -1)
+[  1088.5s] valid ep 0.25 full: {"lines_ALL": {"n": 1081, "median_ifa": 3.0, "top1": 28.02960222016651, "top5": 56.42923219241444, "top10": 71.97039777983349, "rand_top1": 13.64938691005086, "rand_top5": 38.953889562762754, "rand_top10": 54.335168187641415}, "lines_A": {"n": 463, "median_ifa": 1.0, "top1": 40.8207343412527, "top5": 73.4341252699784, "top10": 89.20086393088553, "rand_top1": 20.719036742056662, "rand_top5": 58.18691678314103, "rand_top10": 78.03858587334102}, "lines_B": {"n": 416, "median_ifa": 3.0, "top1": 25.0, "top5": 54.567307692307686, "top10": 71.15384615384616, "rand_top1": 11.570175439733575, "rand_top5": 32.50340767818506, "rand_top10": 46.8833407584975}, "lines_C": {"n": 202, "median_ifa": 17.0, "top1": 4.9504950495049505, "top5": 21.287128712871286, "top10": 34.15841584158416, "rand_top1": 1.7271299765523507, "rand_top5": 8.154428478352797, "rand_top10": 15.351395029448062}, "function": {"n": 2584, "vulnerable": 1093, "auprc": 0.4296154153448184, "roc_auc": 0.5099253649374135, "spearman_with_tokens": -0.9116134684830152}, "pairs": {"n": 1003, "ties": 72, "ranking_acc_ties_half": 61.016949152542374, "ranking_acc_non_tied": 61.868958109559614}, "same_text_flaw_lines": {"n": 4305, "vul_scored_higher_pct": 54.285714285714285}, "pairs_debiased": 51.89431704885344, "extra": {"line_bce": 1.8166742291746414, "pairs": {"n": 1003, "acc": 61.016949152542374, "acc_debiased": 51.894317048853445, "acc_length_matched": 58.307453416149066, "n_length_matched": 644, "acc_top3mean": 59.67098703888335, "length_rule_longer_is_fixed": 73.678963110668, "P-C_at50": 3.389830508474576, "P-R_at50": 1.296111665004985, "net_at50": 2.0937188434695915}, "function": {"n": 2584, "vulnerable": 1093, "roc_auc": 0.5099253649374135, "roc_auc_debiased": 0.5191680733992242, "roc_auc_top3mean": 0.5101517921189841}}}
+[  1088.9s] saved best epoch 0.25
+[  1091.0s] saved checkpoint epoch 0 batch 787 step 787
+[  1097.4s]   ep 0 b 800/3149 step 800/6298 loss 0.8400 | lr 2.76e-05 | 11.0 items/s | mem 7.9 GB | ETA 68 min
+[  1097.9s] saved checkpoint epoch 0 batch 800 step 800
+[  1146.8s]   ep 0 b 900/3149 step 900/6298 loss 0.9533 | lr 2.71e-05 | 11.3 items/s | mem 7.9 GB | ETA 64 min
+[  1195.6s]   ep 0 b 1000/3149 step 1000/6298 loss 1.2282 | lr 2.66e-05 | 11.6 items/s | mem 8.0 GB | ETA 61 min
+[  1243.3s]   ep 0 b 1100/3149 step 1100/6298 loss 1.5041 | lr 2.61e-05 | 12.0 items/s | mem 8.0 GB | ETA 58 min
+[  1292.1s]   ep 0 b 1200/3149 step 1200/6298 loss 1.0033 | lr 2.56e-05 | 12.2 items/s | mem 8.0 GB | ETA 56 min
+[  1292.6s] saved checkpoint epoch 0 batch 1200 step 1200
+[  1341.1s]   ep 0 b 1300/3149 step 1300/6298 loss 0.9146 | lr 2.51e-05 | 12.5 items/s | mem 8.0 GB | ETA 53 min
+[  1389.7s]   ep 0 b 1400/3149 step 1400/6298 loss 1.2253 | lr 2.46e-05 | 12.6 items/s | mem 8.0 GB | ETA 51 min
+[  1438.3s]   ep 0 b 1500/3149 step 1500/6298 loss 1.0273 | lr 2.41e-05 | 12.8 items/s | mem 8.0 GB | ETA 50 min
+[  1670.7s] valid ep 0.50 step 1574 (197s): lines Top-1/5/10 30.3/55.9/69.8 IFA 3 | line BCE 1.6198 | pairs acc 61.6 debiased 53.0 len-matched 57.1 top3mean 62.2 net@50 +1.1 | fn ROC 0.505 debiased 0.499 | select 125.7 (best 128.4 @ ep 0.2499206097173706)
+[  1670.7s] valid ep 0.50 full: {"lines_ALL": {"n": 1081, "median_ifa": 3.0, "top1": 30.3422756706753, "top5": 55.87419056429233, "top10": 69.84273820536541, "rand_top1": 13.64938691005086, "rand_top5": 38.953889562762754, "rand_top10": 54.335168187641415}, "lines_A": {"n": 463, "median_ifa": 1.0, "top1": 41.252699784017274, "top5": 75.80993520518359, "top10": 89.6328293736501, "rand_top1": 20.719036742056662, "rand_top5": 58.18691678314103, "rand_top10": 78.03858587334102}, "lines_B": {"n": 416, "median_ifa": 5.0, "top1": 27.64423076923077, "top5": 47.11538461538461, "top10": 63.70192307692307, "rand_top1": 11.570175439733575, "rand_top5": 32.50340767818506, "rand_top10": 46.8833407584975}, "lines_C": {"n": 202, "median_ifa": 19.5, "top1": 10.891089108910892, "top5": 28.217821782178216, "top10": 37.12871287128713, "rand_top1": 1.7271299765523507, "rand_top5": 8.154428478352797, "rand_top10": 15.351395029448062}, "function": {"n": 2584, "vulnerable": 1093, "auprc": 0.4277073311769239, "roc_auc": 0.5046770405906007, "spearman_with_tokens": -0.9048177007126016}, "pairs": {"n": 1003, "ties": 65, "ranking_acc_ties_half": 61.56530408773679, "ranking_acc_non_tied": 62.36673773987207}, "same_text_flaw_lines": {"n": 4305, "vul_scored_higher_pct": 54.65737514518002}, "pairs_debiased": 53.040877367896314, "extra": {"line_bce": 1.619797236215593, "pairs": {"n": 1003, "acc": 61.56530408773679, "acc_debiased": 53.040877367896314, "acc_length_matched": 57.065217391304344, "n_length_matched": 644, "acc_top3mean": 62.16350947158524, "length_rule_longer_is_fixed": 73.678963110668, "P-C_at50": 3.489531405782652, "P-R_at50": 2.3928215353938187, "net_at50": 1.0967098703888332}, "function": {"n": 2584, "vulnerable": 1093, "roc_auc": 0.5046770405906007, "roc_auc_debiased": 0.4988267512976609, "roc_auc_top3mean": 0.5057152920573149}}}
+[  1672.3s] saved checkpoint epoch 0 batch 1574 step 1574
+[  1684.9s]   ep 0 b 1600/3149 step 1600/6298 loss 0.8789 | lr 2.36e-05 | 10.8 items/s | mem 8.0 GB | ETA 58 min
+[  1685.5s] saved checkpoint epoch 0 batch 1600 step 1600
+[  1733.8s]   ep 0 b 1700/3149 step 1700/6298 loss 0.7743 | lr 2.31e-05 | 11.0 items/s | mem 8.0 GB | ETA 55 min
+[  1782.6s]   ep 0 b 1800/3149 step 1800/6298 loss 1.0016 | lr 2.26e-05 | 11.1 items/s | mem 8.0 GB | ETA 53 min
+[  1830.7s]   ep 0 b 1900/3149 step 1900/6298 loss 0.9918 | lr 2.20e-05 | 11.3 items/s | mem 8.0 GB | ETA 51 min
+[  1879.0s]   ep 0 b 2000/3149 step 2000/6298 loss 0.9024 | lr 2.15e-05 | 11.6 items/s | mem 8.0 GB | ETA 49 min
+[  1879.5s] saved checkpoint epoch 0 batch 2000 step 2000
+[  1928.1s]   ep 0 b 2100/3149 step 2100/6298 loss 0.9576 | lr 2.10e-05 | 11.8 items/s | mem 8.0 GB | ETA 47 min
+[  1976.3s]   ep 0 b 2200/3149 step 2200/6298 loss 1.1645 | lr 2.05e-05 | 11.9 items/s | mem 8.0 GB | ETA 46 min
+[  2024.9s]   ep 0 b 2300/3149 step 2300/6298 loss 0.7736 | lr 2.00e-05 | 12.0 items/s | mem 8.0 GB | ETA 44 min
+[  2252.2s] valid ep 0.75 step 2362 (197s): lines Top-1/5/10 32.7/61.8/75.3 IFA 2 | line BCE 1.9299 | pairs acc 59.1 debiased 53.0 len-matched 55.2 top3mean 57.8 net@50 -0.6 | fn ROC 0.510 debiased 0.512 | select 137.1 (best 128.4 @ ep 0.2499206097173706)
+[  2252.2s] valid ep 0.75 full: {"lines_ALL": {"n": 1081, "median_ifa": 2.0, "top1": 32.65494912118409, "top5": 61.79463459759482, "top10": 75.30064754856615, "rand_top1": 13.64938691005086, "rand_top5": 38.953889562762754, "rand_top10": 54.335168187641415}, "lines_A": {"n": 463, "median_ifa": 1.0, "top1": 46.220302375809936, "top5": 78.18574514038878, "top10": 91.792656587473, "rand_top1": 20.719036742056662, "rand_top5": 58.18691678314103, "rand_top10": 78.03858587334102}, "lines_B": {"n": 416, "median_ifa": 3.0, "top1": 28.846153846153843, "top5": 60.09615384615385, "top10": 74.75961538461539, "rand_top1": 11.570175439733575, "rand_top5": 32.50340767818506, "rand_top10": 46.8833407584975}, "lines_C": {"n": 202, "median_ifa": 18.0, "top1": 9.405940594059405, "top5": 27.722772277227726, "top10": 38.613861386138616, "rand_top1": 1.7271299765523507, "rand_top5": 8.154428478352797, "rand_top10": 15.351395029448062}, "function": {"n": 2584, "vulnerable": 1093, "auprc": 0.43410272775463266, "roc_auc": 0.5100060564668891, "spearman_with_tokens": -0.8096638964964424}, "pairs": {"n": 1003, "ties": 60, "ranking_acc_ties_half": 59.02293120638086, "ranking_acc_non_tied": 59.597030752916226}, "same_text_flaw_lines": {"n": 4305, "vul_scored_higher_pct": 47.52613240418119}, "pairs_debiased": 53.040877367896314, "extra": {"line_bce": 1.9298907044767026, "pairs": {"n": 1003, "acc": 59.0727816550349, "acc_debiased": 53.040877367896314, "acc_length_matched": 55.201863354037265, "n_length_matched": 644, "acc_top3mean": 57.7766699900299, "length_rule_longer_is_fixed": 73.678963110668, "P-C_at50": 2.3928215353938187, "P-R_at50": 2.991026919242273, "net_at50": -0.5982053838484543}, "function": {"n": 2584, "vulnerable": 1093, "roc_auc": 0.5100060564668891, "roc_auc_debiased": 0.5115852173118001, "roc_auc_top3mean": 0.5098784227168439}}}
+[  2252.7s] saved best epoch 0.75
+[  2254.2s] saved checkpoint epoch 0 batch 2362 step 2362
+[  2272.3s]   ep 0 b 2400/3149 step 2400/6298 loss 0.7234 | lr 1.95e-05 | 10.8 items/s | mem 8.0 GB | ETA 48 min
+[  2272.8s] saved checkpoint epoch 0 batch 2400 step 2400
+[  2320.7s]   ep 0 b 2500/3149 step 2500/6298 loss 0.8938 | lr 1.90e-05 | 11.1 items/s | mem 8.0 GB | ETA 46 min
+[  2368.9s]   ep 0 b 2600/3149 step 2600/6298 loss 0.9075 | lr 1.85e-05 | 11.2 items/s | mem 8.0 GB | ETA 44 min
+[  2417.6s]   ep 0 b 2700/3149 step 2700/6298 loss 0.6910 | lr 1.80e-05 | 11.3 items/s | mem 8.0 GB | ETA 42 min
+[  2466.0s]   ep 0 b 2800/3149 step 2800/6298 loss 1.0961 | lr 1.75e-05 | 11.5 items/s | mem 8.0 GB | ETA 41 min
+[  2466.5s] saved checkpoint epoch 0 batch 2800 step 2800
+[  2514.3s]   ep 0 b 2900/3149 step 2900/6298 loss 0.8651 | lr 1.70e-05 | 11.6 items/s | mem 8.0 GB | ETA 39 min
+[  2563.3s]   ep 0 b 3000/3149 step 3000/6298 loss 1.1497 | lr 1.65e-05 | 11.7 items/s | mem 8.0 GB | ETA 38 min
+[  2611.8s]   ep 0 b 3100/3149 step 3100/6298 loss 1.3958 | lr 1.60e-05 | 11.7 items/s | mem 8.0 GB | ETA 36 min
+[  2832.5s] valid ep 1.00 step 3149 (197s): lines Top-1/5/10 34.4/63.6/76.1 IFA 2 | line BCE 2.5433 | pairs acc 61.8 debiased 55.0 len-matched 57.7 top3mean 62.5 net@50 +1.7 | fn ROC 0.516 debiased 0.529 | select 139.8 (best 137.1 @ ep 0.7500793902826294)
+[  2832.5s] valid ep 1.00 full: {"lines_ALL": {"n": 1081, "median_ifa": 2.0, "top1": 34.41258094357077, "top5": 63.64477335800185, "top10": 76.13320999074931, "rand_top1": 13.64938691005086, "rand_top5": 38.953889562762754, "rand_top10": 54.335168187641415}, "lines_A": {"n": 463, "median_ifa": 1.0, "top1": 45.35637149028078, "top5": 81.42548596112312, "top10": 93.73650107991361, "rand_top1": 20.719036742056662, "rand_top5": 58.18691678314103, "rand_top10": 78.03858587334102}, "lines_B": {"n": 416, "median_ifa": 2.0, "top1": 33.41346153846153, "top5": 61.53846153846154, "top10": 74.27884615384616, "rand_top1": 11.570175439733575, "rand_top5": 32.50340767818506, "rand_top10": 46.8833407584975}, "lines_C": {"n": 202, "median_ifa": 16.0, "top1": 11.386138613861387, "top5": 27.22772277227723, "top10": 39.603960396039604, "rand_top1": 1.7271299765523507, "rand_top5": 8.154428478352797, "rand_top10": 15.351395029448062}, "function": {"n": 2584, "vulnerable": 1093, "auprc": 0.43694967969984444, "roc_auc": 0.5164494131608806, "spearman_with_tokens": -0.8793195973736156}, "pairs": {"n": 1003, "ties": 50, "ranking_acc_ties_half": 61.814556331006976, "ranking_acc_non_tied": 62.43441762854145}, "same_text_flaw_lines": {"n": 4305, "vul_scored_higher_pct": 53.786295005807204}, "pairs_debiased": 54.985044865403786, "extra": {"line_bce": 2.543272052322707, "pairs": {"n": 1003, "acc": 61.814556331006976, "acc_debiased": 54.985044865403786, "acc_length_matched": 57.68633540372671, "n_length_matched": 644, "acc_top3mean": 62.46261216350947, "length_rule_longer_is_fixed": 73.678963110668, "P-C_at50": 4.3868394815553335, "P-R_at50": 2.6919242273180455, "net_at50": 1.694915254237288}, "function": {"n": 2584, "vulnerable": 1093, "roc_auc": 0.5164494131608806, "roc_auc_debiased": 0.5286537768851597, "roc_auc_top3mean": 0.5128729068525211}}}
+[  2833.0s] saved best epoch 1.00
+[  2834.6s] saved checkpoint epoch 1 batch 0 step 3149
+[  2834.6s] epoch 1: 3149 batches, starting at batch 0, valid at batches [787, 1574, 2362, 3149]
+[  2859.9s]   ep 1 b 51/3149 step 3200/6298 loss 0.6291 | lr 1.55e-05 | 16.2 items/s | mem 8.0 GB | ETA 26 min
+[  2860.3s] saved checkpoint epoch 1 batch 51 step 3200
+[  2909.2s]   ep 1 b 151/3149 step 3300/6298 loss 1.1677 | lr 1.50e-05 | 14.7 items/s | mem 8.0 GB | ETA 25 min
+[  2957.5s]   ep 1 b 251/3149 step 3400/6298 loss 0.8134 | lr 1.45e-05 | 16.4 items/s | mem 8.0 GB | ETA 24 min
+[  3006.0s]   ep 1 b 351/3149 step 3500/6298 loss 0.9598 | lr 1.40e-05 | 16.5 items/s | mem 8.0 GB | ETA 23 min
+[  3054.7s]   ep 1 b 451/3149 step 3600/6298 loss 1.0420 | lr 1.35e-05 | 16.0 items/s | mem 8.0 GB | ETA 22 min
+[  3055.2s] saved checkpoint epoch 1 batch 451 step 3600
+[  3103.1s]   ep 1 b 551/3149 step 3700/6298 loss 0.6026 | lr 1.30e-05 | 16.4 items/s | mem 8.0 GB | ETA 21 min
+[  3151.3s]   ep 1 b 651/3149 step 3800/6298 loss 1.2524 | lr 1.25e-05 | 16.6 items/s | mem 8.0 GB | ETA 20 min
+[  3198.5s]   ep 1 b 751/3149 step 3900/6298 loss 0.9167 | lr 1.20e-05 | 17.2 items/s | mem 8.0 GB | ETA 19 min
+[  3413.2s] valid ep 1.25 step 3936 (197s): lines Top-1/5/10 35.2/64.4/77.1 IFA 2 | line BCE 2.1393 | pairs acc 61.5 debiased 58.2 len-matched 58.6 top3mean 59.4 net@50 +1.4 | fn ROC 0.518 debiased 0.525 | select 141.4 (best 139.8 @ ep 1.0)
+[  3413.2s] valid ep 1.25 full: {"lines_ALL": {"n": 1081, "median_ifa": 2.0, "top1": 35.152636447733585, "top5": 64.38482886216467, "top10": 77.05827937095282, "rand_top1": 13.64938691005086, "rand_top5": 38.953889562762754, "rand_top10": 54.335168187641415}, "lines_A": {"n": 463, "median_ifa": 1.0, "top1": 47.73218142548596, "top5": 82.50539956803455, "top10": 94.60043196544277, "rand_top1": 20.719036742056662, "rand_top5": 58.18691678314103, "rand_top10": 78.03858587334102}, "lines_B": {"n": 416, "median_ifa": 3.0, "top1": 30.528846153846157, "top5": 60.09615384615385, "top10": 75.24038461538461, "rand_top1": 11.570175439733575, "rand_top5": 32.50340767818506, "rand_top10": 46.8833407584975}, "lines_C": {"n": 202, "median_ifa": 15.0, "top1": 15.841584158415841, "top5": 31.683168316831683, "top10": 40.5940594059406, "rand_top1": 1.7271299765523507, "rand_top5": 8.154428478352797, "rand_top10": 15.351395029448062}, "function": {"n": 2584, "vulnerable": 1093, "auprc": 0.4401747131946701, "roc_auc": 0.518483882864126, "spearman_with_tokens": -0.7734246981158639}, "pairs": {"n": 1003, "ties": 36, "ranking_acc_ties_half": 61.51545363908275, "ranking_acc_non_tied": 61.94415718717684}, "same_text_flaw_lines": {"n": 4305, "vul_scored_higher_pct": 48.257839721254356}, "pairs_debiased": 58.22532402791625, "extra": {"line_bce": 2.1393397987553704, "pairs": {"n": 1003, "acc": 61.51545363908275, "acc_debiased": 58.225324027916244, "acc_length_matched": 58.618012422360245, "n_length_matched": 644, "acc_top3mean": 59.37188434695913, "length_rule_longer_is_fixed": 73.678963110668, "P-C_at50": 4.885343968095713, "P-R_at50": 3.489531405782652, "net_at50": 1.395812562313061}, "function": {"n": 2584, "vulnerable": 1093, "roc_auc": 0.518483882864126, "roc_auc_debiased": 0.5248729338519681, "roc_auc_top3mean": 0.5156437251137198}}}
+[  3413.7s] saved best epoch 1.25
+[  3415.3s] saved checkpoint epoch 1 batch 787 step 3936
+[  3447.1s]   ep 1 b 851/3149 step 4000/6298 loss 1.1144 | lr 1.15e-05 | 11.4 items/s | mem 8.0 GB | ETA 28 min
+[  3447.6s] saved checkpoint epoch 1 batch 851 step 4000
+[  3496.3s]   ep 1 b 951/3149 step 4100/6298 loss 0.5572 | lr 1.10e-05 | 11.7 items/s | mem 8.0 GB | ETA 25 min
+[  3545.3s]   ep 1 b 1051/3149 step 4200/6298 loss 0.6692 | lr 1.05e-05 | 11.9 items/s | mem 8.0 GB | ETA 24 min
+[  3593.4s]   ep 1 b 1151/3149 step 4300/6298 loss 1.3472 | lr 1.00e-05 | 12.1 items/s | mem 8.0 GB | ETA 22 min
+[  3641.2s]   ep 1 b 1251/3149 step 4400/6298 loss 0.5793 | lr 9.52e-06 | 12.6 items/s | mem 8.0 GB | ETA 20 min
+[  3641.6s] saved checkpoint epoch 1 batch 1251 step 4400
+[  3690.2s]   ep 1 b 1351/3149 step 4500/6298 loss 0.5912 | lr 9.01e-06 | 12.8 items/s | mem 8.0 GB | ETA 19 min
+[  3738.9s]   ep 1 b 1451/3149 step 4600/6298 loss 0.6990 | lr 8.51e-06 | 13.0 items/s | mem 8.0 GB | ETA 18 min
+[  3787.6s]   ep 1 b 1551/3149 step 4700/6298 loss 1.1946 | lr 8.01e-06 | 13.1 items/s | mem 8.0 GB | ETA 16 min
+[  3996.8s] valid ep 1.50 step 4723 (198s): lines Top-1/5/10 37.1/64.3/77.3 IFA 2 | line BCE 2.3179 | pairs acc 56.6 debiased 53.2 len-matched 52.5 top3mean 58.8 net@50 +0.9 | fn ROC 0.518 debiased 0.519 | select 141.6 (best 141.4 @ ep 1.2499206097173705)
+[  3996.8s] valid ep 1.50 full: {"lines_ALL": {"n": 1081, "median_ifa": 2.0, "top1": 37.09528214616096, "top5": 64.29232192414432, "top10": 77.33580018501388, "rand_top1": 13.64938691005086, "rand_top5": 38.953889562762754, "rand_top10": 54.335168187641415}, "lines_A": {"n": 463, "median_ifa": 1.0, "top1": 49.24406047516199, "top5": 81.20950323974083, "top10": 93.08855291576674, "rand_top1": 20.719036742056662, "rand_top5": 58.18691678314103, "rand_top10": 78.03858587334102}, "lines_B": {"n": 416, "median_ifa": 3.0, "top1": 34.375, "top5": 59.855769230769226, "top10": 75.0, "rand_top1": 11.570175439733575, "rand_top5": 32.50340767818506, "rand_top10": 46.8833407584975}, "lines_C": {"n": 202, "median_ifa": 13.0, "top1": 14.85148514851485, "top5": 34.65346534653465, "top10": 46.03960396039604, "rand_top1": 1.7271299765523507, "rand_top5": 8.154428478352797, "rand_top10": 15.351395029448062}, "function": {"n": 2584, "vulnerable": 1093, "auprc": 0.4387944014801213, "roc_auc": 0.5177717724462052, "spearman_with_tokens": -0.7692720905883702}, "pairs": {"n": 1003, "ties": 49, "ranking_acc_ties_half": 56.580259222333, "ranking_acc_non_tied": 56.91823899371069}, "same_text_flaw_lines": {"n": 4305, "vul_scored_higher_pct": 48.94308943089431}, "pairs_debiased": 53.240279162512465, "extra": {"line_bce": 2.317864094890208, "pairs": {"n": 1003, "acc": 56.580259222333, "acc_debiased": 53.24027916251246, "acc_length_matched": 52.484472049689444, "n_length_matched": 644, "acc_top3mean": 58.82352941176471, "length_rule_longer_is_fixed": 73.678963110668, "P-C_at50": 4.685942173479561, "P-R_at50": 3.788634097706879, "net_at50": 0.897308075772682}, "function": {"n": 2584, "vulnerable": 1093, "roc_auc": 0.5177717724462052, "roc_auc_debiased": 0.5188977721160756, "roc_auc_top3mean": 0.5151049634188172}}}
+[  3997.2s] saved best epoch 1.50
+[  3998.8s] saved checkpoint epoch 1 batch 1574 step 4723
+[  4036.7s]   ep 1 b 1651/3149 step 4800/6298 loss 0.7316 | lr 7.51e-06 | 10.9 items/s | mem 8.0 GB | ETA 18 min
+[  4037.2s] saved checkpoint epoch 1 batch 1651 step 4800
+[  4085.0s]   ep 1 b 1751/3149 step 4900/6298 loss 0.8836 | lr 7.01e-06 | 11.3 items/s | mem 8.0 GB | ETA 17 min
+[  4133.4s]   ep 1 b 1851/3149 step 5000/6298 loss 0.8813 | lr 6.51e-06 | 11.5 items/s | mem 8.0 GB | ETA 15 min
+[  4181.0s]   ep 1 b 1951/3149 step 5100/6298 loss 0.7497 | lr 6.01e-06 | 11.8 items/s | mem 8.0 GB | ETA 14 min
+[  4229.9s]   ep 1 b 2051/3149 step 5200/6298 loss 0.8183 | lr 5.50e-06 | 12.0 items/s | mem 8.0 GB | ETA 12 min
+[  4230.4s] saved checkpoint epoch 1 batch 2051 step 5200
+[  4279.4s]   ep 1 b 2151/3149 step 5300/6298 loss 1.3227 | lr 5.00e-06 | 12.1 items/s | mem 8.0 GB | ETA 11 min
+[  4328.5s]   ep 1 b 2251/3149 step 5400/6298 loss 1.1838 | lr 4.50e-06 | 12.3 items/s | mem 8.0 GB | ETA 10 min
+[  4376.9s]   ep 1 b 2351/3149 step 5500/6298 loss 0.8933 | lr 4.00e-06 | 12.3 items/s | mem 8.0 GB | ETA 9 min
+[  4577.2s] valid ep 1.75 step 5511 (195s): lines Top-1/5/10 36.9/65.8/77.2 IFA 2 | line BCE 2.3573 | pairs acc 58.3 debiased 55.6 len-matched 54.5 top3mean 60.1 net@50 +2.3 | fn ROC 0.522 debiased 0.527 | select 143.0 (best 141.6 @ ep 1.4998412194347412)
+[  4577.2s] valid ep 1.75 full: {"lines_ALL": {"n": 1081, "median_ifa": 2.0, "top1": 36.91026827012026, "top5": 65.77243293246994, "top10": 77.24329324699353, "rand_top1": 13.64938691005086, "rand_top5": 38.953889562762754, "rand_top10": 54.335168187641415}, "lines_A": {"n": 463, "median_ifa": 1.0, "top1": 49.0280777537797, "top5": 84.01727861771057, "top10": 93.9524838012959, "rand_top1": 20.719036742056662, "rand_top5": 58.18691678314103, "rand_top10": 78.03858587334102}, "lines_B": {"n": 416, "median_ifa": 2.0, "top1": 33.41346153846153, "top5": 62.980769230769226, "top10": 74.27884615384616, "rand_top1": 11.570175439733575, "rand_top5": 32.50340767818506, "rand_top10": 46.8833407584975}, "lines_C": {"n": 202, "median_ifa": 14.5, "top1": 16.33663366336634, "top5": 29.7029702970297, "top10": 45.04950495049505, "rand_top1": 1.7271299765523507, "rand_top5": 8.154428478352797, "rand_top10": 15.351395029448062}, "function": {"n": 2584, "vulnerable": 1093, "auprc": 0.4386395765095008, "roc_auc": 0.522063764103376, "spearman_with_tokens": -0.7563925764225884}, "pairs": {"n": 1003, "ties": 58, "ranking_acc_ties_half": 58.32502492522432, "ranking_acc_non_tied": 58.83597883597883}, "same_text_flaw_lines": {"n": 4305, "vul_scored_higher_pct": 50.5458768873403}, "pairs_debiased": 55.583250249252245, "extra": {"line_bce": 2.357346844407166, "pairs": {"n": 1003, "acc": 58.32502492522432, "acc_debiased": 55.583250249252245, "acc_length_matched": 54.503105590062106, "n_length_matched": 644, "acc_top3mean": 60.11964107676969, "length_rule_longer_is_fixed": 73.678963110668, "P-C_at50": 6.281156530408774, "P-R_at50": 3.988035892323031, "net_at50": 2.293120638085743}, "function": {"n": 2584, "vulnerable": 1093, "roc_auc": 0.522063764103376, "roc_auc_debiased": 0.526964470568455, "roc_auc_top3mean": 0.5151469966490004}}}
+[  4577.7s] saved best epoch 1.75
+[  4579.3s] saved checkpoint epoch 1 batch 2362 step 5511
+[  4622.3s]   ep 1 b 2451/3149 step 5600/6298 loss 0.8653 | lr 3.50e-06 | 11.0 items/s | mem 8.0 GB | ETA 8 min
+[  4622.8s] saved checkpoint epoch 1 batch 2451 step 5600
+[  4670.8s]   ep 1 b 2551/3149 step 5700/6298 loss 0.6872 | lr 3.00e-06 | 11.2 items/s | mem 8.0 GB | ETA 7 min
+[  4719.1s]   ep 1 b 2651/3149 step 5800/6298 loss 0.5597 | lr 2.50e-06 | 11.3 items/s | mem 8.0 GB | ETA 6 min
+[  4767.6s]   ep 1 b 2751/3149 step 5900/6298 loss 0.7453 | lr 2.00e-06 | 11.4 items/s | mem 8.0 GB | ETA 5 min
+[  4815.6s]   ep 1 b 2851/3149 step 6000/6298 loss 0.8973 | lr 1.49e-06 | 11.5 items/s | mem 8.0 GB | ETA 3 min
+[  4816.1s] saved checkpoint epoch 1 batch 2851 step 6000
+[  4864.6s]   ep 1 b 2951/3149 step 6100/6298 loss 1.0802 | lr 9.93e-07 | 11.5 items/s | mem 8.0 GB | ETA 2 min
+[  4913.1s]   ep 1 b 3051/3149 step 6200/6298 loss 0.5379 | lr 4.91e-07 | 11.7 items/s | mem 8.0 GB | ETA 1 min
+[  5156.4s] valid ep 2.00 step 6298 (196s): lines Top-1/5/10 37.7/64.8/77.0 IFA 2 | line BCE 2.3191 | pairs acc 58.6 debiased 56.7 len-matched 55.1 top3mean 59.2 net@50 +1.8 | fn ROC 0.522 debiased 0.525 | select 141.7 (best 143.0 @ ep 1.7500793902826293)
+[  5156.4s] valid ep 2.00 full: {"lines_ALL": {"n": 1081, "median_ifa": 2.0, "top1": 37.74283071230342, "top5": 64.75485661424607, "top10": 76.96577243293247, "rand_top1": 13.64938691005086, "rand_top5": 38.953889562762754, "rand_top10": 54.335168187641415}, "lines_A": {"n": 463, "median_ifa": 1.0, "top1": 49.676025917926566, "top5": 82.28941684665226, "top10": 93.73650107991361, "rand_top1": 20.719036742056662, "rand_top5": 58.18691678314103, "rand_top10": 78.03858587334102}, "lines_B": {"n": 416, "median_ifa": 3.0, "top1": 34.13461538461539, "top5": 60.09615384615385, "top10": 73.3173076923077, "rand_top1": 11.570175439733575, "rand_top5": 32.50340767818506, "rand_top10": 46.8833407584975}, "lines_C": {"n": 202, "median_ifa": 13.0, "top1": 17.82178217821782, "top5": 34.15841584158416, "top10": 46.03960396039604, "rand_top1": 1.7271299765523507, "rand_top5": 8.154428478352797, "rand_top10": 15.351395029448062}, "function": {"n": 2584, "vulnerable": 1093, "auprc": 0.44000686589478044, "roc_auc": 0.522109479076349, "spearman_with_tokens": -0.7238780872491819}, "pairs": {"n": 1003, "ties": 44, "ranking_acc_ties_half": 58.62412761714856, "ranking_acc_non_tied": 59.019812304483835}, "same_text_flaw_lines": {"n": 4305, "vul_scored_higher_pct": 50.18583042973287}, "pairs_debiased": 56.729810568295115, "extra": {"line_bce": 2.3190999321256474, "pairs": {"n": 1003, "acc": 58.62412761714856, "acc_debiased": 56.729810568295115, "acc_length_matched": 55.12422360248447, "n_length_matched": 644, "acc_top3mean": 59.222333000997004, "length_rule_longer_is_fixed": 73.678963110668, "P-C_at50": 5.383848454636091, "P-R_at50": 3.589232303090728, "net_at50": 1.7946161515453634}, "function": {"n": 2584, "vulnerable": 1093, "roc_auc": 0.522109479076349, "roc_auc_debiased": 0.5245084413157812, "roc_auc_top3mean": 0.5176867855501414}}}
+[  5158.1s] saved checkpoint epoch 2 batch 0 step 6298
+[  5529.6s] test: {"lines_ALL": {"n": 1037, "median_ifa": 3.0, "top1": 27.86885245901639, "top5": 56.123432979749275, "top10": 69.62391513982642, "rand_top1": 11.433263614523854, "rand_top5": 34.327928788284964, "rand_top10": 48.667007900367594}, "lines_A": {"n": 417, "median_ifa": 1.0, "top1": 41.726618705035975, "top5": 81.29496402877699, "top10": 92.56594724220624, "rand_top1": 20.472506752819026, "rand_top5": 57.83867857756011, "rand_top10": 77.4444301348686}, "lines_B": {"n": 389, "median_ifa": 5.0, "top1": 24.164524421593832, "top5": 48.84318766066838, "top10": 67.3521850899743, "rand_top1": 7.610360620416337, "rand_top5": 25.162195294348066, "rand_top10": 38.59119905130036}, "lines_C": {"n": 231, "median_ifa": 22.0, "top1": 9.090909090909092, "top5": 22.943722943722943, "top10": 32.03463203463203, "rand_top1": 1.5533713030032332, "rand_top5": 7.321381892240428, "rand_top10": 13.685642404697623}, "function": {"n": 2606, "vulnerable": 1061, "auprc": 0.43145108715770675, "roc_auc": 0.5243520645175065, "spearman_with_tokens": -0.8109706840473924}, "pairs": {"n": 979, "ties": 54, "ranking_acc_ties_half": 58.5291113381001, "ranking_acc_non_tied": 59.027027027027025}, "same_text_flaw_lines": {"n": 3737, "vul_scored_higher_pct": 49.464811345999465}, "extra": {"line_bce": 1.3078949361603784, "pairs": {"n": 979, "acc": 58.5291113381001, "acc_debiased": 52.19611848825332, "acc_length_matched": 53.69496855345912, "n_length_matched": 636, "acc_top3mean": 57.660878447395305, "length_rule_longer_is_fixed": 81.15423901940756, "P-C_at50": 4.290091930541369, "P-R_at50": 2.8600612870275794, "net_at50": 1.4300306435137897}, "function": {"n": 2606, "vulnerable": 1061, "roc_auc": 0.5243520645175065, "roc_auc_debiased": 0.5143700301053229, "roc_auc_top3mean": 0.5235943986408377}}}
+[  5531.1s] DONE
+[     7.7s] PrimeVul: 564 pairs, 25911 test functions
+Loading weights:   0%|          | 0/134 [00:00<?, ?it/s]Loading weights: 100%|██████████| 134/134 [00:00<00:00, 5627.23it/s]
+[transformers] [1mModernBertModel LOAD REPORT[0m from: answerdotai/ModernBERT-base
+Key               | Status     |  | 
+------------------+------------+--+-
+decoder.bias      | UNEXPECTED |  | 
+head.dense.weight | UNEXPECTED |  | 
+head.norm.weight  | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (10246 > 8192). Running this sequence through the model will result in indexing errors
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (733 > 512). Running this sequence through the model will result in indexing errors
+[   189.4s] paired: {"lines_ALL": {"n": 357, "median_ifa": 6.0, "top1": 16.80672268907563, "top5": 42.857142857142854, "top10": 58.543417366946784, "rand_top1": 5.918633195040236, "rand_top5": 22.60531487329123, "rand_top10": 36.6916096025223}, "lines_A": {"n": 103, "median_ifa": 2.0, "top1": 29.126213592233007, "top5": 75.72815533980582, "top10": 90.29126213592234, "rand_top1": 9.930408281595495, "rand_top5": 39.142328736711626, "rand_top10": 63.513065869009964}, "lines_B": {"n": 122, "median_ifa": 6.0, "top1": 15.573770491803279, "top5": 40.16393442622951, "top10": 64.75409836065575, "rand_top1": 6.902678616126441, "rand_top5": 23.858983096552265, "rand_top10": 36.89306172979458}, "lines_C": {"n": 132, "median_ifa": 22.0, "top1": 8.333333333333332, "top5": 19.696969696969695, "top10": 28.030303030303028, "rand_top1": 1.8787364125575947, "rand_top5": 8.542739485638622, "rand_top10": 15.576555398162863}, "function": {"n": 1128, "vulnerable": 564, "auprc": 0.5191452428231516, "roc_auc": 0.518228773703536, "spearman_with_tokens": -0.7419598885997144}, "pairs": {"n": 564, "ties": 33, "ranking_acc_ties_half": 62.677304964539005, "ranking_acc_non_tied": 63.465160075329564}, "same_text_flaw_lines": {"n": 200, "vul_scored_higher_pct": 51.74999999999999}}
+[   891.7s] full test: {"n": 25911, "vulnerable": 695, "auprc": 0.017173579357529146, "roc_auc": 0.22760894076616878, "spearman_with_tokens": -0.8051326156222832}
+[   891.8s] DONE primevul
+[     7.3s] data /content/exp5/secvul_lines -> out /content/exp5/slide_ModernBERT-base_2048_s1_base2
+[     9.4s] dropped 679 train functions overlapping the PrimeVul test set (incl. pair partners)
+[     9.8s] train 18795 functions (add-only fixes dropped) | valid 2584 | test 2606 | device cuda
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (8233 > 8192). Running this sequence through the model will result in indexing errors
+[   475.7s] training views built in 466s
+[   476.9s] train cache written (125 MB)
+[   476.9s] 25066 training views | lines: 45320 flaw / 1929087 clean | pos_weight 20.0
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (730 > 512). Running this sequence through the model will result in indexing errors
+Loading weights:   0%|          | 0/134 [00:00<?, ?it/s]Loading weights: 100%|██████████| 134/134 [00:00<00:00, 4876.34it/s]
+[transformers] [1mModernBertModel LOAD REPORT[0m from: answerdotai/ModernBERT-base
+Key               | Status     |  | 
+------------------+------------+--+-
+decoder.bias      | UNEXPECTED |  | 
+head.norm.weight  | UNEXPECTED |  | 
+head.dense.weight | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[   503.1s] 3149 batches/epoch, 6298 steps total, warmup 314 | valid at batches [787, 1574, 2362, 3149] of every epoch | select top5_top10 | patience 0 epochs | amp torch.bfloat16 | NVIDIA L4
+[   503.2s] epoch 0: 3149 batches, starting at batch 0, valid at batches [787, 1574, 2362, 3149]
+[   551.6s]   ep 0 b 100/3149 step 100/6298 loss 1.1509 | lr 9.55e-06 | 14.3 items/s | mem 7.9 GB | ETA 50 min
+[   600.4s]   ep 0 b 200/3149 step 200/6298 loss 0.9347 | lr 1.91e-05 | 13.4 items/s | mem 7.9 GB | ETA 49 min
+[   648.5s]   ep 0 b 300/3149 step 300/6298 loss 0.9153 | lr 2.87e-05 | 14.0 items/s | mem 7.9 GB | ETA 48 min
+[   696.6s]   ep 0 b 400/3149 step 400/6298 loss 1.1633 | lr 2.96e-05 | 14.9 items/s | mem 7.9 GB | ETA 48 min
+[   697.0s] saved checkpoint epoch 0 batch 400 step 400
+[   745.3s]   ep 0 b 500/3149 step 500/6298 loss 0.9070 | lr 2.91e-05 | 15.4 items/s | mem 7.9 GB | ETA 47 min
+[   794.1s]   ep 0 b 600/3149 step 600/6298 loss 1.1948 | lr 2.86e-05 | 15.1 items/s | mem 7.9 GB | ETA 46 min
+[   842.3s]   ep 0 b 700/3149 step 700/6298 loss 0.8639 | lr 2.81e-05 | 15.3 items/s | mem 7.9 GB | ETA 45 min
+[  1080.1s] valid ep 0.25 step 787 (196s): lines Top-1/5/10 28.1/55.9/71.7 IFA 3 | line BCE 1.4608 | pairs acc 60.0 debiased 53.6 len-matched 55.7 top3mean 60.4 net@50 +1.5 | fn ROC 0.514 debiased 0.520 | select 127.6 (best -1.0 @ ep -1)
+[  1080.1s] valid ep 0.25 full: {"lines_ALL": {"n": 1081, "median_ifa": 3.0, "top1": 28.122109158186863, "top5": 55.87419056429233, "top10": 71.69287696577243, "rand_top1": 13.64938691005086, "rand_top5": 38.953889562762754, "rand_top10": 54.335168187641415}, "lines_A": {"n": 463, "median_ifa": 1.0, "top1": 41.90064794816415, "top5": 75.80993520518359, "top10": 91.14470842332614, "rand_top1": 20.719036742056662, "rand_top5": 58.18691678314103, "rand_top10": 78.03858587334102}, "lines_B": {"n": 416, "median_ifa": 4.0, "top1": 24.03846153846154, "top5": 52.88461538461539, "top10": 71.15384615384616, "rand_top1": 11.570175439733575, "rand_top5": 32.50340767818506, "rand_top10": 46.8833407584975}, "lines_C": {"n": 202, "median_ifa": 22.0, "top1": 4.9504950495049505, "top5": 16.33663366336634, "top10": 28.217821782178216, "rand_top1": 1.7271299765523507, "rand_top5": 8.154428478352797, "rand_top10": 15.351395029448062}, "function": {"n": 2584, "vulnerable": 1093, "auprc": 0.436215901075176, "roc_auc": 0.5135779605967614, "spearman_with_tokens": -0.8725590078362561}, "pairs": {"n": 1003, "ties": 76, "ranking_acc_ties_half": 60.019940179461614, "ranking_acc_non_tied": 60.84142394822006}, "same_text_flaw_lines": {"n": 4305, "vul_scored_higher_pct": 49.930313588850176}, "pairs_debiased": 53.639082751744766, "extra": {"line_bce": 1.4608169274059082, "pairs": {"n": 1003, "acc": 60.019940179461614, "acc_debiased": 53.63908275174477, "acc_length_matched": 55.66770186335403, "n_length_matched": 644, "acc_top3mean": 60.36889332003989, "length_rule_longer_is_fixed": 73.678963110668, "P-C_at50": 3.589232303090728, "P-R_at50": 2.0937188434695915, "net_at50": 1.4955134596211366}, "function": {"n": 2584, "vulnerable": 1093, "roc_auc": 0.5135779605967614, "roc_auc_debiased": 0.5202655395624739, "roc_auc_top3mean": 0.5121715348510705}}}
+[  1080.4s] saved best epoch 0.25
+[  1082.5s] saved checkpoint epoch 0 batch 787 step 787
+[  1088.7s]   ep 0 b 800/3149 step 800/6298 loss 1.0081 | lr 2.76e-05 | 10.4 items/s | mem 7.9 GB | ETA 67 min
+[  1089.2s] saved checkpoint epoch 0 batch 800 step 800
+[  1138.1s]   ep 0 b 900/3149 step 900/6298 loss 0.9399 | lr 2.71e-05 | 10.6 items/s | mem 7.9 GB | ETA 63 min
+[  1186.2s]   ep 0 b 1000/3149 step 1000/6298 loss 1.0414 | lr 2.66e-05 | 11.2 items/s | mem 7.9 GB | ETA 60 min
+[  1234.9s]   ep 0 b 1100/3149 step 1100/6298 loss 1.1762 | lr 2.61e-05 | 11.4 items/s | mem 7.9 GB | ETA 58 min
+[  1282.7s]   ep 0 b 1200/3149 step 1200/6298 loss 1.0034 | lr 2.56e-05 | 12.0 items/s | mem 7.9 GB | ETA 55 min
+[  1283.2s] saved checkpoint epoch 0 batch 1200 step 1200
+[  1331.5s]   ep 0 b 1300/3149 step 1300/6298 loss 0.9230 | lr 2.51e-05 | 12.5 items/s | mem 7.9 GB | ETA 53 min
+[  1379.1s]   ep 0 b 1400/3149 step 1400/6298 loss 0.8032 | lr 2.46e-05 | 13.2 items/s | mem 7.9 GB | ETA 51 min
+[  1428.1s]   ep 0 b 1500/3149 step 1500/6298 loss 0.9017 | lr 2.41e-05 | 13.3 items/s | mem 7.9 GB | ETA 49 min
+[  1660.8s] valid ep 0.50 step 1574 (196s): lines Top-1/5/10 30.2/58.6/74.4 IFA 3 | line BCE 1.5604 | pairs acc 60.3 debiased 54.0 len-matched 55.6 top3mean 58.7 net@50 +0.6 | fn ROC 0.508 debiased 0.508 | select 132.9 (best 127.6 @ ep 0.2499206097173706)
+[  1660.8s] valid ep 0.50 full: {"lines_ALL": {"n": 1081, "median_ifa": 3.0, "top1": 30.249768732654946, "top5": 58.556891766882515, "top10": 74.37557816836264, "rand_top1": 13.64938691005086, "rand_top5": 38.953889562762754, "rand_top10": 54.335168187641415}, "lines_A": {"n": 463, "median_ifa": 1.0, "top1": 41.68466522678186, "top5": 77.10583153347731, "top10": 93.08855291576674, "rand_top1": 20.719036742056662, "rand_top5": 58.18691678314103, "rand_top10": 78.03858587334102}, "lines_B": {"n": 416, "median_ifa": 3.0, "top1": 27.163461538461537, "top5": 55.52884615384615, "top10": 72.59615384615384, "rand_top1": 11.570175439733575, "rand_top5": 32.50340767818506, "rand_top10": 46.8833407584975}, "lines_C": {"n": 202, "median_ifa": 17.0, "top1": 10.396039603960396, "top5": 22.277227722772277, "top10": 35.148514851485146, "rand_top1": 1.7271299765523507, "rand_top5": 8.154428478352797, "rand_top10": 15.351395029448062}, "function": {"n": 2584, "vulnerable": 1093, "auprc": 0.42584719016428146, "roc_auc": 0.5078025334072136, "spearman_with_tokens": -0.8696180737511285}, "pairs": {"n": 1003, "ties": 81, "ranking_acc_ties_half": 60.26919242273181, "ranking_acc_non_tied": 61.17136659436009}, "same_text_flaw_lines": {"n": 4305, "vul_scored_higher_pct": 51.92799070847851}, "pairs_debiased": 54.03788634097707, "extra": {"line_bce": 1.560387171475488, "pairs": {"n": 1003, "acc": 60.26919242273181, "acc_debiased": 54.03788634097707, "acc_length_matched": 55.590062111801245, "n_length_matched": 644, "acc_top3mean": 58.67397806580259, "length_rule_longer_is_fixed": 73.678963110668, "P-C_at50": 2.8913260219341974, "P-R_at50": 2.293120638085743, "net_at50": 0.5982053838484547}, "function": {"n": 2584, "vulnerable": 1093, "roc_auc": 0.5078025334072136, "roc_auc_debiased": 0.5081532194079389, "roc_auc_top3mean": 0.5048243103021913}}}
+[  1661.3s] saved best epoch 0.50
+[  1662.9s] saved checkpoint epoch 0 batch 1574 step 1574
+[  1675.8s]   ep 0 b 1600/3149 step 1600/6298 loss 0.7263 | lr 2.36e-05 | 11.1 items/s | mem 8.0 GB | ETA 57 min
+[  1676.3s] saved checkpoint epoch 0 batch 1600 step 1600
+[  1725.3s]   ep 0 b 1700/3149 step 1700/6298 loss 1.0953 | lr 2.31e-05 | 11.2 items/s | mem 8.0 GB | ETA 55 min
+[  1773.6s]   ep 0 b 1800/3149 step 1800/6298 loss 0.6567 | lr 2.26e-05 | 11.5 items/s | mem 8.0 GB | ETA 53 min
+[  1822.4s]   ep 0 b 1900/3149 step 1900/6298 loss 1.2563 | lr 2.20e-05 | 11.6 items/s | mem 8.0 GB | ETA 51 min
+[  1871.0s]   ep 0 b 2000/3149 step 2000/6298 loss 0.6733 | lr 2.15e-05 | 11.7 items/s | mem 8.0 GB | ETA 49 min
+[  1871.5s] saved checkpoint epoch 0 batch 2000 step 2000
+[  1920.3s]   ep 0 b 2100/3149 step 2100/6298 loss 0.9340 | lr 2.10e-05 | 11.8 items/s | mem 8.0 GB | ETA 47 min
+[  1968.4s]   ep 0 b 2200/3149 step 2200/6298 loss 0.7241 | lr 2.05e-05 | 12.0 items/s | mem 8.0 GB | ETA 45 min
+[  2015.8s]   ep 0 b 2300/3149 step 2300/6298 loss 0.8342 | lr 2.00e-05 | 12.2 items/s | mem 8.0 GB | ETA 44 min
+[  2243.0s] valid ep 0.75 step 2362 (197s): lines Top-1/5/10 34.7/64.7/79.0 IFA 2 | line BCE 2.2999 | pairs acc 58.1 debiased 53.2 len-matched 53.9 top3mean 58.0 net@50 +1.0 | fn ROC 0.511 debiased 0.515 | select 143.7 (best 132.9 @ ep 0.4998412194347412)
+[  2243.0s] valid ep 0.75 full: {"lines_ALL": {"n": 1081, "median_ifa": 2.0, "top1": 34.69010175763182, "top5": 64.66234967622572, "top10": 79.0009250693802, "rand_top1": 13.64938691005086, "rand_top5": 38.953889562762754, "rand_top10": 54.335168187641415}, "lines_A": {"n": 463, "median_ifa": 1.0, "top1": 48.16414686825054, "top5": 83.8012958963283, "top10": 95.68034557235421, "rand_top1": 20.719036742056662, "rand_top5": 58.18691678314103, "rand_top10": 78.03858587334102}, "lines_B": {"n": 416, "median_ifa": 2.0, "top1": 31.490384615384613, "top5": 60.33653846153846, "top10": 78.84615384615384, "rand_top1": 11.570175439733575, "rand_top5": 32.50340767818506, "rand_top10": 46.8833407584975}, "lines_C": {"n": 202, "median_ifa": 14.5, "top1": 10.396039603960396, "top5": 29.7029702970297, "top10": 41.089108910891085, "rand_top1": 1.7271299765523507, "rand_top5": 8.154428478352797, "rand_top10": 15.351395029448062}, "function": {"n": 2584, "vulnerable": 1093, "auprc": 0.42841748676420804, "roc_auc": 0.5107166328253141, "spearman_with_tokens": -0.7625107554635961}, "pairs": {"n": 1003, "ties": 39, "ranking_acc_ties_half": 58.07577268195414, "ranking_acc_non_tied": 58.40248962655602}, "same_text_flaw_lines": {"n": 4305, "vul_scored_higher_pct": 51.3704994192799}, "pairs_debiased": 53.190428713858424, "extra": {"line_bce": 2.29994952751726, "pairs": {"n": 1003, "acc": 58.07577268195414, "acc_debiased": 53.19042871385843, "acc_length_matched": 53.881987577639755, "n_length_matched": 644, "acc_top3mean": 57.97607178464607, "length_rule_longer_is_fixed": 73.678963110668, "P-C_at50": 4.087736789631107, "P-R_at50": 3.090727816550349, "net_at50": 0.9970089730807575}, "function": {"n": 2584, "vulnerable": 1093, "roc_auc": 0.5107166328253141, "roc_auc_debiased": 0.5154550357957443, "roc_auc_top3mean": 0.5080418466885486}}}
+[  2243.5s] saved best epoch 0.75
+[  2245.7s] saved checkpoint epoch 0 batch 2362 step 2362
+[  2264.3s]   ep 0 b 2400/3149 step 2400/6298 loss 0.9607 | lr 1.95e-05 | 10.8 items/s | mem 8.0 GB | ETA 48 min
+[  2264.9s] saved checkpoint epoch 0 batch 2400 step 2400
+[  2313.4s]   ep 0 b 2500/3149 step 2500/6298 loss 0.5581 | lr 1.90e-05 | 11.0 items/s | mem 8.0 GB | ETA 46 min
+[  2361.7s]   ep 0 b 2600/3149 step 2600/6298 loss 0.7403 | lr 1.85e-05 | 11.1 items/s | mem 8.0 GB | ETA 44 min
+[  2410.2s]   ep 0 b 2700/3149 step 2700/6298 loss 0.8738 | lr 1.80e-05 | 11.3 items/s | mem 8.0 GB | ETA 42 min
+[  2459.4s]   ep 0 b 2800/3149 step 2800/6298 loss 1.0730 | lr 1.75e-05 | 11.3 items/s | mem 8.0 GB | ETA 41 min
+[  2460.0s] saved checkpoint epoch 0 batch 2800 step 2800
+[  2508.3s]   ep 0 b 2900/3149 step 2900/6298 loss 1.0727 | lr 1.70e-05 | 11.4 items/s | mem 8.0 GB | ETA 39 min
+[  2556.5s]   ep 0 b 3000/3149 step 3000/6298 loss 0.9586 | lr 1.65e-05 | 11.6 items/s | mem 8.0 GB | ETA 38 min
+[  2604.7s]   ep 0 b 3100/3149 step 3100/6298 loss 1.2970 | lr 1.60e-05 | 11.8 items/s | mem 8.0 GB | ETA 36 min
+[  2825.1s] valid ep 1.00 step 3149 (197s): lines Top-1/5/10 37.4/64.4/76.3 IFA 2 | line BCE 1.8202 | pairs acc 60.4 debiased 53.6 len-matched 57.6 top3mean 61.9 net@50 +0.7 | fn ROC 0.508 debiased 0.503 | select 140.7 (best 143.7 @ ep 0.7500793902826294)
+[  2825.1s] valid ep 1.00 full: {"lines_ALL": {"n": 1081, "median_ifa": 2.0, "top1": 37.37280296022202, "top5": 64.38482886216467, "top10": 76.31822386679002, "rand_top1": 13.64938691005086, "rand_top5": 38.953889562762754, "rand_top10": 54.335168187641415}, "lines_A": {"n": 463, "median_ifa": 1.0, "top1": 48.81209503239741, "top5": 80.56155507559394, "top10": 92.0086393088553, "rand_top1": 20.719036742056662, "rand_top5": 58.18691678314103, "rand_top10": 78.03858587334102}, "lines_B": {"n": 416, "median_ifa": 2.0, "top1": 35.33653846153847, "top5": 61.77884615384615, "top10": 75.48076923076923, "rand_top1": 11.570175439733575, "rand_top5": 32.50340767818506, "rand_top10": 46.8833407584975}, "lines_C": {"n": 202, "median_ifa": 12.0, "top1": 15.346534653465346, "top5": 32.67326732673268, "top10": 42.07920792079208, "rand_top1": 1.7271299765523507, "rand_top5": 8.154428478352797, "rand_top10": 15.351395029448062}, "function": {"n": 2584, "vulnerable": 1093, "auprc": 0.4258253422839061, "roc_auc": 0.5082268542637343, "spearman_with_tokens": -0.8548243744850224}, "pairs": {"n": 1003, "ties": 61, "ranking_acc_ties_half": 60.36889332003989, "ranking_acc_non_tied": 61.04033970276008}, "same_text_flaw_lines": {"n": 4305, "vul_scored_higher_pct": 50.55749128919861}, "pairs_debiased": 53.589232303090725, "extra": {"line_bce": 1.8201813205418322, "pairs": {"n": 1003, "acc": 60.36889332003989, "acc_debiased": 53.589232303090725, "acc_length_matched": 57.608695652173914, "n_length_matched": 644, "acc_top3mean": 61.86440677966102, "length_rule_longer_is_fixed": 73.678963110668, "P-C_at50": 3.589232303090728, "P-R_at50": 2.8913260219341974, "net_at50": 0.6979062811565305}, "function": {"n": 2584, "vulnerable": 1093, "roc_auc": 0.5082268542637343, "roc_auc_debiased": 0.5034126687542149, "roc_auc_top3mean": 0.5061491240827091}}}
+[  2826.8s] saved checkpoint epoch 1 batch 0 step 3149
+[  2826.8s] epoch 1: 3151 batches, starting at batch 0, valid at batches [788, 1576, 2363, 3151]
+[  2852.0s]   ep 1 b 51/3151 step 3200/6298 loss 0.8779 | lr 1.55e-05 | 16.6 items/s | mem 8.0 GB | ETA 25 min
+[  2852.5s] saved checkpoint epoch 1 batch 51 step 3200
+[  2901.0s]   ep 1 b 151/3151 step 3300/6298 loss 1.2343 | lr 1.50e-05 | 15.1 items/s | mem 8.0 GB | ETA 25 min
+[  2949.7s]   ep 1 b 251/3151 step 3400/6298 loss 1.2708 | lr 1.45e-05 | 15.4 items/s | mem 8.0 GB | ETA 24 min
+[  2997.7s]   ep 1 b 351/3151 step 3500/6298 loss 0.9809 | lr 1.40e-05 | 17.1 items/s | mem 8.0 GB | ETA 23 min
+[  3045.6s]   ep 1 b 451/3151 step 3600/6298 loss 0.7284 | lr 1.35e-05 | 18.0 items/s | mem 8.0 GB | ETA 22 min
+[  3046.2s] saved checkpoint epoch 1 batch 451 step 3600
+[  3094.7s]   ep 1 b 551/3151 step 3700/6298 loss 0.5930 | lr 1.30e-05 | 17.5 items/s | mem 8.0 GB | ETA 21 min
+[  3143.1s]   ep 1 b 651/3151 step 3800/6298 loss 1.0012 | lr 1.25e-05 | 17.1 items/s | mem 8.0 GB | ETA 20 min
+[  3191.1s]   ep 1 b 751/3151 step 3900/6298 loss 0.6215 | lr 1.20e-05 | 17.2 items/s | mem 8.0 GB | ETA 19 min
+[  3407.6s] valid ep 1.25 step 3937 (198s): lines Top-1/5/10 35.1/64.6/76.1 IFA 2 | line BCE 2.5593 | pairs acc 54.2 debiased 49.1 len-matched 50.1 top3mean 57.7 net@50 +2.0 | fn ROC 0.506 debiased 0.498 | select 140.7 (best 143.7 @ ep 0.7500793902826294)
+[  3407.6s] valid ep 1.25 full: {"lines_ALL": {"n": 1081, "median_ifa": 2.0, "top1": 35.06012950971323, "top5": 64.56984273820537, "top10": 76.13320999074931, "rand_top1": 13.64938691005086, "rand_top5": 38.953889562762754, "rand_top10": 54.335168187641415}, "lines_A": {"n": 463, "median_ifa": 1.0, "top1": 46.652267818574515, "top5": 82.72138228941685, "top10": 94.16846652267819, "rand_top1": 20.719036742056662, "rand_top5": 58.18691678314103, "rand_top10": 78.03858587334102}, "lines_B": {"n": 416, "median_ifa": 3.0, "top1": 32.21153846153847, "top5": 57.932692307692314, "top10": 71.875, "rand_top1": 11.570175439733575, "rand_top5": 32.50340767818506, "rand_top10": 46.8833407584975}, "lines_C": {"n": 202, "median_ifa": 11.0, "top1": 14.356435643564355, "top5": 36.633663366336634, "top10": 43.56435643564357, "rand_top1": 1.7271299765523507, "rand_top5": 8.154428478352797, "rand_top10": 15.351395029448062}, "function": {"n": 2584, "vulnerable": 1093, "auprc": 0.42875889459226724, "roc_auc": 0.5057539503566074, "spearman_with_tokens": -0.7466639244072848}, "pairs": {"n": 1003, "ties": 38, "ranking_acc_ties_half": 54.23728813559322, "ranking_acc_non_tied": 54.40414507772021}, "same_text_flaw_lines": {"n": 4305, "vul_scored_higher_pct": 54.541231126596976}, "pairs_debiased": 49.05284147557328, "extra": {"line_bce": 2.559348381749738, "pairs": {"n": 1003, "acc": 54.23728813559322, "acc_debiased": 49.05284147557328, "acc_length_matched": 50.077639751552795, "n_length_matched": 644, "acc_top3mean": 57.67696909272183, "length_rule_longer_is_fixed": 73.678963110668, "P-C_at50": 4.885343968095713, "P-R_at50": 2.8913260219341974, "net_at50": 1.9940179461615155}, "function": {"n": 2584, "vulnerable": 1093, "roc_auc": 0.5057539503566074, "roc_auc_debiased": 0.49790877009541235, "roc_auc_top3mean": 0.507899179155445}}}
+[  3409.4s] saved checkpoint epoch 1 batch 788 step 3937
+[  3439.9s]   ep 1 b 851/3151 step 4000/6298 loss 1.0180 | lr 1.15e-05 | 11.6 items/s | mem 8.0 GB | ETA 28 min
+[  3440.5s] saved checkpoint epoch 1 batch 851 step 4000
+[  3489.3s]   ep 1 b 951/3151 step 4100/6298 loss 0.9907 | lr 1.10e-05 | 12.0 items/s | mem 8.0 GB | ETA 26 min
+[  3538.1s]   ep 1 b 1051/3151 step 4200/6298 loss 1.1270 | lr 1.05e-05 | 12.2 items/s | mem 8.0 GB | ETA 24 min
+[  3586.7s]   ep 1 b 1151/3151 step 4300/6298 loss 0.9752 | lr 1.00e-05 | 12.5 items/s | mem 8.0 GB | ETA 22 min
+[  3633.9s]   ep 1 b 1251/3151 step 4400/6298 loss 0.8156 | lr 9.52e-06 | 12.8 items/s | mem 8.0 GB | ETA 20 min
+[  3634.4s] saved checkpoint epoch 1 batch 1251 step 4400
+[  3683.0s]   ep 1 b 1351/3151 step 4500/6298 loss 1.0252 | lr 9.01e-06 | 13.1 items/s | mem 8.0 GB | ETA 19 min
+[  3731.8s]   ep 1 b 1451/3151 step 4600/6298 loss 0.8619 | lr 8.51e-06 | 13.2 items/s | mem 8.0 GB | ETA 18 min
+[  3779.7s]   ep 1 b 1551/3151 step 4700/6298 loss 0.8312 | lr 8.01e-06 | 13.3 items/s | mem 8.0 GB | ETA 16 min
+[  3990.1s] valid ep 1.50 step 4725 (198s): lines Top-1/5/10 36.7/63.7/76.7 IFA 2 | line BCE 2.5116 | pairs acc 55.6 debiased 50.4 len-matched 51.4 top3mean 57.6 net@50 +2.2 | fn ROC 0.512 debiased 0.512 | select 140.4 (best 143.7 @ ep 0.7500793902826294)
+[  3990.1s] valid ep 1.50 full: {"lines_ALL": {"n": 1081, "median_ifa": 2.0, "top1": 36.725254394079556, "top5": 63.737280296022206, "top10": 76.68825161887142, "rand_top1": 13.64938691005086, "rand_top5": 38.953889562762754, "rand_top10": 54.335168187641415}, "lines_A": {"n": 463, "median_ifa": 0.0, "top1": 50.53995680345572, "top5": 82.72138228941685, "top10": 93.9524838012959, "rand_top1": 20.719036742056662, "rand_top5": 58.18691678314103, "rand_top10": 78.03858587334102}, "lines_B": {"n": 416, "median_ifa": 3.0, "top1": 30.528846153846157, "top5": 59.375, "top10": 75.24038461538461, "rand_top1": 11.570175439733575, "rand_top5": 32.50340767818506, "rand_top10": 46.8833407584975}, "lines_C": {"n": 202, "median_ifa": 17.0, "top1": 17.82178217821782, "top5": 29.207920792079207, "top10": 40.099009900990104, "rand_top1": 1.7271299765523507, "rand_top5": 8.154428478352797, "rand_top10": 15.351395029448062}, "function": {"n": 2584, "vulnerable": 1093, "auprc": 0.42976472052079107, "roc_auc": 0.5116990445263836, "spearman_with_tokens": -0.7525726872787787}, "pairs": {"n": 1003, "ties": 48, "ranking_acc_ties_half": 55.63310069790628, "ranking_acc_non_tied": 55.91623036649215}, "same_text_flaw_lines": {"n": 4305, "vul_scored_higher_pct": 55.42392566782811}, "pairs_debiased": 50.3988035892323, "extra": {"line_bce": 2.5116348385350045, "pairs": {"n": 1003, "acc": 55.63310069790628, "acc_debiased": 50.3988035892323, "acc_length_matched": 51.39751552795031, "n_length_matched": 644, "acc_top3mean": 57.6271186440678, "length_rule_longer_is_fixed": 73.678963110668, "P-C_at50": 5.583250249252243, "P-R_at50": 3.389830508474576, "net_at50": 2.1934197407776668}, "function": {"n": 2584, "vulnerable": 1093, "roc_auc": 0.5116990445263836, "roc_auc_debiased": 0.5115336729127433, "roc_auc_top3mean": 0.5098038674253511}}}
+[  3991.8s] saved checkpoint epoch 1 batch 1576 step 4725
+[  4028.0s]   ep 1 b 1651/3151 step 4800/6298 loss 0.9190 | lr 7.51e-06 | 11.3 items/s | mem 8.0 GB | ETA 18 min
+[  4028.5s] saved checkpoint epoch 1 batch 1651 step 4800
+[  4077.5s]   ep 1 b 1751/3151 step 4900/6298 loss 1.0615 | lr 7.01e-06 | 11.4 items/s | mem 8.0 GB | ETA 17 min
+[  4126.2s]   ep 1 b 1851/3151 step 5000/6298 loss 1.1049 | lr 6.51e-06 | 11.4 items/s | mem 8.0 GB | ETA 15 min
+[  4175.0s]   ep 1 b 1951/3151 step 5100/6298 loss 0.9982 | lr 6.01e-06 | 11.5 items/s | mem 8.0 GB | ETA 14 min
+[  4222.5s]   ep 1 b 2051/3151 step 5200/6298 loss 0.5797 | lr 5.50e-06 | 11.7 items/s | mem 8.0 GB | ETA 12 min
+[  4223.0s] saved checkpoint epoch 1 batch 2051 step 5200
+[  4272.1s]   ep 1 b 2151/3151 step 5300/6298 loss 0.4477 | lr 5.00e-06 | 11.7 items/s | mem 8.0 GB | ETA 11 min
+[  4321.2s]   ep 1 b 2251/3151 step 5400/6298 loss 0.7089 | lr 4.50e-06 | 11.8 items/s | mem 8.0 GB | ETA 10 min
+[  4369.9s]   ep 1 b 2351/3151 step 5500/6298 loss 0.6776 | lr 4.00e-06 | 11.9 items/s | mem 8.0 GB | ETA 9 min
+[  4573.9s] valid ep 1.75 step 5512 (198s): lines Top-1/5/10 39.0/66.4/78.3 IFA 1 | line BCE 2.4696 | pairs acc 57.0 debiased 52.9 len-matched 52.3 top3mean 57.9 net@50 +1.7 | fn ROC 0.518 debiased 0.519 | select 144.7 (best 143.7 @ ep 0.7500793902826294)
+[  4573.9s] valid ep 1.75 full: {"lines_ALL": {"n": 1081, "median_ifa": 1.0, "top1": 39.037927844588346, "top5": 66.41998149861239, "top10": 78.26086956521739, "rand_top1": 13.64938691005086, "rand_top5": 38.953889562762754, "rand_top10": 54.335168187641415}, "lines_A": {"n": 463, "median_ifa": 0.0, "top1": 50.9719222462203, "top5": 84.44924406047517, "top10": 95.46436285097192, "rand_top1": 20.719036742056662, "rand_top5": 58.18691678314103, "rand_top10": 78.03858587334102}, "lines_B": {"n": 416, "median_ifa": 2.0, "top1": 33.894230769230774, "top5": 61.057692307692314, "top10": 74.51923076923077, "rand_top1": 11.570175439733575, "rand_top5": 32.50340767818506, "rand_top10": 46.8833407584975}, "lines_C": {"n": 202, "median_ifa": 12.5, "top1": 22.277227722772277, "top5": 36.13861386138614, "top10": 46.53465346534654, "rand_top1": 1.7271299765523507, "rand_top5": 8.154428478352797, "rand_top10": 15.351395029448062}, "function": {"n": 2584, "vulnerable": 1093, "auprc": 0.43729749057724576, "roc_auc": 0.5176972171547123, "spearman_with_tokens": -0.6458362736915357}, "pairs": {"n": 1003, "ties": 40, "ranking_acc_ties_half": 57.02891326021934, "ranking_acc_non_tied": 57.3208722741433}, "same_text_flaw_lines": {"n": 4305, "vul_scored_higher_pct": 54.5760743321719}, "pairs_debiased": 52.94117647058823, "extra": {"line_bce": 2.4695785518394557, "pairs": {"n": 1003, "acc": 57.02891326021934, "acc_debiased": 52.94117647058824, "acc_length_matched": 52.25155279503105, "n_length_matched": 644, "acc_top3mean": 57.87637088733799, "length_rule_longer_is_fixed": 73.678963110668, "P-C_at50": 7.2781655034895305, "P-R_at50": 5.583250249252243, "net_at50": 1.6949152542372878}, "function": {"n": 2584, "vulnerable": 1093, "roc_auc": 0.5176972171547123, "roc_auc_debiased": 0.518663367825127, "roc_auc_top3mean": 0.5169258920402562}}}
+[  4574.4s] saved best epoch 1.75
+[  4576.1s] saved checkpoint epoch 1 batch 2363 step 5512
+[  4618.3s]   ep 1 b 2451/3151 step 5600/6298 loss 0.9601 | lr 3.50e-06 | 10.8 items/s | mem 8.0 GB | ETA 9 min
+[  4618.9s] saved checkpoint epoch 1 batch 2451 step 5600
+[  4667.6s]   ep 1 b 2551/3151 step 5700/6298 loss 0.9425 | lr 3.00e-06 | 10.9 items/s | mem 8.0 GB | ETA 7 min
+[  4715.4s]   ep 1 b 2651/3151 step 5800/6298 loss 0.4931 | lr 2.50e-06 | 11.2 items/s | mem 8.0 GB | ETA 6 min
+[  4764.2s]   ep 1 b 2751/3151 step 5900/6298 loss 0.4045 | lr 2.00e-06 | 11.3 items/s | mem 8.0 GB | ETA 5 min
+[  4812.1s]   ep 1 b 2851/3151 step 6000/6298 loss 0.8140 | lr 1.49e-06 | 11.4 items/s | mem 8.0 GB | ETA 3 min
+[  4812.7s] saved checkpoint epoch 1 batch 2851 step 6000
+[  4861.2s]   ep 1 b 2951/3151 step 6100/6298 loss 0.5869 | lr 9.93e-07 | 11.6 items/s | mem 8.0 GB | ETA 2 min
+[  4910.3s]   ep 1 b 3051/3151 step 6200/6298 loss 1.0230 | lr 4.91e-07 | 11.7 items/s | mem 8.0 GB | ETA 1 min
+[  4959.2s]   ep 1 b 3151/3151 step 6300/6298 loss 1.2071 | lr 0.00e+00 | 11.8 items/s | mem 8.0 GB | ETA -0 min
+[  5159.1s] valid ep 2.00 step 6300 (200s): lines Top-1/5/10 38.8/64.8/76.2 IFA 1 | line BCE 2.5229 | pairs acc 55.1 debiased 50.7 len-matched 49.4 top3mean 58.4 net@50 +2.2 | fn ROC 0.514 debiased 0.514 | select 141.0 (best 144.7 @ ep 1.7499206601079023)
+[  5159.1s] valid ep 2.00 full: {"lines_ALL": {"n": 1081, "median_ifa": 1.0, "top1": 38.76040703052729, "top5": 64.75485661424607, "top10": 76.22571692876966, "rand_top1": 13.64938691005086, "rand_top5": 38.953889562762754, "rand_top10": 54.335168187641415}, "lines_A": {"n": 463, "median_ifa": 0.0, "top1": 52.26781857451404, "top5": 81.6414686825054, "top10": 92.87257019438445, "rand_top1": 20.719036742056662, "rand_top5": 58.18691678314103, "rand_top10": 78.03858587334102}, "lines_B": {"n": 416, "median_ifa": 2.0, "top1": 32.69230769230769, "top5": 59.61538461538461, "top10": 73.3173076923077, "rand_top1": 11.570175439733575, "rand_top5": 32.50340767818506, "rand_top10": 46.8833407584975}, "lines_C": {"n": 202, "median_ifa": 12.5, "top1": 20.2970297029703, "top5": 36.633663366336634, "top10": 44.05940594059406, "rand_top1": 1.7271299765523507, "rand_top5": 8.154428478352797, "rand_top10": 15.351395029448062}, "function": {"n": 2584, "vulnerable": 1093, "auprc": 0.4349557146438841, "roc_auc": 0.5143293429377731, "spearman_with_tokens": -0.6827683738594522}, "pairs": {"n": 1003, "ties": 43, "ranking_acc_ties_half": 55.08474576271186, "ranking_acc_non_tied": 55.3125}, "same_text_flaw_lines": {"n": 4305, "vul_scored_higher_pct": 53.484320557491294}, "pairs_debiased": 50.69790628115653, "extra": {"line_bce": 2.5228852124793693, "pairs": {"n": 1003, "acc": 55.08474576271186, "acc_debiased": 50.697906281156534, "acc_length_matched": 49.378881987577635, "n_length_matched": 644, "acc_top3mean": 58.37487537387837, "length_rule_longer_is_fixed": 73.678963110668, "P-C_at50": 6.4805583250249255, "P-R_at50": 4.287138584247258, "net_at50": 2.1934197407776668}, "function": {"n": 2584, "vulnerable": 1093, "roc_auc": 0.5143293429377731, "roc_auc_debiased": 0.5137163327632768, "roc_auc_top3mean": 0.5130054495929526}}}
+[  5160.9s] saved checkpoint epoch 2 batch 0 step 6300
+[  5539.0s] test: {"lines_ALL": {"n": 1037, "median_ifa": 3.0, "top1": 29.122468659594986, "top5": 54.387656702025076, "top10": 68.94889103182257, "rand_top1": 11.433263614523854, "rand_top5": 34.327928788284964, "rand_top10": 48.667007900367594}, "lines_A": {"n": 417, "median_ifa": 1.0, "top1": 43.884892086330936, "top5": 78.17745803357315, "top10": 92.56594724220624, "rand_top1": 20.472506752819026, "rand_top5": 57.83867857756011, "rand_top10": 77.4444301348686}, "lines_B": {"n": 389, "median_ifa": 5.0, "top1": 23.90745501285347, "top5": 48.329048843187664, "top10": 65.29562982005142, "rand_top1": 7.610360620416337, "rand_top5": 25.162195294348066, "rand_top10": 38.59119905130036}, "lines_C": {"n": 231, "median_ifa": 24.0, "top1": 11.255411255411255, "top5": 21.645021645021643, "top10": 32.467532467532465, "rand_top1": 1.5533713030032332, "rand_top5": 7.321381892240428, "rand_top10": 13.685642404697623}, "function": {"n": 2606, "vulnerable": 1061, "auprc": 0.4348881185052811, "roc_auc": 0.5307574523637406, "spearman_with_tokens": -0.7293725345577868}, "pairs": {"n": 979, "ties": 41, "ranking_acc_ties_half": 57.967313585291116, "ranking_acc_non_tied": 58.31556503198294}, "same_text_flaw_lines": {"n": 3737, "vul_scored_higher_pct": 47.68530907144768}, "extra": {"line_bce": 1.402681369350002, "pairs": {"n": 979, "acc": 57.967313585291116, "acc_debiased": 53.11542390194075, "acc_length_matched": 53.61635220125787, "n_length_matched": 636, "acc_top3mean": 61.03166496424923, "length_rule_longer_is_fixed": 81.15423901940756, "P-C_at50": 5.720122574055159, "P-R_at50": 2.6557711950970377, "net_at50": 3.064351378958121}, "function": {"n": 2606, "vulnerable": 1061, "roc_auc": 0.5307574523637406, "roc_auc_debiased": 0.5228885859038765, "roc_auc_top3mean": 0.5285204469130605}}}
+[  5540.5s] DONE
+[     7.7s] PrimeVul: 564 pairs, 25911 test functions
+Loading weights:   0%|          | 0/134 [00:00<?, ?it/s]Loading weights: 100%|██████████| 134/134 [00:00<00:00, 4578.97it/s]
+[transformers] [1mModernBertModel LOAD REPORT[0m from: answerdotai/ModernBERT-base
+Key               | Status     |  | 
+------------------+------------+--+-
+head.dense.weight | UNEXPECTED |  | 
+head.norm.weight  | UNEXPECTED |  | 
+decoder.bias      | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (10246 > 8192). Running this sequence through the model will result in indexing errors
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (733 > 512). Running this sequence through the model will result in indexing errors
+[   192.5s] paired: {"lines_ALL": {"n": 357, "median_ifa": 6.0, "top1": 16.5266106442577, "top5": 45.09803921568628, "top10": 57.70308123249299, "rand_top1": 5.918633195040236, "rand_top5": 22.60531487329123, "rand_top10": 36.6916096025223}, "lines_A": {"n": 103, "median_ifa": 2.0, "top1": 26.21359223300971, "top5": 70.87378640776699, "top10": 87.37864077669903, "rand_top1": 9.930408281595495, "rand_top5": 39.142328736711626, "rand_top10": 63.513065869009964}, "lines_B": {"n": 122, "median_ifa": 6.0, "top1": 14.754098360655737, "top5": 45.90163934426229, "top10": 59.83606557377049, "rand_top1": 6.902678616126441, "rand_top5": 23.858983096552265, "rand_top10": 36.89306172979458}, "lines_C": {"n": 132, "median_ifa": 21.0, "top1": 10.606060606060606, "top5": 24.242424242424242, "top10": 32.57575757575758, "rand_top1": 1.8787364125575947, "rand_top5": 8.542739485638622, "rand_top10": 15.576555398162863}, "function": {"n": 1128, "vulnerable": 564, "auprc": 0.5227158615786884, "roc_auc": 0.5158709949197726, "spearman_with_tokens": -0.664393663014721}, "pairs": {"n": 564, "ties": 33, "ranking_acc_ties_half": 59.840425531914896, "ranking_acc_non_tied": 60.451977401129945}, "same_text_flaw_lines": {"n": 200, "vul_scored_higher_pct": 50.0}}
+[   904.3s] full test: {"n": 25911, "vulnerable": 695, "auprc": 0.017196433750156143, "roc_auc": 0.2583528101376767, "spearman_with_tokens": -0.7424332920492663}
+[   904.4s] DONE primevul
+== 2026-10-24 21:06:19 UTC exit 0
