@@ -2,3 +2,7 @@
 __pycache__/
 data/
 exp5_out/
+experiments/exp5_line_labels/results/*/primevul_pair_lines.jsonl
+archive/
+experiments/exp5_line_labels/colab/work/
+experiments/exp5_line_labels/inputs/*.jsonl
