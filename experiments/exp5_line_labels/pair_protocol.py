@@ -136,12 +136,18 @@ def main():
         name = os.path.basename(os.path.normpath(run))
         rng = np.random.default_rng(0)
         logit = {r["idx"]: r["logit"] for r in load_jsonl(os.path.join(run, "primevul_test_scores.jsonl"))}
-        pv = np.array([logit[p[0]] for p in pairs]); pf = np.array([logit[p[1]] for p in pairs])
-        rep = {"pairs": {}}
+        have = np.array([p[0] in logit and p[1] in logit for p in pairs])     # a smoke run scores only some pairs
+        pv = np.array([logit.get(p[0], 0.0) for p in pairs]); pf = np.array([logit.get(p[1], 0.0) for p in pairs])
+        rep = {"pairs": {}, "pairs_scored": int(have.sum()), "pairs_total": len(pairs)}
         print(f"\n### {name} — cặp PrimeVul")
+        if not have.all():
+            print(f"WARNING: {name} has scores for {int(have.sum())}/{len(pairs)} pairs; the other pairs are left out of every row below")
         print("| tập cặp | n | xếp đúng cặp [CI] | sau trừ độ dài | luật độ dài | P-C / P-V / P-B / P-R (ngưỡng 0) | net [CI] | null P-C | P-C @50% gắn cờ | net @50% [CI] | null P-C @50% |")
         print("|---|---|---|---|---|---|---|---|---|---|---|")
         for sname, m in subsets.items():
+            m = m & have
+            if not m.any():
+                continue
             r = pair_metrics(pv[m], pf[m], cv[m], cf[m], rng)
             rep["pairs"][sname] = r
             t0, tm = r["t0"], r["t_median"]

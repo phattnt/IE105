@@ -85,7 +85,7 @@ ModernBERT: phản ứng mạnh hơn (20–40% ca đổi quá 0,5) nhưng **khô
 điểm dòng hiện tại đến từ hình dạng của dòng, không từ quan hệ giữa các dòng → Train 13 (cặp phản thực khác đúng một guard) là đúng thuốc.
 Cùng script này, đổi chiều (xóa guard khỏi hàm lành của PrimeVul train) là bộ sinh dữ liệu cho Train 13.
 
-## Train 13 – học sơ bộ bằng cặp phản thực "rút guard" (22/10, đang chạy)
+## Train 13 – học sơ bộ bằng cặp phản thực "rút guard" (22–23/10)
 
 `make_synthetic_guards.py`: với mỗi hàm lành của `primevul_train` có một guard `if (...) return/break/continue/goto;` (1–3 dòng), xóa guard đó
 → bản "lỗi giả" với đúng một dòng nhãn 1 = dòng kế tiếp (câu lệnh mất bảo vệ); bản gốc là bản "đã vá". Hai bản chỉ khác 1–3 dòng nên không có
@@ -136,9 +136,71 @@ Test SecVulEval: Top-10 **65,8** (A 89,9 / B 62,5 / C 27,7) – kém `s0_conv` 3
 PrimeVul: Top-10 54,3, cặp 58,3 → 52,9, toàn tập ROC 0,26 → 0,48. Probe: xóa guard +0,49, chèn G1 −0,27 nhưng chèn chú thích cũng −0,29 → chỉ dấu vết.
 → Mô hình vẫn học lối tắt từ 65% dữ liệu còn lại; bớt dữ liệu chỉ làm tìm dòng tụt. Hướng "cân độ dài" đóng.
 
+**Chấm hàm bằng phản thực (23/10, `counterfactual_score.py`, checkpoint `synth1`, Colab T4 ~65 phút, `results/counterfactual_synth1.json`) –
+cũng không thoát khỏi độ dài.** Ý tưởng: thay vì hỏi "dòng này trông nguy hiểm cỡ nào" (bám độ dài), hỏi "điểm dòng này *tụt* bao nhiêu khi chèn
+`if (!x) return;` ngay trên nó" – so hai bản của cùng một hàm nên lẽ ra không phụ thuộc độ dài. Lấy K=8 dòng cao nhất làm ứng viên, chèn guard
+lần lượt, điểm hàm = tụt lớn nhất / tổng tụt / tụt của dòng cao nhất. Chấm trên 564 cặp PrimeVul test và trên mẫu toàn tập (695 hàm lỗi + 2.000 lành).
+
+| Điểm hàm | Cặp: ROC thô → trừ độ dài | Cặp: đúng cặp thô → trừ | Toàn tập: ROC thô → trừ | ρ độ dài (toàn tập) |
+|---|---|---|---|---|
+| max dòng (cách cũ) | 0,521 → 0,516 | 59,6 → 57,8 | 0,397 → 0,486 | −0,35 |
+| tụt lớn nhất khi chèn guard | 0,513 → 0,516 | 54,3 → **60,3** | 0,565 → 0,485 | +0,14 |
+| tổng tụt | 0,494 → 0,505 | 44,6 → 51,5 | 0,738 → 0,505 | +0,78 |
+| tụt của dòng cao nhất | 0,514 → 0,518 | 52,0 → 57,7 | 0,531 → 0,489 | +0,04 |
+| (chỉ độ dài, CV) | 0,516 | 84,2 | 0,793 | +0,99 |
+
+Sau trừ độ dài mọi cách đều về **0,485–0,518** = ngẫu nhiên; "tổng tụt" ROC thô 0,74 chỉ vì hàm dài có nhiều dòng để chèn (ρ +0,78, đối chứng độ dài 0,79).
+Đúng cặp 60,3 hơn cách cũ 2,5 điểm, trong sai số của 564 cặp. → Kỹ năng guard của `synth1` có thật ở mức dòng (probe +6 logit) nhưng **không phân biệt
+được hàm lỗi thật với hàm lành của PrimeVul**: lỗi thật phần lớn không phải "thiếu một câu kiểm tra ngay trên dòng này". Hướng mức hàm đóng;
+kết quả chính của exp5 là định vị dòng (Top-10 SecVulEval 68,8 → 71,5 nhờ học sơ bộ phản thực) và kết quả âm có kiểm soát độ dài ở mức hàm.
+
+**Chấm lại theo giao thức cặp của tài liệu (23/10, `pair_protocol.py`, `results/pair_protocol.json`; mức cặp từ điểm đã lưu, 0 GPU;
+mức dòng chấm lại 3 checkpoint trên Colab T4 ~15 phút, `score_pairs_lines.py`).** Giao thức: P-C/P-V/P-B/P-R của bài PrimeVul
+(gắn cờ = logit > 0), điểm ròng = P-C − P-R với mô hình null "gắn cờ độc lập theo tỉ lệ p" (P-C = P-R = p(1−p), ròng 0) và tập cặp
+cân độ dài (lệch ký tự < 5%, 337/564 cặp) theo arXiv 2609.32890, bootstrap 2.000 lần trên cặp. Lưu ý: ngay trong tập "cân độ dài"
+luật "bản dài hơn là bản vá" vẫn đúng 83,8% (toàn bộ: 87,0%), nên cột "sau trừ độ dài" (dư sau khi trừ E[điểm | log ký tự]) vẫn là kiểm soát chính.
+
+| Run | xếp đúng cặp [CI] | sau trừ độ dài | P-C / P-V / P-B / P-R | ròng [CI] | cân độ dài: xếp đúng / sau trừ / P-C / ròng [CI] |
+|---|---|---|---|---|---|
+| Run gốc `s0_conv` | 62,5 [58,7; 66,2] | 54,7 | 3,7 / 59,6 / 34,0 / 2,7 | +1,1 [−1,1; +3,2] | 55,0 / 50,9 / 2,4 / +0,3 [−2,1; +2,7] |
+| So-cặp-mạnh `contrast_conv` | 62,3 [58,3; 66,1] | 58,2 | 8,2 / 47,5 / 42,9 / 1,4 | **+6,7 [+4,3; +9,4]** | 55,9 / 52,5 / 3,3 / +1,8 [−0,6; +4,2] |
+| So-cặp-nhẹ `contrast03_conv` | 60,6 [56,7; 64,5] | **59,1** | **8,9** / 56,4 / 31,9 / 2,8 | **+6,0 [+3,2; +8,9]** | 56,7 / **55,9** / **5,6** / **+3,3 [+0,3; +6,2]** |
+| UniXcoder `unixcoder_conv` | 59,8 [55,8; 63,5] | 49,6 | 2,5 / 75,5 / 20,6 / 1,4 | +1,1 [−0,5; +2,8] | 50,7 / 47,0 / 1,5 / −0,6 [−2,7; +1,5] |
+| Tự-tạo `synth1` | 58,7 [54,6; 62,8] | 55,0 | 4,6 / 64,0 / 28,4 / 3,0 | +1,6 [−0,5; +3,9] | 55,0 / 57,3 / 3,6 / +1,8 [−0,6; +4,5] |
+| Tự-tạo → thật `s13_conv` | **64,8 [61,0; 68,5]** | 51,8 | 3,0 / 43,1 / 52,8 / 1,1 | +2,0 [+0,4; +3,7] | 56,4 / 50,4 / 1,5 / −0,3 [−2,4; +1,5] |
+| Run 3 `s13bal_conv` | 58,4 [54,5; 62,3] | 52,0 | 3,9 / 71,3 / 23,4 / 1,4 | +2,5 [+0,5; +4,4] | 50,4 / 48,8 / 3,6 / +1,5 [−0,9; +4,2] |
+| Luật độ dài (dài hơn = vá) | 87,0 | – | – | – | 83,8 / – / – / – |
+| Tài liệu: fine-tune trên PrimeVul (Ding 2024) | – | – | P-C 1,1–3,0 | – | – |
+| Tài liệu: GPT-3.5 CoT / GPT-4 CoT (Ding 2024) | – | – | P-C 6,2 / 12,9 | – | – |
+| Tài liệu: VulTriage GPT-4o + ngữ cảnh (2026) | – | – | P-C 33,8 (147/435) | – | – |
+
+Đọc: (1) P-C của mọi run (3–9%) thấp hơn hẳn null P-C (≈ 23%) vì mô hình trả lời **giống nhau cho cả hai bản** (P-V + P-B ≈ 90%),
+đúng hiện tượng "phán quyết bám phần chữ chung của cặp" trong 2609.32890; so sánh đúng là điểm ròng với null 0. (2) Hai run so-cặp có
+điểm ròng dương có ý nghĩa (+6 đến +7, CI không chứa 0) và P-C 8–9%, cao hơn fine-tune trong bài PrimeVul (1–3%) và GPT-3.5 CoT, thấp hơn
+GPT-4 CoT; **chỉ so-cặp-nhẹ còn giữ được tín hiệu trên cặp cân độ dài** (ròng +3,3 [+0,3; +6,2], sau trừ độ dài 55,9). Các run còn lại
+≈ null. (3) `s13_conv` xếp cặp cao nhất (64,8) nhưng là nhờ độ dài: sau trừ chỉ 51,8, cân độ dài ròng −0,3. → Có một tín hiệu cặp nhỏ nhưng
+thật ở run so-cặp, cỡ 1/4 khoảng cách tới GPT-4 CoT; không phải "ngẫu nhiên hoàn toàn", cũng không đủ để dùng.
+
+**Mức dòng trên PrimeVul kiểu ANVIL (arXiv 2408.16028): chỉ xếp dòng code (bỏ dòng trống/chú thích), hàm lỗi có ≥ 1 dòng lỗi
+(357 hàm, 1.301 dòng lỗi; ANVIL dùng 273 hàm / 924 dòng với lọc riêng của họ nên không trùng tập hoàn toàn).**
+
+| | Top-1 | Top-3 | Top-5 | Top-10 | MFR ↓ | N-MFR ↓ | ROC-AUC dòng |
+|---|---|---|---|---|---|---|---|
+| Tự-tạo → thật `s13_conv` | **16,8** [13,2; 20,7] | **32,5** [27,7; 37,5] | **45,1** [40,1; 50,1] | 59,4 | 26,7 | 0,22 | 0,754 |
+| So-cặp-nhẹ `contrast03_conv` | 16,8 [12,9; 21,0] | 30,0 [25,5; 34,7] | 39,5 [34,5; 44,3] | 50,4 | 30,0 | 0,24 | **0,767** |
+| Tự-tạo `synth1` (0 nhãn thật) | 11,8 [8,4; 15,1] | 25,5 [21,0; 30,0] | 35,0 [30,0; 40,1] | 53,2 | 35,2 | 0,25 | 0,652 |
+| Ngẫu nhiên (kỳ vọng) | 7,0 | 17,6 | 26,0 | 41,5 | 46,3 | – | 0,500 |
+| ANVIL (không train, LLM điền chỗ trống) | 11,7 | 31,3 | 41,4 | – | 25,0 | 0,18 | 0,618 |
+| LineVul dạy trên BigVul (theo ANVIL) | 4,0 | 17,0 | 30,0 | – | 17,6 | – | 0,496 |
+| LineVD / LLMAO dạy trên BigVul (theo ANVIL) | 9,2 / 9,2 | 15,4 / 17,3 | 23,1 / 26,2 | – | 38,0 / 49,3 | – | 0,50 / 0,52 |
+
+Đọc: `s13_conv` hơn ANVIL ở Top-1 (+5), Top-5 (+4) và ROC-AUC dòng (0,75 so với 0,62), ngang ở Top-3 và MFR (CI ±4–5 điểm nên Top-3/MFR
+không phân biệt được); hơn hẳn LineVul/LineVD/LLMAO dạy trên BigVul. `synth1` chưa thấy nhãn thật nào mà đã ngang ANVIL. Đây là chỗ exp5 có
+tiến bộ thật và có mốc tài liệu để so, với dè dặt: tập hàm và định nghĩa dòng lỗi không trùng hoàn toàn với ANVIL.
+
 ## Lần chạy kế tiếp (Colab Pro, L4)
 
-Quyết định ngân sách (22/10): chạy **một** run trước, rồi mới quyết định có chạy thêm seed không. Hàng đợi mặc định trong `colab_exp5.py`:
+Quyết định ngân sách (22/10): chạy **một** run trước, rồi mới quyết định có chạy thêm seed không. Run đã chạy:
 
 | Run | Loss | Seed | Trả lời gì |
 |---|---|---|---|
@@ -147,49 +209,75 @@ Quyết định ngân sách (22/10): chạy **một** run trước, rồi mới 
 Chung: `--strategy slide --model answerdotai/ModernBERT-base --max_len 2048 --train_tokens 8192 --bf16 --epochs 4 --patience 2 --ckpt_every 400`.
 Ước tính trên L4 (theo log cũ): contrast ~1,45 giờ + chấm PrimeVul ~15 phút + chuẩn bị dữ liệu ~15 phút → **~2 giờ ≈ 3 compute unit**.
 
-Kết quả (22/10): vẫn phải đánh đổi, xem bảng trên. Các seed 1, 2 vẫn để sẵn trong `colab_exp5.py` (`EXP5_EXTRA_SEEDS=1` hoặc `--only`), ~8 giờ ≈ 12 unit,
+Kết quả (22/10): vẫn phải đánh đổi, xem bảng trên. Các seed 1, 2 là preset `conv_s1/2`, `contrast03_s1/2` trong `colab/presets.py`, ~8 giờ ≈ 12 unit,
 nhưng chỉ đáng chạy cho cấu hình được chọn làm kết quả chính, không phải cho λ 0,3.
 
 Cách chấm mức hàm/cặp từ giờ dùng `debias_length.py` (trừ phần điểm giải thích được bằng độ dài, không cần train lại):
 sau khi trừ, plain mất hết tín hiệu cặp (58 → 51%) còn contrast λ=1 giữ gần nguyên (62 → 61% SecVulEval, 58–60% PrimeVul);
 trên toàn tập test PrimeVul mọi run đều về đúng ngẫu nhiên (ROC-AUC 0,49), nên mục tiêu "hàm có lỗi không" trên tập mất cân bằng được gác lại.
 
-Script chạy trên VM: clone/pull repo (nhánh `main` trên GitHub – **push code trước**), cài gói, tải PrimeVul, sinh
-`secvul_lines`, rồi lần lượt `train_lines.py` → `eval_primevul.py`. Run đã có `results.json` không train lại, run đã
-có `primevul_results.json` bị bỏ qua, nên sau khi VM reset chỉ cần chạy lại. Nếu có `ckpt_last.pt` trong thư mục
-run thì train tiếp từ đó.
+Chạy trên Colab: `colab/README.md` (`colabctl`, 25/10). Các run trên là các preset trong `colab/presets.py`
+(`conv_s1`, `contrast03_s1`, `s13_s1`, …); vd. `colabctl new --gpu L4`, `colabctl start conv_s1`, `colabctl mirror conv_s1`
+(kết quả về `results/<run>/`, checkpoint về `data/colab_ckpt/<run>/`). Tính CI như cũ:
 
 ```bash
-cd experiments/exp5_line_labels
-colab new -s exp5 --gpu L4
-colab upload -s exp5 colab_exp5.py /content/colab_exp5.py
-# chạy tách khỏi CLI (kết nối CLI rớt sau ~20 phút)
-echo 'import subprocess, sys; subprocess.Popen([sys.executable, "/content/colab_exp5.py"], stdout=open("/content/exp5_launch.log", "a"), stderr=subprocess.STDOUT, start_new_session=True)' | colab exec -s exp5
-
-# theo dõi: mỗi bước, mỗi lần lưu checkpoint, mỗi epoch valid đều ghi vào queue.log
-colab download -s exp5 /content/exp5/logs/queue.log queue.log && tail -20 queue.log
-colab ls -s exp5 /content/exp5/logs
-colab download -s exp5 /content/exp5/logs/slide_ModernBERT-base_2048_s0_contrast03_conv.log s0_c03.log
-# đề phòng VM bị thu hồi: kéo checkpoint về, sau reset upload lại vào /content/exp5/<run>/ckpt_last.pt rồi chạy lại lệnh echo ở trên
-colab download -s exp5 /content/exp5/slide_ModernBERT-base_2048_s0_contrast03_conv/ckpt_last.pt ckpt_last.pt
+python bootstrap_ci.py --data ../../data/secvul_lines --runs results/slide_ModernBERT-base_2048_s0_conv results/slide_ModernBERT-base_2048_s1_conv --out ../../data/bootstrap_s0_vs_s1_conv.json
 ```
 
-Tải kết quả về `results/` (mỗi run: `results.json`, `test_scores.jsonl`, `primevul_results.json`,
-`primevul_test_scores.jsonl`, log) rồi tính CI:
+## Đợt 24–25/10: baseline 2 seed, kiểm tra dữ liệu, ngữ cảnh liên hàm cho LLM
+
+### Baseline `_base2` (preset `base`, 2 seed)
+
+Công thức `s0_conv` với 3 thay đổi về tối ưu: lịch LR giảm tuyến tính về 0 trong **2 epoch** (trước: 4 epoch + patience, đỉnh valid
+luôn rơi vào lúc LR còn gần cực đại), valid 4 lần mỗi epoch, chọn epoch theo Top-5 + Top-10. Dữ liệu, loss, mô hình giữ nguyên.
+
+| SecVulEval test (mới − `s0_conv`, CI 95% bootstrap theo project) | seed 0 | seed 1 |
+|---|---|---|
+| Top-1 | +0,4 [−2,4; +3,4] | +1,6 [−0,7; +4,0] |
+| Top-5 | +2,5 [−0,4; +4,7] | +0,8 [−2,1; +2,6] |
+| Top-10 | +0,9 [−1,4; +3,3] | +0,2 [−1,8; +2,1] |
+| xếp đúng cặp | +0,5 | −0,2 |
+| cùng dòng chữ, bản lỗi điểm cao hơn | −4,0 [−5,6; +0,5] | −5,8 [−7,8; +1,6] |
+
+Đọc: **ngang `s0_conv` với khoảng nửa thời gian GPU**, không phải cải thiện (Top-5 +2,5 của seed 0 không lặp lại). Valid
+phẳng từ epoch 1,25; train lâu hơn (run cũ, epoch 3: loss train 0,56, valid giảm) là học thuộc nhãn. Loss train (BCE dòng
+có trọng số) chỉ thấp hơn mức "đoán hằng số" (0,93 trên train) khoảng 10–17%, valid BCE (1,6–2,5) còn cao hơn mức đó
+(1,10) dù Top-k tốt: mô hình học thứ tự dòng trong hàm, không học xác suất tuyệt đối. PrimeVul Top-1/5/10:
+16,8/42,9/58,5 (s0), 16,5/45,1/57,7 (s1), so với 19,3/41,2/59,4 của `s0_conv`. `s13b` (synth1 + công thức này, 2 seed) không
+chạy xong và được bỏ: lợi ích dự kiến +1–3 điểm dòng, cùng cỡ với chênh lệch giữa hai seed.
+
+### Kiểm tra dữ liệu (CPU)
+
+| | Kết quả | File |
+|---|---|---|
+| Loại bản vá, 40 cặp test ngẫu nhiên đọc tay | 29/40 (72%) "có A thiếu B"; **12/40 (30%, CI 18–45%) cần thông tin ngoài hàm** (hợp đồng callee, đảm bảo của caller, ngữ nghĩa giao thức/phần cứng); 15/40 quyết được trong hàm | `results/patch_taxonomy/manual_labels_test40.json` |
+| Phân loại tự động bằng regex (`patch_taxonomy.py`) | không dùng được cho câu "cần ngoài hàm": khớp tay 17/40, đếm 52% so với 30% | `results/patch_taxonomy/` |
+| Rò rỉ theo commit (`leak_audit.py`) | SecVulEval train/test: 0 commit chung. 21 cặp PrimeVul test chung commit với SecVulEval train, 5 với PrimeVul train; bỏ chúng đi mọi số lệch ≤ 0,6 | `results/leak_audit.json` |
+| Đối chứng "dòng dài nhất trước", PrimeVul | Top-1/5/10 10,4/35,3/52,4 (mô hình 17–19/45–50/58–62) | `results/controls_primevul_lines.json` |
+
+### Ngữ cảnh liên hàm cho LLM (giai đoạn 2)
+
+`build_context.py` lấy ngữ cảnh ở **commit cha của bản vá** qua GitHub API (không clone): định nghĩa các hàm được gọi và
+chỗ gọi hàm này, trong các file bản vá chạm tới, header cùng thư mục và header chúng include. Hai bản của một cặp dùng
+**chung một ngữ cảnh**. Đối chứng `context_fake`: cùng file, cùng độ dài, hàm không được gọi và chỗ gọi hàm khác.
+Phủ: 1065/1071 commit, 531/564 cặp test có ngữ cảnh (478 có định nghĩa callee, 340 có chỗ gọi), ~2000 ký tự/cặp.
+Qwen3.5-9B (vLLM FP8, A100), `llm_audit.py` nhánh `audit` / `audit_ctx` / `audit_ctxfake`, cùng prompt guard-audit.
+
+Phép so đăng ký trước: net (P-C − P-R) của ngữ cảnh thật − ngữ cảnh giả trên 337 cặp cân độ dài, đạt nếu ≥ +5 và CI không chứa 0.
+
+| 337 cặp cân độ dài | thật − giả | thật − không ngữ cảnh | giả − không ngữ cảnh |
+|---|---|---|---|
+| ngưỡng 0 (quyết định của mô hình) | +2,1 [−2,9; +7,7] | −0,3 [−6,4; +5,0] | −2,4 |
+| gắn cờ 50% | +8,3 [+0,0; +17,5] | +3,6 [−5,3; +13,2] | −4,7 |
+
+**Không đạt.** Ngữ cảnh thật không hơn không có ngữ cảnh; phần hơn ngữ cảnh giả chủ yếu do ngữ cảnh không liên quan làm
+LLM kém đi. Tách nhỏ (`results/llm_ctx_test/by_type.json`): ở 149 cặp mà dòng sửa gọi đúng một hàm có định nghĩa trong ngữ
+cảnh, thật − không là −2,0 (ngưỡng 0) và +7,4 (50%), CI rộng ±12; không nhóm con nào cho tín hiệu cùng chiều ở cả hai ngưỡng.
+Bỏ 7 cặp có dòng thay đổi trùng chữ với code trong ngữ cảnh: không đổi. Giới hạn: ~90% câu trả lời bị cắt ở ngân sách
+suy nghĩ 1536 token, ngữ cảnh làm phần phải đọc dài thêm; chưa thử ngân sách lớn hơn.
 
 ```bash
-for r in slide_ModernBERT-base_2048_s0_contrast03_conv slide_ModernBERT-base_2048_s1_conv slide_ModernBERT-base_2048_s1_contrast03_conv \
-         slide_ModernBERT-base_2048_s2_conv slide_ModernBERT-base_2048_s2_contrast03_conv; do
-  mkdir -p results/$r
-  for f in results.json test_scores.jsonl primevul_results.json primevul_test_scores.jsonl; do
-    colab download -s exp5 /content/exp5/$r/$f results/$r/$f
-  done
-  colab download -s exp5 /content/exp5/logs/$r.log results/$r/train.log
-done
-colab stop -s exp5
-python bootstrap_ci.py --data ../../data/secvul_lines --runs results/slide_ModernBERT-base_2048_s0_conv results/slide_ModernBERT-base_2048_s0_contrast03_conv --out ../../data/bootstrap_s0_conv_vs_c03.json
+python build_context.py --primevul ../../data/primevul --cache ../../data/ctx --splits valid test --out inputs
+# VM: colabctl -s exp5a100 new --gpu A100; start vllm; push inputs/ctx_test_pairs.jsonl /content/exp5/upload/...; start llm_ctx_test
+python pair_protocol.py --primevul ../../data/primevul --runs results/llm_ctx_test/scores/audit results/llm_ctx_test/scores/audit_ctx results/llm_ctx_test/scores/audit_ctxfake
 ```
-
-Ghi chú: `colab exec` có timeout mặc định 30 giây, đủ cho lệnh `Popen` (nó trả về ngay). `python /content/colab_exp5.py --dry` in
-các lệnh sẽ chạy; `--only <tên hoặc chuỗi con>` chỉ chạy một phần hàng đợi (vd. `--only s0_contrast03`). Theo README của CLI, bản 0.7.5 chỉ hỗ trợ
-chính thức Linux/macOS; trên Windows nếu lệnh nào lỗi thì chạy CLI trong WSL.

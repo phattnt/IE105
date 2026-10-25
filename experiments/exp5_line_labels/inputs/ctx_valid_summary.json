@@ -1,0 +1,16 @@
+{
+ "commit_ok": 0.973,
+ "files": 19.829,
+ "own_found": 0.858,
+ "callees": 14.02,
+ "callees_resolved": 5.909,
+ "callee_defs_shown": 5.007,
+ "callers_shown": 1.253,
+ "chars": 1931.343,
+ "fake_chars": 1711.785,
+ "diff_line_in_context": 0.05,
+ "pairs": 562,
+ "pairs_with_context": 523,
+ "pairs_with_callee_def": 454,
+ "pairs_with_caller": 370
+}

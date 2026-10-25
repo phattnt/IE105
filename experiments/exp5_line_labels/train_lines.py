@@ -6,6 +6,8 @@ vulnerable version, of its fixed version and of unrelated benign functions - is 
 
     encoder (RoBERTa family) -> token states -> mean-pool the tokens of each line -> linear -> line logit
     function score = max line probability over the whole function (all views)
+    loss: weighted line BCE (default), or --loss listwise (softmax over each function's lines + lam_bce x BCE);
+          --mask_contradict drops fixed-version lines whose text equals a flaw line of the pair from the loss
 
 Strategies (what one 512-token view contains, like exp2/exp3):
   head    first max_len-2 tokens (lines beyond them are never seen, score 0)
@@ -199,8 +201,27 @@ def head_visibility(tok, func, max_len):
 
 
 # ----------------------------------------------------------------------------- model
-def build_views(tok, func, flaws, strategy, max_len):
-    """-> list of (ids[max_len], tok_line[max_len] with -1 for special/pad, lines_in_view, labels_in_view)."""
+def contradicting_lines(rows):
+    """{idx of a fixed version: its lines whose text (whitespace removed, as in same_text) equals a flaw line of the
+    vulnerable partner}. Such a line is 1 in the vulnerable version and 0 in the fixed one although the text is the same
+    (39% of SecVulEval train flaw lines, 25/10); --mask_contradict leaves it out of the loss instead of labelling it 0."""
+    by = {r["idx"]: r for r in rows}
+    out = {}
+    for r in rows:
+        if r["target"] != 1 or not r["flaw_lines"] or r["pair_idx"] not in by:
+            continue
+        vl = r["func"].split("\n")
+        keys = {re.sub(r"\s+", "", vl[l]) for l in r["flaw_lines"] if l < len(vl)} - {""}
+        f = by[r["pair_idx"]]
+        hit = {j for j, t in enumerate(f["func"].split("\n")) if re.sub(r"\s+", "", t) in keys}
+        if hit:
+            out.setdefault(f["idx"], set()).update(hit)
+    return out
+
+
+def build_views(tok, func, flaws, strategy, max_len, ignore=()):
+    """-> list of (ids[max_len], tok_line[max_len] with -1 for special/pad, lines_in_view, labels_in_view).
+    Labels: 1 flaw, 0 clean, -1 for lines in `ignore` (left out of the loss)."""
     enc = tok(func, add_special_tokens=False, return_offsets_mapping=True)
     ids, offs = enc["input_ids"], enc["offset_mapping"]
     starts = line_starts(func)
@@ -213,14 +234,41 @@ def build_views(tok, func, flaws, strategy, max_len):
         spans = [(a, min(a + budget, len(ids))) for a in range(0, max(1, len(ids) - budget + step), step)]
         if spans[-1][1] < len(ids):
             spans.append((len(ids) - budget, len(ids)))
-    fl = set(flaws)
+    fl, ign = set(flaws), set(ignore)
     views = []
     for a, b in spans:
         vid = [tok.cls_token_id] + ids[a:b] + [tok.sep_token_id]     # padded per batch in collate
         vl = [-1] + tline[a:b] + [-1]
         lines = sorted({l for l in vl if l >= 0})
-        views.append((vid, vl, lines, [int(l in fl) for l in lines]))
+        views.append((vid, vl, lines, [1 if l in fl else -1 if l in ign else 0 for l in lines]))
     return views
+
+
+def listwise_loss(z, y, lens, bce_each, C):
+    """(listwise, bce, chance) for one batch of views. listwise: per view with a flaw line, -log of the softmax mass on
+    its flaw lines (over its labelled lines), summed and divided by the constant C = flaw views per batch on average, so
+    each vulnerable function counts once whatever its size or number of flaw lines (a view is the whole function for
+    the ~90% that fit one window). A per-batch mean would not: batches are packed by length, so a long view shares its
+    batch with 1-3 others and a short one with dozens (debate 25/10). chance: the same quantity for uniform scores,
+    log(n_labelled / n_flaw). bce: the weighted line BCE over every labelled line, which keeps scores comparable across
+    functions (benign and fixed versions get no listwise term). Lines labelled -1 are in neither."""
+    import torch
+    V = len(lens)
+    vid = torch.repeat_interleave(torch.arange(V, device=z.device), torch.tensor(lens, device=z.device))
+    keep, pos = y >= 0, y == 1
+
+    def lse(m):                         # per-view logsumexp of z over the lines in mask m
+        v = torch.where(m, z, torch.full_like(z, -1e4))
+        mx = torch.full((V,), -1e4, device=z.device).scatter_reduce(0, vid, v, "amax").detach()
+        s = torch.zeros(V, device=z.device).index_add(0, vid, torch.exp(v - mx[vid]) * m)
+        return mx + torch.log(s.clamp_min(1e-30))
+    n_pos = torch.zeros(V, device=z.device).index_add(0, vid, pos.float())
+    n_keep = torch.zeros(V, device=z.device).index_add(0, vid, keep.float())
+    has = n_pos > 0
+    lw = (lse(keep) - lse(pos))[has].sum() / C if has.any() else z.sum() * 0
+    chance = float((torch.log(n_keep[has]) - torch.log(n_pos[has])).sum() / C) if has.any() else 0.0
+    bce = bce_each(z[keep], y[keep]).mean() if keep.any() else z.sum() * 0
+    return lw, bce, chance
 
 
 def make_model(model_name):
@@ -340,6 +388,52 @@ def pair_acc_debiased(rows, fs):
             t += 1
             w += 1.0 if a > b else 0.5 if a == b else 0.0
     return 100 * w / t if t else 50.0
+
+
+def valid_extra(rows, ls, fs, pos_weight):
+    """Extra validation numbers logged at every evaluation point (none of them is used for model selection unless
+    --select says so): the weighted line BCE on the seen lines (convergence signal, same loss as training), and the
+    function level read the way pair_protocol.py reads it - pair ranking raw / length-debiased / on length-matched
+    pairs (|chars diff| / max < 5%) / with the function score = mean of the top-3 line logits, net = P-C - P-R at a 50%
+    flag rate over the pair functions, and ROC-AUC over every valid function (benign ones included) raw and debiased."""
+    from sklearn.metrics import roc_auc_score
+    out = {}
+    bce, n = 0.0, 0
+    for r, s in zip(rows, ls):
+        s = np.asarray(s, float)
+        seen = s > -1e8
+        if not seen.any():
+            continue
+        y = np.zeros(len(s)); y[[l for l in r["flaw_lines"] if l < len(s)]] = 1
+        z, yy = s[seen], y[seen]
+        w = np.where(yy == 1, pos_weight, 1.0)
+        bce += float((w * (np.maximum(z, 0) - z * yy + np.log1p(np.exp(-np.abs(z))))).sum()); n += len(z)
+    out["line_bce"] = bce / max(n, 1)
+    chars = np.log(np.maximum([len(r["func"]) for r in rows], 1))
+    s = np.asarray(fs, float)
+    ok = s > -1e8
+    resid = s - np.polyval(np.polyfit(chars[ok], s[ok], 3), chars) if ok.sum() >= 10 else s * 0
+    top3 = np.array([float(np.mean(sorted(np.asarray(x)[np.asarray(x) > -1e8], reverse=True)[:3])) if (np.asarray(x) > -1e8).any() else -1e9 for x in ls])
+    by = {r["idx"]: i for i, r in enumerate(rows)}
+    pv = [(by[r["idx"]], by[r["pair_idx"]]) for r in rows if r["target"] == 1 and r["pair_idx"] in by]
+    if pv:
+        iv, iff = np.array([p[0] for p in pv]), np.array([p[1] for p in pv])
+        acc = lambda a, b: float(np.where(a > b, 1.0, np.where(a == b, 0.5, 0.0)).mean() * 100)
+        cv, cf = np.exp(chars[iv]), np.exp(chars[iff])
+        lm = np.abs(cv - cf) / np.maximum(cv, cf) < 0.05
+        out["pairs"] = {"n": len(pv), "acc": acc(s[iv], s[iff]), "acc_debiased": acc(resid[iv], resid[iff]),
+                        "acc_length_matched": acc(s[iv][lm], s[iff][lm]) if lm.any() else None, "n_length_matched": int(lm.sum()),
+                        "acc_top3mean": acc(top3[iv], top3[iff]),
+                        "length_rule_longer_is_fixed": acc(cf, cv)}
+        t = float(np.median(np.concatenate([s[iv], s[iff]])))
+        fv, ff = s[iv] > t, s[iff] > t
+        out["pairs"].update({"P-C_at50": float((fv & ~ff).mean() * 100), "P-R_at50": float((~fv & ff).mean() * 100),
+                             "net_at50": float(((fv & ~ff).mean() - (~fv & ff).mean()) * 100)})
+    y = np.array([r["target"] for r in rows])
+    if 0 < y.sum() < len(y):
+        out["function"] = {"n": int(len(y)), "vulnerable": int(y.sum()), "roc_auc": float(roc_auc_score(y, s)),
+                           "roc_auc_debiased": float(roc_auc_score(y, resid)), "roc_auc_top3mean": float(roc_auc_score(y, top3))}
+    return out
 
 
 # ----------------------------------------------------------------------------- fix-contrastive training
@@ -482,6 +576,8 @@ def train(data, out, args):
     leak = {r["idx"] for r in train_all if r.get("in_primevul_test")}
     leak |= {r["pair_idx"] for r in train_all if r["idx"] in leak and r["pair_idx"] is not None}
     pair_mode = args.lam_line > 0 or args.lam_fn > 0 or args.pair_batches
+    if pair_mode and (args.loss != "bce" or args.mask_contradict):
+        raise SystemExit("--loss listwise and --mask_contradict work on single views only (no pair losses)")
     # add-only fixes have no labelled line; pair mode keeps them (function hinge only, line BCE masked)
     train_rows = [r for r in train_all if r["idx"] not in leak and (pair_mode or not (r["target"] == 1 and not r["flaw_lines"]))]
     log(f"dropped {len(leak)} train functions overlapping the PrimeVul test set (incl. pair partners)")
@@ -499,28 +595,112 @@ def train(data, out, args):
     valid = read_split(data, "valid", args.limit)
     test = read_split(data, "test", args.limit)
     log(f"train {len(train_rows)} functions{'' if pair_mode else ' (add-only fixes dropped)'} | valid {len(valid)} | test {len(test)} | device {device}")
+    # 24/10: tokenising + windowing 87k functions takes ~26 min on the VM's CPU and was redone on every resume; the
+    # result is cached in <out>/train_cache.pkl, keyed by everything that changes it (data file, model, window, rows).
+    # The pickle is only ever written by this script into its own output dir, so loading it trusts nothing external.
+    import hashlib
+    import pickle
+    key = hashlib.md5(json.dumps([os.path.abspath(f"{data}/train.jsonl"), os.path.getsize(f"{data}/train.jsonl"), args.model, args.max_len,
+                                  args.strategy, args.max_pair_views, pair_mode, sorted(r["idx"] for r in train_rows)]
+                                 + ([True] if args.mask_contradict else []), default=str).encode()).hexdigest()
+    cache = f"{out}/train_cache.pkl"
+    cached = None
+    if os.path.exists(cache):
+        try:
+            with open(cache, "rb") as fh:
+                cached = pickle.load(fh)
+            if cached.get("key") != key:
+                log("train cache key differs - rebuilding"); cached = None
+        except Exception as e:
+            log(f"train cache unreadable ({e!r}) - rebuilding"); cached = None
+    t_build = time.time()
     if pair_mode:
-        items = make_items(train_rows, tok, args)
+        items = cached["items"] if cached else make_items(train_rows, tok, args)
         views = [v for it in items for m in it["members"] if m["bce"] for v in m["views"]]
         log(f"pair mode: {sum(len(it['members']) == 2 for it in items)} vulnerable/fixed pairs, "
             f"{sum(len(it['match']) for it in items)} aligned flaw lines, {sum(len(it['members']) == 1 for it in items)} single views | "
             f"lam_line {args.lam_line} lam_fn {args.lam_fn} margin {args.margin}")
     else:
-        views = [v for r in train_rows for v in build_views(tok, r["func"], r["flaw_lines"], args.strategy, args.max_len)]
-    n_pos = sum(sum(v[3]) for v in views); n_neg = sum(len(v[3]) for v in views) - n_pos
+        ign = contradicting_lines(train_rows) if args.mask_contradict else {}
+        if args.mask_contradict:
+            log(f"mask_contradict: {sum(map(len, ign.values()))} lines in {len(ign)} fixed versions left out of the loss "
+                f"(same text as a flaw line of the vulnerable partner)")
+        views = cached["views"] if cached else [v for r in train_rows for v in build_views(tok, r["func"], r["flaw_lines"], args.strategy,
+                                                                                            args.max_len, ign.get(r["idx"], ()))]
+    log(f"training views {'loaded from cache' if cached else 'built'} in {time.time() - t_build:.0f}s")
+    if not cached:
+        try:
+            with open(cache + ".tmp", "wb") as fh:
+                pickle.dump({"key": key, "items": items if pair_mode else None, "views": None if pair_mode else views}, fh, protocol=pickle.HIGHEST_PROTOCOL)
+            os.replace(cache + ".tmp", cache)
+            log(f"train cache written ({os.path.getsize(cache) / 2**20:.0f} MB)")
+        except Exception as e:
+            log(f"train cache not written: {e!r}")
+    n_pos = sum(v[3].count(1) for v in views); n_neg = sum(v[3].count(0) for v in views)
     pos_weight = min(args.max_pos_weight, n_neg / max(n_pos, 1))
-    log(f"{len(views)} training views | lines: {n_pos} flaw / {n_neg} clean | pos_weight {pos_weight:.1f}")
+    log(f"{len(views)} training views | lines: {n_pos} flaw / {n_neg} clean / {sum(v[3].count(-1) for v in views)} masked | "
+        f"pos_weight {pos_weight:.1f} | loss {args.loss}" + (f" + {args.lam_bce} x bce" if args.loss == "listwise" else ""))
     valid_groups = group_info(valid)
     model = make_model(args.model).to(device)
     opt = torch.optim.AdamW(model.parameters(), lr=args.lr, eps=1e-8)
     n_batches = len(item_batches(items, args.train_tokens, 0)) if pair_mode else len(token_batches(views, args.train_tokens, 0))
     steps = n_batches * args.epochs
+    lw_C = max(1e-6, sum(1 for v in views if 1 in v[3]) / max(n_batches, 1))      # fixed from epoch 0's packing
+    if args.loss == "listwise":
+        log(f"listwise: {sum(1 for v in views if 1 in v[3])} views with a flaw line, C = {lw_C:.2f} per batch")
     sched = get_linear_schedule_with_warmup(opt, int(0.05 * steps), steps)
     scaler = torch.amp.GradScaler(device.type, enabled=device.type == "cuda" and amp() == torch.float16)
     lossf = torch.nn.BCEWithLogitsLoss(pos_weight=torch.tensor(pos_weight, device=device))
     lossf_each = torch.nn.BCEWithLogitsLoss(pos_weight=torch.tensor(pos_weight, device=device), reduction="none")
     ck_last, ck_best = f"{out}/ckpt_last.pt", f"{out}/ckpt_best.pt"
     start_ep, start_b, step, curve, best = 0, 0, 0, [], {"score": -1, "epoch": -1}
+    n_eval = max(1, int(round(1 / args.eval_every)))          # evaluation points per epoch
+    eval_at = sorted({min(n_batches, max(1, round(n_batches * k / n_eval))) for k in range(1, n_eval + 1)})
+    log(f"{n_batches} batches/epoch, {steps} steps total, warmup {int(0.05 * steps)} | valid at batches {eval_at} of every epoch "
+        f"| select {args.select} | patience {args.patience} epochs | amp {amp()} | {torch.cuda.get_device_name(0) if device.type == 'cuda' else 'cpu'}")
+    train_log = open(f"{out}/train_log.jsonl", "a")
+
+    def validate(ep_f):
+        """Score valid, log every metric, update best / curve.json / plots. ep_f = epochs completed (float)."""
+        t0 = time.time()
+        ls, fs = score_rows(model, tok, valid, args.strategy, args, device)
+        m = evaluate(valid, ls, fs, *valid_groups)
+        m["pairs_debiased"] = pair_acc_debiased(valid, fs)
+        m["extra"] = valid_extra(valid, ls, fs, pos_weight)
+        la = m.get("lines_ALL", {})
+        if args.select == "top5_pair_debias":
+            score = la.get("top5", 0) + m["pairs_debiased"]
+        elif args.select == "top5_top10":
+            score = la.get("top5", 0) + la.get("top10", 0)
+        else:
+            score = la.get("top5", 0) + (m["same_text_flaw_lines"]["vul_scored_higher_pct"] or 50)
+        curve.append({"epoch": ep_f, "step": step, "valid": m, "select_score": score, "elapsed_min": (time.time() - T0) / 60})
+        ex, px, fx = m["extra"], m["extra"].get("pairs", {}), m["extra"].get("function", {})
+        log(f"valid ep {ep_f:.2f} step {step} ({time.time() - t0:.0f}s): lines Top-1/5/10 {la.get('top1', 0):.1f}/{la.get('top5', 0):.1f}/{la.get('top10', 0):.1f} "
+            f"IFA {la.get('median_ifa', 0):.0f} | line BCE {ex['line_bce']:.4f} | pairs acc {px.get('acc', 0):.1f} debiased {px.get('acc_debiased', 0):.1f} "
+            f"len-matched {px.get('acc_length_matched') or 0:.1f} top3mean {px.get('acc_top3mean', 0):.1f} net@50 {px.get('net_at50', 0):+.1f} "
+            f"| fn ROC {fx.get('roc_auc', 0):.3f} debiased {fx.get('roc_auc_debiased', 0):.3f} | select {score:.1f} (best {best['score']:.1f} @ ep {best['epoch']})")
+        log(f"valid ep {ep_f:.2f} full: {json.dumps(m)}")
+        if score > best["score"]:
+            best.update({"score": score, "epoch": ep_f, "step": step})
+            torch.save({k: v.half() for k, v in model.state_dict().items()}, ck_best + ".tmp")
+            os.replace(ck_best + ".tmp", ck_best)     # a kill mid-save never leaves a truncated best checkpoint
+            log(f"saved best epoch {ep_f:.2f}")
+        json.dump({"args": vars(args), "best": best, "curve": curve}, open(f"{out}/curve.json", "w"), indent=1)
+        try:
+            import plot_curve
+            plot_curve.plot_run(out)
+        except Exception as e:       # plotting must never stop a run
+            log(f"plot skipped: {e!r}")
+
+    def log_step(ep, bi, nb, loss, parts, t_ep, seen):
+        lr = sched.get_last_lr()[0]
+        mem = torch.cuda.max_memory_allocated() / 2**30 if device.type == "cuda" else 0.0
+        rate = seen / max(time.time() - t_ep, 1e-6)
+        left = (steps - step) * (time.time() - t_ep) / max(bi + 1 - (start_b if ep == start_ep else 0), 1) / 60
+        log(f"  ep {ep} b {bi + 1}/{nb} step {step}/{steps} loss {loss:.4f}{parts} | lr {lr:.2e} | {rate:.1f} items/s | mem {mem:.1f} GB | ETA {left:.0f} min")
+        train_log.write(json.dumps({"step": step, "epoch": ep + (bi + 1) / nb, "loss": loss, "lr": lr, "items_per_s": rate, "mem_gb": mem,
+                                    "elapsed_min": (time.time() - T0) / 60}) + "\n"); train_log.flush()
     if args.init and not os.path.exists(ck_last):
         st = torch.load(args.init, map_location="cpu")
         st = st["model"] if "model" in st else st
@@ -543,13 +723,17 @@ def train(data, out, args):
     for ep in range(start_ep, args.epochs):
         batches = item_batches(items, args.train_tokens, args.seed * 1000 + ep) if pair_mode else token_batches(views, args.train_tokens, args.seed * 1000 + ep)
         model.train()
-        t_ep, run, seen, run_parts = time.time(), 0.0, 0, np.zeros(3)
+        t_ep, run, seen, run_parts, n_run = time.time(), 0.0, 0, np.zeros(4), 0
         first = start_b if ep == start_ep else 0
+        # the packing differs per epoch (shuffle), so the evaluation points are recomputed from this epoch's batch count
+        eval_at = sorted({min(len(batches), max(1, round(len(batches) * k / n_eval))) for k in range(1, n_eval + 1)})
+        log(f"epoch {ep}: {len(batches)} batches, starting at batch {first}, valid at batches {eval_at}")
         for bi in range(first, len(batches)):
             if pair_mode:
                 (ids, seg, n_seg, y, mask, seg_u, n_u, u_func, n_func, lv, lf, fv, ff) = collate_items([items[i] for i in batches[bi]], device)
             else:
                 ids, seg, n_seg, y, _ = collate([views[i] for i in batches[bi]], device)
+                lens = [len(views[i][2]) for i in batches[bi]]
             seen += len(batches[bi])
             if y.numel() == 0:
                 continue
@@ -560,51 +744,61 @@ def train(data, out, args):
                 bce = (lossf_each(z, y) * mask).sum() / mask.sum().clamp(min=1)
                 l_line, l_fn = pair_losses(z, seg_u, n_u, u_func, n_func, lv, lf, fv, ff, args.margin)
                 loss = bce + args.lam_line * l_line + args.lam_fn * l_fn
-                run_parts += [bce.item(), l_line.item(), l_fn.item()]
+                run_parts += [bce.item(), l_line.item(), l_fn.item(), 0.0]
+            elif args.loss == "listwise":
+                lw, bce, chance = listwise_loss(logits.float(), y, lens, lossf_each, lw_C)
+                loss = lw + args.lam_bce * bce
+                run_parts += [bce.item(), lw.item(), chance, 0.0]
             else:
-                loss = lossf(logits.float(), y)
+                keep = y >= 0                                   # all lines unless --mask_contradict
+                loss = lossf(logits.float()[keep], y[keep])
             opt.zero_grad(set_to_none=True)
             scaler.scale(loss).backward()
             scaler.unscale_(opt)
-            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+            gnorm = torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             scaler.step(opt); scaler.update(); sched.step()
-            run += loss.item(); step += 1
-            if step % 100 == 0:
-                parts = f" (bce {run_parts[0] / 100:.3f} line-hinge {run_parts[1] / 100:.3f} fn-hinge {run_parts[2] / 100:.3f})" if pair_mode else ""
-                log(f"  ep {ep} step {step}/{steps} loss {run / 100:.4f}{parts} | {seen / (time.time() - t_ep):.1f} items/s")
-                run, run_parts = 0.0, np.zeros(3)
+            run += loss.item(); step += 1; n_run += 1
+            run_parts[3] += float(gnorm)
+            if step % args.log_every == 0:
+                # listwise vs its chance level (uniform scores): kill the run if it is not >10% below chance by ~0.5 epoch
+                parts = (f" (bce {run_parts[0] / n_run:.3f} line-hinge {run_parts[1] / n_run:.3f} fn-hinge {run_parts[2] / n_run:.3f})" if pair_mode
+                         else f" (listwise {run_parts[1] / n_run:.3f} chance {run_parts[2] / n_run:.3f} bce {run_parts[0] / n_run:.3f} "
+                              f"gnorm {run_parts[3] / n_run:.2f})" if args.loss == "listwise" else "")
+                log_step(ep, bi, len(batches), run / n_run, parts, t_ep, seen)
+                run, run_parts, n_run = 0.0, np.zeros(4), 0
             if step % args.ckpt_every == 0:
                 save_last(ep, bi + 1)
-        ls, fs = score_rows(model, tok, valid, args.strategy, args, device)
-        m = evaluate(valid, ls, fs, *valid_groups)
-        m["pairs_debiased"] = pair_acc_debiased(valid, fs)
-        if args.select == "top5_pair_debias":
-            score = m.get("lines_ALL", {}).get("top5", 0) + m["pairs_debiased"]
-        else:
-            score = m.get("lines_ALL", {}).get("top5", 0) + (m["same_text_flaw_lines"]["vul_scored_higher_pct"] or 50)
-        curve.append({"epoch": ep, "valid": m, "select_score": score})
-        log(f"valid ep {ep}: {json.dumps(m)}")
-        if score > best["score"]:
-            best = {"score": score, "epoch": ep}
-            torch.save({k: v.half() for k, v in model.state_dict().items()}, ck_best)
-            log(f"saved best epoch {ep}")
+            if (bi + 1) in eval_at:
+                ep_f = ep + (bi + 1) / len(batches)
+                if not any(abs(c["epoch"] - ep_f) < 1e-6 for c in curve):      # not already done before a resume
+                    validate(ep_f)
+                    model.train()
+                    if (bi + 1) < len(batches):
+                        save_last(ep, bi + 1)
         save_last(ep + 1, 0)
-        if args.patience and ep - best["epoch"] >= args.patience:
+        if args.patience and (ep + 1) - best["epoch"] >= args.patience:
             log(f"early stop: no improvement for {args.patience} epochs (best epoch {best['epoch']})")
             break
+    train_log.close()
     if os.path.exists(ck_best):
         model.load_state_dict({k: v.float() for k, v in torch.load(ck_best, map_location="cpu").items()})
     ls, fs = score_rows(model, tok, test, args.strategy, args, device)
     hv, nt = group_info(test)
-    res = {"experiment": "exp5 line-level supervision on SecVulEval" + (" + fix-contrastive losses" if pair_mode else ""), "args": vars(args), "best_epoch": best["epoch"],
-           "valid_curve": curve, "test": evaluate(test, ls, fs, hv, nt)}
+    res = {"experiment": f"exp5 line-level supervision on {os.path.basename(os.path.normpath(data))}" + (" + fix-contrastive losses" if pair_mode else ""),
+           "args": vars(args), "best_epoch": best["epoch"], "valid_curve": curve, "test": evaluate(test, ls, fs, hv, nt)}
+    res["test"]["extra"] = valid_extra(test, ls, fs, pos_weight)
     json.dump(res, open(f"{out}/results.json", "w"), indent=1)
     with open(f"{out}/test_scores.jsonl", "w") as fh:
-        for r, s in zip(test, ls):
-            fh.write(json.dumps({"idx": r["idx"], "target": r["target"], "pair_idx": r["pair_idx"],
-                                 "flaw_lines": r["flaw_lines"], "line_scores": [round(float(x), 4) for x in s]}) + "\n")
+        for r, s, f in zip(test, ls, fs):
+            fh.write(json.dumps({"idx": r["idx"], "target": r["target"], "pair_idx": r["pair_idx"], "chars": len(r["func"]), "func": r["func"],
+                                 "flaw_lines": r["flaw_lines"], "logit": round(float(f), 4), "line_scores": [round(float(x), 4) for x in s]}) + "\n")
     os.remove(ck_last) if os.path.exists(ck_last) else None
     log("test:", json.dumps(res["test"]))
+    try:
+        import plot_curve
+        plot_curve.plot_run(out)
+    except Exception as e:
+        log(f"plot skipped: {e!r}")
     log("DONE")
 
 
@@ -637,11 +831,18 @@ if __name__ == "__main__":
     ap.add_argument("--lam_fn", type=float, default=0.0, help="weight of the function-level vulnerable-vs-fixed hinge")
     ap.add_argument("--margin", type=float, default=1.0, help="hinge margin in logits")
     ap.add_argument("--pair_batches", action="store_true", help="pair batching without pair losses (fair BCE-only control)")
+    ap.add_argument("--loss", choices=["bce", "listwise"], default="bce",
+                    help="listwise: softmax over each function's lines, -log mass on its flaw lines, + lam_bce x line BCE")
+    ap.add_argument("--lam_bce", type=float, default=0.3, help="weight of the line BCE next to the listwise loss")
+    ap.add_argument("--mask_contradict", action="store_true",
+                    help="leave fixed-version lines with the same text as a flaw line of the pair out of the loss")
     ap.add_argument("--max_pair_views", type=int, default=4, help="max windows per function inside a pair item")
     ap.add_argument("--tag", default="", help="suffix for the run name")
     ap.add_argument("--patience", type=int, default=0, help="stop after this many epochs without a better valid score (0 = off)")
     ap.add_argument("--init", default=None, help="checkpoint (ckpt_best.pt / ckpt_last.pt) to start from, e.g. a stage-1 model")
-    ap.add_argument("--select", choices=["top5_same_text", "top5_pair_debias"], default="top5_same_text",
+    ap.add_argument("--eval_every", type=float, default=1.0, help="validate every this fraction of an epoch (0.5 = twice per epoch)")
+    ap.add_argument("--log_every", type=int, default=100, help="log the training loss every this many steps")
+    ap.add_argument("--select", choices=["top5_same_text", "top5_pair_debias", "top5_top10"], default="top5_same_text",
                     help="epoch selection score on valid: Top-5 + same-text %% (old, biased by one function) or "
                          "Top-5 + length-debiased pair accuracy")
     ap.add_argument("--balance_length", action="store_true",

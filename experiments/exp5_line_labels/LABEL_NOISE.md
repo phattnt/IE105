@@ -30,33 +30,21 @@ Lọc làm dòng nhãn 1 **dài thêm** ~3 ký tự → rủi ro lối tắt đ�
 
 ## Train (Colab L4, ~2 giờ ≈ 3 unit) – chưa chạy
 
-Entry `_conv_clean` trong `colab_exp5.py`: y hệt run gốc `slide_ModernBERT-base_2048_s0_conv` (`colab/run_inner_conv.py`:
-`--lr 3e-5`, 4 epoch, patience 2, seed 0, chọn epoch mặc định `top5_same_text`), chỉ khác `--data`. Không dùng
-`--select top5_pair_debias` nên **không cần chạy lại run gốc**. Lưu ý: thước chọn epoch tính trên valid **đã lọc** (bỏ 66 hàm dày như hermes)
-nên nó ít bị một hàm chi phối hơn run gốc; đây là một phần của can thiệp.
+Preset `conv_clean` trong `colab/presets.py`: y hệt run gốc `slide_ModernBERT-base_2048_s0_conv` (`--lr 3e-5`, 4 epoch,
+patience 2, seed 0, chọn epoch mặc định `top5_same_text`), chỉ khác `--data`; preset kiểm tra test sạch giống hệt test gốc (`cmp`).
+Không dùng `--select top5_pair_debias` nên **không cần chạy lại run gốc**. Lưu ý: thước chọn epoch tính trên valid **đã lọc**
+(bỏ 66 hàm dày như hermes) nên nó ít bị một hàm chi phối hơn run gốc; đây là một phần của can thiệp.
 
-```bash
-# push nhánh, trên Colab dùng nhánh này (colab_exp5.py pull `main`): hoặc merge trước, hoặc trên VM: git -C /content/IE105 checkout label-noise-filter
-colab new -s exp5 --gpu L4
-colab upload -s exp5 experiments/exp5_line_labels/colab_exp5.py /content/colab_exp5.py
-echo 'import subprocess, sys; subprocess.Popen([sys.executable, "/content/colab_exp5.py", "--only", "_conv_clean"], stdout=open("/content/exp5_launch.log", "a"), stderr=subprocess.STDOUT, start_new_session=True)' | colab exec -s exp5
-```
-
-Lệnh train mà hàng đợi sẽ chạy (`python colab_exp5.py --dry --only _conv_clean`):
-
-```bash
-python train_lines.py --strategy slide --train_tokens 8192 --bf16 --ckpt_every 400 --model answerdotai/ModernBERT-base --max_len 2048 \
-  --lam_line 0 --lam_fn 0 --epochs 4 --patience 2 --data /content/exp5/secvul_lines_clean --lr 3e-5 --seed 0 --tag _conv_clean \
-  --out /content/exp5/slide_ModernBERT-base_2048_s0_conv_clean
-python eval_primevul.py --run /content/exp5/slide_ModernBERT-base_2048_s0_conv_clean --primevul /content/exp5/primevul
+```powershell
+& $py -u colab/colabctl.py new --gpu L4
+& $py -u colab/colabctl.py start conv_clean
+& $py -u colab/colabctl.py mirror conv_clean     # kết quả về results/slide_ModernBERT-base_2048_s0_conv_clean/
 ```
 
 ## Đánh giá (CPU, sau khi tải kết quả về `results/`)
 
 ```bash
 R=slide_ModernBERT-base_2048_s0_conv_clean
-for f in results.json test_scores.jsonl primevul_results.json primevul_test_scores.jsonl; do colab download -s exp5 /content/exp5/$R/$f results/$R/$f; done
-colab download -s exp5 /content/exp5/logs/$R.log results/$R/train.log
 B=results/slide_ModernBERT-base_2048_s0_conv; N=results/$R
 python bootstrap_ci.py --data ../../data/secvul_lines --runs $B $N --out ../../data/bootstrap_conv_vs_clean.json
 python debias_length.py --data ../../data/secvul_lines --primevul ../../data/primevul --runs $B $N --out ../../data/debias_conv_clean.json
