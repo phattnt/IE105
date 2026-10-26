@@ -104,17 +104,33 @@ Khi đánh giá thêm mô hình ngoại **OpenVul-4B**, chúng ta chia 564 cặp
 
 ---
 
-## 4. ĐÁNH GIÁ THẲNG THẮN HIỆN TRẠNG & PHÂN TÍCH ĐIỂM NGHẼN (TẠI SAO $F_1$ CHƯA VƯỢT MỐC 0.70?)
+## 4. ĐÁNH GIÁ THẲNG THẮN HIỆN TRẠNG: CHÚNG TA ĐÃ VƯỢT CÁC BÀI BÁO KHÁC Ở ĐÂU & ĐANG VƯỚNG Ở ĐÂU?
 
-Qua bảng quét ngưỡng tự tin trên 1.128 hàm, chúng ta nhìn thấy rõ sự đánh đổi giữa **Recall (Độ phủ lỗi)** và **Báo động giả (`P-V`)**:
-* Ở ngưỡng nhạy ($t = 50\%$): Recall đạt **71.6% – 78.0%**, kéo $F_1$ lên **60.8% – 62.6%**, nhưng `P-V` còn cao (`51% – 60%`).
-* Ở ngưỡng thận trọng ($t = 85\%$): `P-V` giảm 7–8 lần xuống chỉ còn **7.4% – 8.3%** (độ nhận diện đúng hàm sạch đạt **79.4%**), nhưng Recall bị cắt xuống **23.8% – 28.6%**, làm $F_1$ tụt về **34.3% – 39.2%**.
+### 4.1. Đối chiếu trực diện: Mặt trận ĐÃ VƯỢT vs Mặt trận CHƯA VƯỢT các bài báo trước
 
-### Ba nguyên nhân kỹ thuật trực tiếp gây ra điểm nghẽn này:
+1. **Mặt trận ĐÃ VƯỢT RÕ RỆT (Điểm mạnh thực chất):**
+   * **Khả năng phân biệt cặp "Hàm Lỗi vs Hàm Đã Vá" (`P-C` và `Net`):**
+     * Các bài báo nền tảng (ICSE 2024 — *LineVul, UniXcoder, CodeT5+, DeepDFA, GPT-4*) chỉ đạt `P-C = 2.1% – 9.4%` và `Net = +0.5% đến +2.2%`.
+     * Các bài báo chuyên sâu mới nhất (2025 — *VulnLLM-R 7B, R2Vul*) đạt `P-C = 14.5% – 16.2%` và `Net = +5.5% đến +7.5%`.
+     * Phương pháp của chúng ta (**Qwen3.5-9B + Mỏ neo dòng ModernBERT `audit_hint`**) đạt **`P-C = 20.4%`**, **`Net = +8.51%`** (trên tập `CLEAN` hoàn toàn sạch đạt `P-C = 20.3%`, `Net = +7.84%`).
+     * Đặc biệt trên nhóm khó nhất là **bản vá chỉ thêm dòng (`ADD_ONLY` — 207 cặp)**, chúng ta đẩy `P-C` lên **`23.7% – 24.2%`** và **`Net = +12.08% đến +12.56%`** (cao gấp đôi các công bố trước).
+   * **Phát hiện và bóc tách lỗ hổng "Lộ đề" (Data Leakage) của bài báo OpenVul (2025):**
+     * Bài báo OpenVul công bố `P-C = 23.5%`, nhưng kiểm toán độc lập của chúng ta ([`leak_audit_openvul.json`](experiments/exp5_line_labels/results/leak_audit_openvul.json)) chứng minh **27.7% tập test (156 cặp)** đã nằm trong tập train SFT của họ (`Net = +13.46%` trên tập lộ đề). Khi chấm trên 408 cặp `CLEAN`, OpenVul đạt `P-C = 18.1% – 19.9%` — tương đương mức `20.3%` mà `Qwen3.5-9B + ModernBERT hint` của chúng ta đạt được mà không cần fine-tune LLM.
+   * **Định vị dòng lỗi (Line Localization):**
+     * `ModernBERT-base` đạt **Top-5 Accuracy = 56.1% – 58.1%** (vượt xa LineVul ~28%–35%) và dẫn đường trúng **72.9%** các điểm nhạy cảm (`missing sinks`) cho LLM.
+
+2. **Mặt trận CHƯA VƯỢT (Đang ngang bằng nhóm đầu hoặc còn đánh đổi):**
+   * **Chỉ số `F1` mức hàm dừng ở ~60.8% – 62.6% (Ngang đỉnh hiện tại, chưa phá mốc 70%):**
+     * Ở ngưỡng nhạy ($t = 50\%$), Recall đạt **71.6% – 78.0%**, kéo $F_1$ lên **60.8% – 62.6%**, nhưng báo động giả `P-V` còn cao (`51% – 60%`).
+     * Ở ngưỡng thận trọng ($t = 85\%$), `P-V` giảm 7–8 lần xuống chỉ còn **7.4% – 8.3%** (độ nhận diện đúng hàm sạch đạt **79.4%**), nhưng Recall bị cắt xuống **23.8% – 28.6%**, làm $F_1$ tụt về **34.3% – 39.2%**.
+
+---
+
+### 4.2. Ba nguyên nhân kỹ thuật khiến $F_1$ bị chặn ở ~62% và Recall giảm khi ép `P-V`
 
 1. **Hiện tượng "Tràn bộ nhớ suy nghĩ" (`think_forced`) khi ép OpenVul-4B vào prompt `AUDIT` dài:**
-   - Theo số liệu trong [`results/openvul_test/scores/summary.json`](experiments/exp5_line_labels/results/openvul_test/scores/summary.json), ở nhánh `plain` (prompt ngắn gọn đúng chuẩn lúc OpenVul được huấn luyện SFT), tỷ lệ bị cắt ngang chuỗi suy nghĩ (`think_forced` ở mức `--think_budget 1536`) là **40.0%**, giúp `plain` đạt **`Net = +9.31%`** trên tập `CLEAN`.
-   - Khi chuyển sang prompt `audit` và `audit_hint` (bắt mô hình liệt kê danh sách JSON `sinks`, `guards`, `guard_sufficient` dài dòng), tỷ lệ bị cắt ngang suy nghĩ vọt lên tới **74.2%** (`audit`) và **61.8%** (`audit_hint`)! Việc bị ngắt suy nghĩ giữa chừng ở các hàm dài làm OpenVul-4B mất khả năng kết luận chính xác.
+   - Theo [`results/openvul_test/scores/summary.json`](experiments/exp5_line_labels/results/openvul_test/scores/summary.json), ở nhánh `plain` (prompt ngắn gọn đúng chuẩn lúc OpenVul được huấn luyện SFT), tỷ lệ bị cắt ngang chuỗi suy nghĩ (`think_forced` ở mức `--think_budget 1536`) là **40.0%**, giúp `plain` đạt **`Net = +9.31%`** trên tập `CLEAN`.
+   - Khi chuyển sang prompt `audit` và `audit_hint` (bắt mô hình liệt kê danh sách JSON `sinks`, `guards`, `guard_sufficient` dài dòng), tỷ lệ bị cắt ngang suy nghĩ vọt lên tới **74.2%** (`audit`) và **61.8%** (`audit_hint`)! Việc bị ngắt suy nghĩ giữa chừng ở các hàm dài làm OpenVul-4B mất khả năng kết luận chính xác trên nhóm `CHANGED`.
 2. **Dùng ngưỡng cắt cứng (Hard Threshold) trên điểm số văn bản rời rạc của 1 mô hình đơn lẻ:**
    - LLM xuất xác suất dưới dạng con số văn bản rời rạc (`0, 20, 50, 75, 80, 85, 95%`). Cắt cứng ở `prob >= 85%` làm toàn bộ các hàm lỗi ở vùng `50% – 80%` bị vứt bỏ hoàn toàn, khiến Recall rớt mạnh.
 3. **Trần thông tin của bài toán Đơn hàm (Single-Function Ceiling — 49.6% lỗi liên hàm):**
@@ -122,17 +138,36 @@ Qua bảng quét ngưỡng tự tin trên 1.128 hàm, chúng ta nhìn thấy rõ
 
 ---
 
-## 5. BỐN ĐỊNH HƯỚNG TIẾP THEO ĐỂ BỨT PHÁ QUA NGƯỠNG $F_1 = 0.70$
+### 4.3. Giải phẫu chuyên sâu: Tại sao chỉ số đoán ngược `P-R` (Pair-Reversed) của chúng ta lại cao (`10.3% – 13.5%`)?
+
+Chỉ số **`P-R` (Đoán ngược: Bảo hàm lỗi là An toàn, nhưng lại bảo hàm Đã vá là Lỗi)** của các nhánh LLM ở mức `10.3% – 13.5%` (so với `1.6% – 3.7%` của LineVul/UniXcoder). Có **4 nguyên nhân cốt lõi**:
+
+1. **Ảo giác thống kê từ tỷ lệ dám tách cặp (`P-C + P-R`):**
+   - **LineVul** phán 2 hàm giống hệt nhau ở **96.3%** số cặp (`P-B = 84.2%`, `P-V = 12.1%`) và chỉ dám đưa ra 2 nhãn khác nhau ở **3.7%** số cặp (`P-C = 2.1%`, `P-R = 1.6%`). Như vậy, trong số những lần LineVul tách đôi phán quyết, **tỷ lệ đoán ngược của LineVul lên tới $\frac{1.6}{2.1 + 1.6} = 43.2\%$**!
+   - **Mô hình của chúng ta (`Qwen3.5 audit_hint`)** dám tách đôi phán quyết ở **32.3%** số cặp (`P-C = 20.4%`, `P-R = 11.9%` — gấp gần 9 lần LineVul). Tỷ lệ đoán ngược trong số các ca tách đôi thực chất đã **giảm xuống còn $36.8\%$**, nhưng vì tổng số cặp được tách đôi lớn gấp 9 lần nên con số tuyệt đối `P-R` hiển thị cao hơn.
+2. **Nghịch lý "Bản vá làm lộ thêm từ khóa nhạy cảm" (Guard / Error-Path Paradox):**
+   - Trong C/C++, khi lập trình viên vá lỗi, họ thường thêm khối xử lý lỗi (ví dụ: `if (len > MAX) { kfree(buf); memcpy(err, ...); return -EINVAL; }`).
+   - Ở hàm chưa vá (`vul`), không có lệnh `kfree(buf)` này nên đôi khi mô hình thấy ngắn gọn và cho qua (`Safe`). Sang hàm đã vá (`fix`), sự xuất hiện của lệnh `kfree(buf)` mới thêm trong nhánh thoát lỗi lại khiến LLM nghi ngờ lỗi *Double-Free / Use-After-Free* ở nhánh lỗi $\rightarrow$ phán hàm đã vá là `Vulnerable`, sinh ra `P-R`.
+3. **Hiệu ứng "Dịch chuyển Top-3 dòng mỏ neo" (Top-3 Hint Shift) ở hàm đã vá:**
+   - Vì hệ thống luôn lấy cố định **Top-3 dòng điểm cao nhất** ở mỗi hàm: Khi dòng lỗi số 10 ở hàm `vul` đã được sửa an toàn trong hàm `fix`, điểm rủi ro của dòng 10 giảm xuống. Lúc này, một dòng thao tác khác (ví dụ dòng 55 vốn nằm ở Top-4 trong hàm `vul`) bị **đôn lên thành Top-3 trong hàm `fix`**.
+   - Khi mỏ neo mới hướng sự chú ý của LLM vào dòng 55 ở hàm `fix` (dòng mà ở hàm `vul` nó không bị yêu cầu soi kỹ), LLM lại bắt lỗi ở dòng 55 $\rightarrow$ Hàm `vul` thoát, hàm `fix` bị bắt!
+4. **Nhiễu nhảy bậc quanh "vách đá 85%" khi chấm độc lập từng hàm:**
+   - Ở thời điểm test, mô hình chấm từng hàm riêng rẽ. Với những cặp hàm mà lỗi nằm ở hàm khác (chiếm 49.6%), độ rủi ro nội tại gần như bằng nhau. Do LLM xuất số rời rạc (`80%` vs `85%`) cộng với việc 61.8% lượt chạy OpenVul chạm trần `think_forced`, chỉ cần hàm `vul` ngẫu nhiên dừng ở `80%` và hàm `fix` dừng ở `85%`, ngưỡng cắt cứng `>= 85%` lập tức biến cặp `(80%, 85%)` thành `(An toàn, Lỗi)` $\rightarrow$ tạo ra `P-R`.
+
+---
+
+## 5. BỐN ĐỊNH HƯỚNG TIẾP THEO ĐỂ GIẢM `P-R` (< 5%) VÀ BỨT PHÁ QUA NGƯỠNG $F_1 = 0.70$
 
 1. **Hướng 1 (Chạy ngay trên CPU — 0 Compute Unit): Kết hợp Đa góc nhìn & Đa mô hình (Multi-Model Soft Stacking)**
    - Kết hợp điểm xác suất liên tục của **ModernBERT (`pv1`, `lw_s0`)** + **Qwen3.5-9B (`plain`, `audit_hint`)** + **OpenVul-4B (`plain`, `audit_hint`)** + các đặc trưng trùng khớp dòng (`sink_in_hint`, `line_entropy`) bằng kiểm định chéo Out-of-Fold theo cặp.
-   - Tận dụng thế mạnh của `OpenVul plain` trên nhóm `CHANGED` (`Net = +10.08%`), `Qwen3.5` & `OpenVul audit_hint` trên nhóm `ADD_ONLY` (`Net = +12.08% – +12.56%`), và điểm liên tục của `ModernBERT` để giữ Recall cao mà không làm nổ `P-V`.
-2. **Hướng 2 (Chi phí thấp ~2–3 Units trên L4): Prompt `"Plain + Line Hint"` (`plain_hint`) & Tăng `think_budget`**
-   - Đưa 3 dòng mỏ neo của ModernBERT trực tiếp vào prompt `PLAIN` gọn nhẹ của OpenVul (không bắt sinh danh sách JSON dài dòng của `AUDIT`) và nâng `--think_budget` từ `1536` lên `2560` để chấm dứt tình trạng bị cắt ngang suy nghĩ (`think_forced`).
+   - **Tác dụng kép:** (a) Xóa bỏ hiện tượng nhảy bậc ngẫu nhiên `80% vs 85%` ở vách cắt cứng để kéo giảm `P-R`; (b) Cộng hưởng thế mạnh của `OpenVul plain` trên nhóm `CHANGED` (`Net = +10.08%`) với `audit_hint` trên nhóm `ADD_ONLY` (`Net = +12.56%`) để giữ Recall cao mà không làm nổ `P-V`.
+2. **Hướng 2 (Chi phí thấp ~2–3 Units trên L4): Prompt `"Plain + Line Hint"` (`plain_hint`) + Ngưỡng Hint Động + Nhận diện Mẫu Cleanup**
+   - Đưa dòng mỏ neo của ModernBERT trực tiếp vào prompt `PLAIN` gọn nhẹ của OpenVul và nâng `--think_budget` từ `1536` lên `2560` để chấm dứt tình trạng bị cắt ngang suy nghĩ (`think_forced`).
+   - **Trị tận gốc `P-R`:** Thay vì luôn ép lấy đủ Top-3 dòng bằng mọi giá (gây *Hint Shift* ở hàm đã vá), chỉ đưa vào prompt các dòng có `line_prob` vượt ngưỡng sàn; đồng thời bổ sung quy tắc nhận diện mẫu `if (...) { free/goto err; return; }` là bản vá hợp lệ.
 3. **Hướng 3 (Chi phí thấp ~2–3 Units trên L4): Huấn luyện lại ModernBERT với Nhãn Mỏ neo chèn (`--anchor_add_only`)**
    - Checkpoint ModernBERT hiện tại được train trước khi có thuật toán [`diff_flaw_lines_anchored`](experiments/exp5_line_labels/prepare_primevul_lines.py). Train lại ModernBERT với `--anchor_add_only` sẽ giúp bản thân encoder học được vị trí thiếu câu lệnh `if` ngay từ gốc.
 4. **Hướng 4 (Đột phá dài hạn): Tóm tắt Hợp đồng Liên hàm (Callee Contract Distillation) & Huấn luyện cặp DPO**
-   - Thay vì nhồi 8.000 ký tự code thô của hàm cha/con, tóm tắt mỗi hàm phụ thành 1 dòng hợp đồng điều kiện biên (`pre/post-condition`), kết hợp huấn luyện đối xứng LoRA DPO theo cặp `(vul, fix)` trên tập train PrimeVul.
+   - Thay vì nhồi 8.000 ký tự code thô của hàm cha/con, tóm tắt mỗi hàm phụ thành 1 dòng hợp đồng điều kiện biên (`pre/post-condition`), kết hợp huấn luyện đối xứng LoRA DPO theo cặp `(vul, fix)` trên tập train PrimeVul để triệt tiêu `P-R`.
 
 ---
 
