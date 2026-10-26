@@ -194,8 +194,13 @@ def cmd_new(a):
     if listed:
         say(f"session {S} exists - not creating another VM (that would bill a second one)")
     else:
-        say(f"colab new -s {S} --gpu {a.gpu}")
-        rc, _ = colab("new", "-s", S, "--gpu", a.gpu, wall=600)
+        new_args = ["new", "-s", S]
+        if a.gpu and a.gpu.lower() not in ("none", "cpu", ""):
+            new_args += ["--gpu", a.gpu]
+            say(f"colab new -s {S} --gpu {a.gpu}")
+        else:
+            say(f"colab new -s {S} (CPU runtime)")
+        rc, _ = colab(*new_args, wall=600)
         if rc != 0:
             sys.exit(f"colab new failed (rc {rc})")
         time.sleep(20)                            # the first exec right after `new` can time out while the kernel starts

@@ -85,6 +85,9 @@ Answer with JSON only:
 HINT = "\nA line-level model trained on vulnerability fixes flagged these lines as the most suspicious: {lines}.\n"
 HINT_RULE = " Audit the flagged lines first; you may add or drop candidates."
 
+HINT_NEUTRAL = "\nA static analysis pass identified candidate lines performing sensitive/critical operations: {lines}.\n"
+HINT_RULE_NEUTRAL = " Check whether operations on these lines are properly guarded; you may add or drop candidates."
+
 SYSTEM_CTX = ("You are a careful C/C++ security auditor. You audit exactly one function. You also get some related code from "
               "the same repository (definitions of functions it calls, places where it is called); it may or may not be "
               "relevant. There is no patch and no commit message. Be precise about line numbers. Answer with a single JSON "
@@ -137,7 +140,7 @@ def hint_lines(r, arm, k, n_kept):
     return [i + 1 for i in pick]          # 1-based in the prompt
 
 
-def build(r, arm, k):
+def build(r, arm, k, hint_style="neutral"):
     """-> (messages, meta, thinking)"""
     code, n_kept, cut = numbered(r["func"])
     meta = {"idx": r["idx"], "arm": arm, "cut": cut, "n_lines": n_kept}
@@ -147,7 +150,9 @@ def build(r, arm, k):
         hint, rule = "", ""
         if arm in ("audit_hint", "audit_rand", "audit_hint_nt"):
             meta["hint_lines"] = hint_lines(r, arm, k, n_kept)
-            hint, rule = HINT.format(lines=", ".join(map(str, meta["hint_lines"]))), HINT_RULE
+            h_tmpl = HINT_NEUTRAL if hint_style == "neutral" else HINT
+            r_tmpl = HINT_RULE_NEUTRAL if hint_style == "neutral" else HINT_RULE
+            hint, rule = h_tmpl.format(lines=", ".join(map(str, meta["hint_lines"]))), r_tmpl
         if arm in CTX_ARMS:
             ctx = (r.get(CTX_ARMS[arm]) or "").strip()[:MAX_CTX_CHARS] or "/* nothing found */"
             meta["ctx_chars"] = len(ctx)
@@ -310,7 +315,7 @@ def run(a):
         T = time.time(); n = n_err = 0; toks = 0
 
         def work(r):
-            messages, meta, thinking = build(r, arm, a.k)
+            messages, meta, thinking = build(r, arm, a.k, hint_style=getattr(a, "hint_style", "neutral"))
             text, rec = cl.judge(messages, thinking, seed_of(r["idx"]))
             js, how = parse_answer(text)
             return {**meta, **rec, "target": r["target"], "pair_idx": r.get("pair_idx"), "status": "ok" if js else "unparsed",
@@ -412,7 +417,8 @@ if __name__ == "__main__":
     ap.add_argument("--out", required=True)
     ap.add_argument("--arms", nargs="*", default=["audit_hint"])
     ap.add_argument("--limit", type=int, default=None, help="smoke: this many vulnerable functions (with flaw lines) + their pairs")
-    ap.add_argument("--k", type=int, default=5)
+    ap.add_argument("--k", type=int, default=3, help="top-k hint lines (default: 3 to avoid OR-gate false alarm explosion)")
+    ap.add_argument("--hint_style", choices=["neutral", "asymmetric"], default="neutral", help="symmetric neutral hints vs asymmetric priming")
     ap.add_argument("--url", default="http://127.0.0.1:8000/v1")
     ap.add_argument("--model", default="llm")
     ap.add_argument("--workers", type=int, default=16, help="keep <= the server's --max-num-seqs so requests do not queue")

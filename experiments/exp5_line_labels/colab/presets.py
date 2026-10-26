@@ -159,6 +159,29 @@ preset("vllm", [
 preset("llm_audit", ["python llm_audit.py run"], note="llm_audit.py run <args after -->, needs the vllm job up",
        takes_args=True)
 
+# OpenVul 4B (Phase 1): OpenVul-Qwen3-4B-SFT-ep3 with symmetric neutral hints (K=3)
+WAIT_VLLM = "until curl -sf http://127.0.0.1:8000/v1/models >/dev/null; do echo 'waiting for vllm'; sleep 30; done"
+OPENVUL_MODEL = "Leopo1d/OpenVul-Qwen3-4B-SFT-ep3"
+preset("vllm_openvul", [
+    "pip install -U --progress-bar off 'vllm>=0.17'",
+    f"exec python -m vllm.entrypoints.openai.api_server --model {OPENVUL_MODEL} --served-model-name llm "
+    "--reasoning-parser qwen3 --max-model-len 16384 --gpu-memory-utilization 0.90 "
+    "--max-num-seqs 32 --dtype bfloat16 --port 8000",
+], note="vLLM OpenAI server for OpenVul-4B on port 8000 (bfloat16)", service=True)
+
+preset("openvul_smoke", [
+    WAIT_VLLM,
+    f"python llm_audit.py run --scores {ROOT}/upload/test_scores.jsonl --out {ROOT}/openvul_smoke --arms audit_hint audit --k 3 --hint_style neutral --workers 16 --limit 10 --tokenizer {OPENVUL_MODEL}",
+    f"python llm_audit.py score --scores {ROOT}/upload/test_scores.jsonl --out {ROOT}/openvul_smoke",
+], note="Smoke test (10 pairs) for OpenVul-4B with symmetric hints K=3", pull=["openvul_smoke"])
+
+preset("openvul_test", [
+    WAIT_VLLM,
+    f"python llm_audit.py run --scores {ROOT}/upload/test_scores.jsonl --out {ROOT}/openvul_test --arms audit_hint audit plain --k 3 --hint_style neutral --workers 24 --tokenizer {OPENVUL_MODEL}",
+    f"python llm_audit.py score --scores {ROOT}/upload/test_scores.jsonl --out {ROOT}/openvul_test",
+], note="Full test for OpenVul-4B with symmetric hints K=3 on PrimeVul test pairs", pull=["openvul_test"])
+
+
 # phase 2: cross-function context (build_context.py) on PrimeVul pairs. Arms: audit (no context), audit_ctx (real),
 # audit_ctxfake (control). Inputs go up first: colabctl push inputs/ctx_<split>_pairs.jsonl /content/exp5/upload/...
 # llm_ctx_valid is the check run (60 valid pairs); llm_ctx_test is the one pre-registered test run.

@@ -31,6 +31,29 @@ def diff_flaw_lines(vul, fix):
     return out
 
 
+def diff_flaw_lines_anchored(vul, fix):
+    """diff_flaw_lines with insertion-anchor support for add_only patches.
+    When a patch only adds code, the omitted check is anchored to the adjacent line in vul."""
+    a, b = vul.split("\n"), fix.split("\n")
+    out, anchors = [], []
+    for op, i1, i2, j1, j2 in difflib.SequenceMatcher(None, [x.strip() for x in a], [x.strip() for x in b], autojunk=False).get_opcodes():
+        if op in ("delete", "replace"):
+            out += [i for i in range(i1, i2) if a[i].strip() and not a[i].strip().startswith(COMMENT)]
+        elif op == "insert":
+            cand = i1 - 1 if i1 > 0 else i1
+            while cand >= 0 and (not a[cand].strip() or a[cand].strip().startswith(COMMENT)):
+                cand -= 1
+            if cand < 0:
+                cand = i1
+                while cand < len(a) and (not a[cand].strip() or a[cand].strip().startswith(COMMENT)):
+                    cand += 1
+            if 0 <= cand < len(a):
+                anchors.append(cand)
+    if not out and anchors:
+        return sorted(list(set(anchors)))
+    return sorted(list(set(out)))
+
+
 def primevul_rows(primevul_dir, limit=None):
     """-> (pair_rows, test_rows) in train_lines row format; downloads PrimeVul if needed."""
     os.makedirs(primevul_dir, exist_ok=True)

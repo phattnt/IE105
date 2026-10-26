@@ -20,7 +20,7 @@ import random
 import re
 from collections import Counter
 
-from eval_primevul import diff_flaw_lines
+from eval_primevul import diff_flaw_lines, diff_flaw_lines_anchored
 
 
 def load_jsonl(p):
@@ -43,8 +43,9 @@ def benign_rows(primevul, split, n, used_idx, banned_hash, seed):
     return rows, len(pool)
 
 
-def pair_rows(paired, split):
+def pair_rows(paired, split, anchor_add_only=False):
     out, st = [], Counter()
+    diff_fn = diff_flaw_lines_anchored if anchor_add_only else diff_flaw_lines
     for k in range(0, len(paired) - 1, 2):
         v, f = paired[k], paired[k + 1]
         if v["commit_id"] != f["commit_id"] or {v["target"], f["target"]} != {0, 1}:
@@ -52,7 +53,7 @@ def pair_rows(paired, split):
             continue
         if v["target"] == 0:
             v, f = f, v
-        fl = diff_flaw_lines(v["func"], f["func"])
+        fl = diff_fn(v["func"], f["func"])
         st["pairs"] += 1
         st["add_only_fix"] += int(not fl)
         common = {"project": v.get("project", ""), "commit_id": v["commit_id"], "cwe": [v.get("cwe") or ""], "split": split,
@@ -71,11 +72,12 @@ def main():
     ap.add_argument("--extra_benign", type=int, default=0)
     ap.add_argument("--extra_benign_valid", type=int, default=0)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--anchor_add_only", action="store_true", help="anchor missing validation lines for add_only patches")
     a = ap.parse_args()
     os.makedirs(a.out, exist_ok=True)
     stats, rows_by, st_by = {}, {}, {}
     for split in ("train", "valid", "test"):
-        rows_by[split], st_by[split] = pair_rows(load_jsonl(os.path.join(a.primevul, f"primevul_{split}_paired.jsonl")), split)
+        rows_by[split], st_by[split] = pair_rows(load_jsonl(os.path.join(a.primevul, f"primevul_{split}_paired.jsonl")), split, anchor_add_only=a.anchor_add_only)
     test_hash = {text_hash(r["func"]) for r in rows_by["test"]}
     test_hash |= {text_hash(r["func"]) for r in load_jsonl(os.path.join(a.primevul, "primevul_test.jsonl"))}
     for split, n in (("train", a.extra_benign), ("valid", a.extra_benign_valid)):
