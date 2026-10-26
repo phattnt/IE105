@@ -47,7 +47,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 COMMENT = ("//", "/*", "*", "*/")
 MAX_CHARS = 24000          # ~7k tokens; longer functions are cut (counted in the summary)
-ARMS = ("plain", "audit", "audit_hint", "audit_rand", "audit_hint_nt", "audit_ctx", "audit_ctxfake")
+ARMS = ("plain", "plain_hint", "plain_rand", "audit", "audit_hint", "audit_rand", "audit_hint_nt", "audit_ctx", "audit_ctxfake")
 CTX_ARMS = {"audit_ctx": "context", "audit_ctxfake": "context_fake"}
 MAX_CTX_CHARS = 9000       # build_context.py --budget 8000 plus headers
 SAMPLING = {True: {"temperature": 0.6, "top_p": 0.95, "top_k": 20, "presence_penalty": 0.0},
@@ -64,6 +64,15 @@ PLAIN = """Does this function contain a security vulnerability (memory safety, i
 {code}
 ```
 
+Answer with JSON only: {{"vulnerable": true or false, "probability": <integer 0-100, your probability that the function is vulnerable>, "reason": "one sentence"}}"""
+
+PLAIN_HINT = """Does this function contain a security vulnerability (memory safety, integer overflow, missing validation, use-after-free, race, etc.)?
+Lines are numbered.
+
+```c
+{code}
+```
+{hint}
 Answer with JSON only: {{"vulnerable": true or false, "probability": <integer 0-100, your probability that the function is vulnerable>, "reason": "one sentence"}}"""
 
 AUDIT = """Audit this function for a security vulnerability by checking whether its dangerous operations are guarded.
@@ -132,7 +141,7 @@ def numbered(func):
 def hint_lines(r, arm, k, n_kept):
     lines = r["func"].split("\n")
     code = [i for i in range(min(len(lines), len(r["line_scores"]), n_kept)) if is_code(lines[i])]
-    if arm == "audit_rand":
+    if arm in ("audit_rand", "plain_rand"):
         rng = random.Random(f"{r['idx']}")
         pick = sorted(rng.sample(code, min(k, len(code))))
     else:
@@ -146,6 +155,11 @@ def build(r, arm, k, hint_style="neutral"):
     meta = {"idx": r["idx"], "arm": arm, "cut": cut, "n_lines": n_kept}
     if arm == "plain":
         user = PLAIN.format(code=code)
+    elif arm in ("plain_hint", "plain_rand"):
+        meta["hint_lines"] = hint_lines(r, arm, k, n_kept)
+        h_tmpl = HINT_NEUTRAL if hint_style == "neutral" else HINT
+        hint = h_tmpl.format(lines=", ".join(map(str, meta["hint_lines"])))
+        user = PLAIN_HINT.format(code=code, hint=hint)
     else:
         hint, rule = "", ""
         if arm in ("audit_hint", "audit_rand", "audit_hint_nt"):
