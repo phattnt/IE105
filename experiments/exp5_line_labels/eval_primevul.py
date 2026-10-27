@@ -31,24 +31,46 @@ def diff_flaw_lines(vul, fix):
     return out
 
 
-def diff_flaw_lines_anchored(vul, fix):
+TRIVIAL_ANCHOR = {"{", "}", "};", ";", "else", "} else {"}
+
+
+def _is_anchor_code(line):
+    s = line.strip()
+    return bool(s) and not s.startswith(COMMENT) and s not in TRIVIAL_ANCHOR
+
+
+def diff_flaw_lines_anchored(vul, fix, mode="after"):
     """diff_flaw_lines with insertion-anchor support for add_only patches.
-    When a patch only adds code, the omitted check is anchored to the adjacent line in vul."""
+    mode='after' (default): first non-trivial code line at/below insertion point (victim statement).
+    mode='before': last non-trivial code line above insertion point.
+    mode='both': both adjacent non-trivial code lines."""
     a, b = vul.split("\n"), fix.split("\n")
     out, anchors = [], []
     for op, i1, i2, j1, j2 in difflib.SequenceMatcher(None, [x.strip() for x in a], [x.strip() for x in b], autojunk=False).get_opcodes():
         if op in ("delete", "replace"):
             out += [i for i in range(i1, i2) if a[i].strip() and not a[i].strip().startswith(COMMENT)]
         elif op == "insert":
-            cand = i1 - 1 if i1 > 0 else i1
-            while cand >= 0 and (not a[cand].strip() or a[cand].strip().startswith(COMMENT)):
-                cand -= 1
-            if cand < 0:
-                cand = i1
-                while cand < len(a) and (not a[cand].strip() or a[cand].strip().startswith(COMMENT)):
-                    cand += 1
-            if 0 <= cand < len(a):
-                anchors.append(cand)
+            b_idx = i1 - 1
+            while b_idx >= 0 and not _is_anchor_code(a[b_idx]):
+                b_idx -= 1
+            a_idx = i1
+            while a_idx < len(a) and not _is_anchor_code(a[a_idx]):
+                a_idx += 1
+            if mode == "after":
+                if a_idx < len(a):
+                    anchors.append(a_idx)
+                elif b_idx >= 0:
+                    anchors.append(b_idx)
+            elif mode == "before":
+                if b_idx >= 0:
+                    anchors.append(b_idx)
+                elif a_idx < len(a):
+                    anchors.append(a_idx)
+            elif mode == "both":
+                if b_idx >= 0:
+                    anchors.append(b_idx)
+                if a_idx < len(a):
+                    anchors.append(a_idx)
     if not out and anchors:
         return sorted(list(set(anchors)))
     return sorted(list(set(out)))
