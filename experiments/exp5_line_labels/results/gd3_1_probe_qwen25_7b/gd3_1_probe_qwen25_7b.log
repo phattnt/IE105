@@ -1,0 +1,223 @@
+== 2026-11-20 09:33:05 UTC start gd3_1_probe_qwen25_7b
+Split stats: {"skipped_misaligned": {"train": 0, "valid": 0, "test": 0}, "train_filter": {"raw": 4354, "clean": 4347, "dropped_commit": 6, "dropped_hash": 1}, "valid_filter": {"raw": 562, "clean": 562, "dropped_commit": 0, "dropped_hash": 0}, "extra_benign_pool": 173561, "extra_benign_sampled": 2000, "test_pairs": 564, "test_seen_projects": 455, "test_unseen_projects": 109}
+[extract] Loading tokenizer & model: Qwen/Qwen2.5-Coder-7B-Instruct
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[extract] Yes token IDs=[(7414, ' Yes'), (9454, 'Yes')] | No token IDs=[(2308, ' No'), (2753, 'No')]
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+Fetching 4 files:   0%|          | 0/4 [00:00<?, ?it/s]Fetching 4 files:  25%|██▌       | 1/4 [00:25<01:15, 25.15s/it]Fetching 4 files:  50%|█████     | 2/4 [00:43<00:41, 20.96s/it]Fetching 4 files:  75%|███████▌  | 3/4 [00:43<00:11, 11.49s/it]Fetching 4 files: 100%|██████████| 4/4 [00:43<00:00, 10.85s/it]
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights:   0%|          | 1/339 [00:00<01:25,  3.94it/s]Loading weights:   1%|          | 2/339 [00:00<01:29,  3.77it/s]Loading weights:   1%|▏         | 5/339 [00:00<00:33, 10.01it/s]Loading weights:   5%|▌         | 18/339 [00:00<00:08, 38.75it/s]Loading weights:   9%|▉         | 30/339 [00:00<00:05, 57.20it/s]Loading weights:  12%|█▏        | 42/339 [00:00<00:04, 70.32it/s]Loading weights:  16%|█▌        | 54/339 [00:01<00:03, 79.78it/s]Loading weights:  19%|█▉        | 66/339 [00:01<00:03, 86.40it/s]Loading weights:  23%|██▎       | 78/339 [00:01<00:02, 90.99it/s]Loading weights:  27%|██▋       | 90/339 [00:01<00:02, 94.60it/s]Loading weights:  30%|███       | 102/339 [00:01<00:02, 96.84it/s]Loading weights:  34%|███▎      | 114/339 [00:01<00:02, 98.20it/s]Loading weights:  37%|███▋      | 126/339 [00:01<00:02, 99.24it/s]Loading weights:  41%|████      | 138/339 [00:01<00:02, 100.20it/s]Loading weights:  44%|████▍     | 150/339 [00:02<00:01, 100.84it/s]Loading weights:  48%|████▊     | 162/339 [00:02<00:01, 101.45it/s]Loading weights:  51%|█████▏    | 174/339 [00:02<00:01, 101.86it/s]Loading weights:  55%|█████▍    | 186/339 [00:02<00:01, 102.05it/s]Loading weights:  58%|█████▊    | 197/339 [00:02<00:01, 99.70it/s] Loading weights:  62%|██████▏   | 209/339 [00:02<00:01, 100.90it/s]Loading weights:  65%|██████▌   | 222/339 [00:02<00:01, 103.95it/s]Loading weights:  69%|██████▉   | 234/339 [00:02<00:01, 103.32it/s]Loading weights:  73%|███████▎  | 246/339 [00:02<00:00, 103.33it/s]Loading weights:  76%|███████▌  | 258/339 [00:03<00:00, 103.20it/s]Loading weights:  80%|███████▉  | 270/339 [00:03<00:00, 103.14it/s]Loading weights:  83%|████████▎ | 282/339 [00:03<00:00, 103.27it/s]Loading weights:  87%|████████▋ | 294/339 [00:03<00:00, 102.92it/s]Loading weights:  90%|█████████ | 306/339 [00:03<00:00, 102.83it/s]Loading weights:  94%|█████████▍| 318/339 [00:03<00:00, 102.90it/s]Loading weights:  97%|█████████▋| 330/339 [00:03<00:00, 102.48it/s]Loading weights: 100%|██████████| 339/339 [00:03<00:00, 89.05it/s] 
+[extract] Model loaded: num_layers=28, d=3584, hooks=[13, 19, 23, 27]
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (44400 > 32768). Running this sequence through the model will result in indexing errors
+[extract] Head equivalence max_diff=3.12e-02 | sample0 top5=[(' No', 19.5), (' Yes', 15.88), (' **', 15.06), (' N', 12.56), (' The', 12.44)]
+[extract] 500/15066 | 29.3 fn/s | 2865 tok/s | peakVRAM 15.30 GB | ETA 8.3 min
+[extract] 1000/15066 | 28.1 fn/s | 3011 tok/s | peakVRAM 15.31 GB | ETA 8.3 min
+[extract] 1500/15066 | 26.0 fn/s | 3026 tok/s | peakVRAM 15.32 GB | ETA 8.7 min
+[extract] 2000/15066 | 24.5 fn/s | 3088 tok/s | peakVRAM 15.34 GB | ETA 8.9 min
+[extract] 2500/15066 | 23.0 fn/s | 3139 tok/s | peakVRAM 15.35 GB | ETA 9.1 min
+[extract] 3000/15066 | 21.6 fn/s | 3170 tok/s | peakVRAM 15.36 GB | ETA 9.3 min
+[extract] 3500/15066 | 20.4 fn/s | 3209 tok/s | peakVRAM 15.37 GB | ETA 9.5 min
+[extract] 4000/15066 | 19.4 fn/s | 3270 tok/s | peakVRAM 15.39 GB | ETA 9.5 min
+[extract] 4500/15066 | 18.4 fn/s | 3300 tok/s | peakVRAM 15.41 GB | ETA 9.6 min
+[extract] 5000/15066 | 17.4 fn/s | 3327 tok/s | peakVRAM 15.42 GB | ETA 9.7 min
+[extract] 5500/15066 | 16.5 fn/s | 3356 tok/s | peakVRAM 15.44 GB | ETA 9.7 min
+[extract] 6000/15066 | 15.6 fn/s | 3391 tok/s | peakVRAM 15.46 GB | ETA 9.7 min
+[extract] 6500/15066 | 14.8 fn/s | 3416 tok/s | peakVRAM 15.48 GB | ETA 9.7 min
+[extract] 7000/15066 | 14.0 fn/s | 3433 tok/s | peakVRAM 15.50 GB | ETA 9.6 min
+[extract] 7500/15066 | 13.2 fn/s | 3451 tok/s | peakVRAM 15.53 GB | ETA 9.6 min
+[extract] 8000/15066 | 12.4 fn/s | 3451 tok/s | peakVRAM 15.53 GB | ETA 9.5 min
+[extract] 8500/15066 | 11.7 fn/s | 3453 tok/s | peakVRAM 15.53 GB | ETA 9.4 min
+[extract] 9000/15066 | 11.0 fn/s | 3460 tok/s | peakVRAM 15.53 GB | ETA 9.2 min
+[extract] 9500/15066 | 10.3 fn/s | 3476 tok/s | peakVRAM 15.53 GB | ETA 9.0 min
+[extract] 10000/15066 | 9.7 fn/s | 3483 tok/s | peakVRAM 15.53 GB | ETA 8.7 min
+[extract] 10500/15066 | 9.0 fn/s | 3489 tok/s | peakVRAM 15.53 GB | ETA 8.4 min
+[extract] 11000/15066 | 8.4 fn/s | 3486 tok/s | peakVRAM 15.53 GB | ETA 8.1 min
+[extract] 11500/15066 | 7.7 fn/s | 3483 tok/s | peakVRAM 15.53 GB | ETA 7.7 min
+[extract] 12000/15066 | 7.2 fn/s | 3488 tok/s | peakVRAM 15.53 GB | ETA 7.1 min
+[extract] 12500/15066 | 6.6 fn/s | 3496 tok/s | peakVRAM 15.53 GB | ETA 6.5 min
+[extract] 13000/15066 | 6.0 fn/s | 3501 tok/s | peakVRAM 15.53 GB | ETA 5.7 min
+[extract] 13500/15066 | 5.6 fn/s | 3518 tok/s | peakVRAM 15.53 GB | ETA 4.7 min
+[extract] 14000/15066 | 5.2 fn/s | 3533 tok/s | peakVRAM 15.53 GB | ETA 3.4 min
+[extract] 14500/15066 | 4.8 fn/s | 3544 tok/s | peakVRAM 15.53 GB | ETA 1.9 min
+[extract] 15000/15066 | 4.6 fn/s | 3554 tok/s | peakVRAM 15.53 GB | ETA 0.2 min
+[extract] 15066/15066 | 4.6 fn/s | 3555 tok/s | peakVRAM 15.53 GB | ETA 0.0 min
+[extract] Saved cached embeddings to /content/exp5/tmp_emb/qwen25_7b_feats.npz
+[eval] Skipping manual40 breakdown (project match 29/40)
+/usr/local/lib/python3.13/dist-packages/sklearn/linear_model/_logistic.py:465: ConvergenceWarning: lbfgs failed to converge (status=1):
+STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT.
+
+Increase the number of iterations (max_iter) or scale the data as shown in:
+    https://scikit-learn.org/stable/modules/preprocessing.html
+Please also refer to the documentation for alternative solver options:
+    https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+  n_iter_i = _check_optimize_result(
+/usr/local/lib/python3.13/dist-packages/sklearn/linear_model/_logistic.py:465: ConvergenceWarning: lbfgs failed to converge (status=1):
+STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT.
+
+Increase the number of iterations (max_iter) or scale the data as shown in:
+    https://scikit-learn.org/stable/modules/preprocessing.html
+Please also refer to the documentation for alternative solver options:
+    https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+  n_iter_i = _check_optimize_result(
+/usr/local/lib/python3.13/dist-packages/sklearn/linear_model/_logistic.py:465: ConvergenceWarning: lbfgs failed to converge (status=1):
+STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT.
+
+Increase the number of iterations (max_iter) or scale the data as shown in:
+    https://scikit-learn.org/stable/modules/preprocessing.html
+Please also refer to the documentation for alternative solver options:
+    https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+  n_iter_i = _check_optimize_result(
+/usr/local/lib/python3.13/dist-packages/sklearn/linear_model/_logistic.py:465: ConvergenceWarning: lbfgs failed to converge (status=1):
+STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT.
+
+Increase the number of iterations (max_iter) or scale the data as shown in:
+    https://scikit-learn.org/stable/modules/preprocessing.html
+Please also refer to the documentation for alternative solver options:
+    https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+  n_iter_i = _check_optimize_result(
+/usr/local/lib/python3.13/dist-packages/sklearn/linear_model/_logistic.py:465: ConvergenceWarning: lbfgs failed to converge (status=1):
+STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT.
+
+Increase the number of iterations (max_iter) or scale the data as shown in:
+    https://scikit-learn.org/stable/modules/preprocessing.html
+Please also refer to the documentation for alternative solver options:
+    https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+  n_iter_i = _check_optimize_result(
+/usr/local/lib/python3.13/dist-packages/sklearn/linear_model/_logistic.py:465: ConvergenceWarning: lbfgs failed to converge (status=1):
+STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT.
+
+Increase the number of iterations (max_iter) or scale the data as shown in:
+    https://scikit-learn.org/stable/modules/preprocessing.html
+Please also refer to the documentation for alternative solver options:
+    https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+  n_iter_i = _check_optimize_result(
+/usr/local/lib/python3.13/dist-packages/sklearn/linear_model/_logistic.py:465: ConvergenceWarning: lbfgs failed to converge (status=1):
+STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT.
+
+Increase the number of iterations (max_iter) or scale the data as shown in:
+    https://scikit-learn.org/stable/modules/preprocessing.html
+Please also refer to the documentation for alternative solver options:
+    https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+  n_iter_i = _check_optimize_result(
+/usr/local/lib/python3.13/dist-packages/sklearn/linear_model/_logistic.py:465: ConvergenceWarning: lbfgs failed to converge (status=1):
+STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT.
+
+Increase the number of iterations (max_iter) or scale the data as shown in:
+    https://scikit-learn.org/stable/modules/preprocessing.html
+Please also refer to the documentation for alternative solver options:
+    https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+  n_iter_i = _check_optimize_result(
+/usr/local/lib/python3.13/dist-packages/sklearn/linear_model/_logistic.py:465: ConvergenceWarning: lbfgs failed to converge (status=1):
+STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT.
+
+Increase the number of iterations (max_iter) or scale the data as shown in:
+    https://scikit-learn.org/stable/modules/preprocessing.html
+Please also refer to the documentation for alternative solver options:
+    https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+  n_iter_i = _check_optimize_result(
+/usr/local/lib/python3.13/dist-packages/sklearn/linear_model/_logistic.py:465: ConvergenceWarning: lbfgs failed to converge (status=1):
+STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT.
+
+Increase the number of iterations (max_iter) or scale the data as shown in:
+    https://scikit-learn.org/stable/modules/preprocessing.html
+Please also refer to the documentation for alternative solver options:
+    https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+  n_iter_i = _check_optimize_result(
+# Tier 1 Frozen LLM Probe & Anti-Shortcut Report
+
+- **Model:** `Qwen/Qwen2.5-Coder-7B-Instruct` (`max_len=2048`, layers `[13, 19, 23, 27]`)
+- **Unique functions extracted:** `15066` (truncated: `1979` = `13.14%`), Peak VRAM `15.53 GB`, Time `3418.1s`, Head equiv max diff `0.03125`
+- **Clean splits:** train `4347` pairs (dropped commit `6`, hash `1`), valid `562` pairs, test `564` pairs (`seen_projects=455`, `unseen_projects=109`), extra train benigns `2000`
+
+## 1. 5-Gate Anti-Shortcut Pair Matrix (`primevul_test_paired`, n=564)
+
+| Method | Best Config | All Net@t0 / Net@med | All Rank / Debias / Ties | Bal Rank | LenMatched5% Rank | **PatchRemoves (n=65) Rank** | Seen / Unseen Rank | Changed / AddOnly Rank | Spearman(log chars) |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| `length_only` | `{"features": ["log_chars", "` | +2.1% / +1.4% | 76.4% / 53.2% / 2.5% | 52.6% | 66.8% | **20.0%** | 75.5% / 80.3% | 72.3% / 83.6% | -0.968 |
+| `tfidf_word` | `{"C": 1.0, "valid_bal_rank":` | +5.7% / +3.2% | 73.7% / 69.8% / 4.1% | 65.0% | 67.4% | **53.1%** | 73.1% / 76.2% | 69.6% / 80.7% | -0.398 |
+| `zero_shot_yesno` | `{"threshold_note": "log P(Ye` | +0.0% / +1.4% | 51.3% / 61.8% / 9.8% | 55.1% | 53.6% | **60.0%** | 50.9% / 53.2% | 52.1% / 50.0% | +0.520 |
+| `probe_std` | `mean/L13/C=0.001` | +10.1% / +10.6% | 77.5% / 76.1% / 5.7% | 66.1% | 70.6% | **50.8%** | 76.7% / 80.7% | 73.0% / 85.3% | -0.273 |
+| `probe_pair_margin` | `mean/L19/C=0.01` | +5.8% / +6.0% | 83.0% / 78.4% / 5.7% | 69.5% | 77.2% | **50.8%** | 83.7% / 79.8% | 77.5% / 92.5% | -0.684 |
+| `probe_len_balanced` | `mean/L13/C=0.01` | +6.0% / +6.7% | 77.8% / 75.7% / 5.7% | 71.7% | 71.5% | **63.1%** | 77.8% / 78.0% | 73.8% / 84.8% | -0.226 |
+| `probe_len_orth` | `mean/L13/C=0.01` | +6.7% / +6.7% | 77.2% / 78.8% / 0.2% | 71.9% | 71.1% | **64.6%** | 76.8% / 78.9% | 74.7% / 81.6% | -0.129 |
+| `probe_mixed_benign` | `mean/L13/C=0.01` | +1.4% / +1.8% | 60.3% / 65.2% / 5.7% | 62.4% | 59.6% | **64.6%** | 59.3% / 64.2% | 60.4% / 60.1% | +0.469 |
+| `mlp_len_orth` | `mean/L13/C=-` | +5.0% / +5.0% | 72.2% / 75.3% / 0.2% | 71.0% | 67.2% | **69.2%** | 72.6% / 70.6% | 70.7% / 74.9% | +0.265 |
+
+## 2. Full PrimeVul Test (Weighted Estimate over 25,911 Functions, prevalence = 2.68%)
+
+| Method | ROC-AUC | **Debiased ROC-AUC** | AUPRC | **VD-S (FNR @ 0.5% FPR)** | Recall @ 0.5% FPR | Actual FPR | Spearman(log chars) |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `length_only` | 0.1952 | **0.5087** | 0.0152 | **100.00%** | 0.00% | 0.049% | -0.984 |
+| `tfidf_word` | 0.3230 | **0.4939** | 0.0179 | **100.00%** | 0.00% | 0.049% | -0.539 |
+| `zero_shot_yesno` | 0.7636 | **0.5653** | 0.0757 | **97.70%** | 2.30% | 0.227% | +0.669 |
+| `probe_std` | 0.3328 | **0.4877** | 0.0188 | **99.71%** | 0.29% | 0.049% | -0.513 |
+| `probe_pair_margin` | 0.2433 | **0.4541** | 0.0178 | **99.57%** | 0.43% | 0.448% | -0.777 |
+| `probe_len_balanced` | 0.3859 | **0.4687** | 0.0253 | **98.99%** | 1.01% | 0.464% | -0.305 |
+| `probe_len_orth` | 0.4303 | **0.4548** | 0.0287 | **98.42%** | 1.58% | 0.419% | -0.135 |
+| `probe_mixed_benign` | 0.7811 | **0.5888** | 0.0857 | **97.55%** | 2.45% | 0.439% | +0.722 |
+| `mlp_len_orth` | 0.7477 | **0.5825** | 0.0653 | **97.70%** | 2.30% | 0.464% | +0.631 |
+
+## 3. Layer & Pooling Sweep (`probe_len_orth`)
+
+| Pool | Layer | Best C | Valid Bal Rank | Test All Rank | Test Debias Rank | Test PatchRemoves Rank |
+|---|---:|---:|---:|---:|---:|---:|
+| `last` | 13 | 0.1 | 60.1% | 63.6% | 63.0% | 58.5% |
+| `last` | 19 | 0.001 | 61.6% | 67.1% | 66.8% | 56.9% |
+| `last` | 23 | 0.01 | 59.2% | 66.9% | 68.5% | 60.0% |
+| `last` | 27 | 1.0 | 58.9% | 66.8% | 65.2% | 46.1% |
+| `mean` | 13 | 0.01 | 70.2% | 77.2% | 78.8% | 64.6% |
+| `mean` | 19 | 0.001 | 66.7% | 74.0% | 75.8% | 64.6% |
+| `mean` | 23 | 0.01 | 64.7% | 72.6% | 74.7% | 61.5% |
+| `mean` | 27 | 0.1 | 69.6% | 74.4% | 75.3% | 52.3% |
+
+T1_PROBE_DONE
+pairs 564: all 564, length_matched_5pct 337, patch_adds_code 482, patch_removes_code 65
+
+### zero_shot_yesno — cặp PrimeVul
+| tập cặp | n | xếp đúng cặp [CI] | sau trừ độ dài (hòa=0.5) | hòa % | luật độ dài | P-C / P-V / P-B / P-R (ngưỡng 0) | net [CI] | null P-C | P-C @med | net @med [CI] | flag @med % | null P-C @med |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| all | 564 | 51.3 [47.5; 55.2] | 61.8 | 9.8 | 87.0 | 2.8 / 8.7 / 85.6 / 2.8 | +0.0 [-2.0; +2.0] | 10.2 | 4.3 | +1.4 [-0.7; +3.5] | 50.0 | 25.0 |
+| length_matched_5pct | 337 | 53.6 [48.5; 58.5] | 61.6 | 14.5 | 83.8 | 3.3 / 12.8 / 80.4 / 3.6 | -0.3 [-3.0; +2.7] | 13.6 | 4.5 | +2.7 [+0.0; +5.3] | 50.0 | 25.0 |
+| patch_adds_code | 482 | 50.2 [46.1; 54.5] | 63.7 | 10.0 | 100.0 | 3.1 / 7.7 / 86.3 / 2.9 | +0.2 [-2.1; +2.3] | 9.5 | 4.1 | +1.0 [-1.2; +3.3] | 49.9 | 25.0 |
+| patch_removes_code | 65 | 60.0 [47.7; 71.5] | 47.7 | 6.2 | 0.0 | 1.5 / 10.8 / 84.6 / 3.1 | -1.5 [-7.7; +3.1] | 11.4 | 6.2 | -1.5 [-10.8; +7.7] | 50.0 | 25.0 |
+
+### probe_std — cặp PrimeVul
+| tập cặp | n | xếp đúng cặp [CI] | sau trừ độ dài (hòa=0.5) | hòa % | luật độ dài | P-C / P-V / P-B / P-R (ngưỡng 0) | net [CI] | null P-C | P-C @med | net @med [CI] | flag @med % | null P-C @med |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| all | 564 | 77.5 [74.1; 80.6] | 76.1 | 5.7 | 87.0 | 11.2 / 48.6 / 39.2 / 1.1 | +10.1 [+7.4; +12.8] | 24.8 | 11.3 | +10.6 [+8.2; +13.7] | 50.0 | 25.0 |
+| length_matched_5pct | 337 | 70.6 [66.0; 74.9] | 70.3 | 9.5 | 83.8 | 6.2 / 48.7 / 44.5 / 0.6 | +5.6 [+3.0; +8.3] | 25.0 | 5.9 | +5.0 [+2.4; +7.7] | 50.0 | 25.0 |
+| patch_adds_code | 482 | 81.4 [78.1; 85.0] | 79.8 | 6.0 | 100.0 | 12.4 / 47.9 / 38.6 / 1.0 | +11.4 [+8.5; +14.7] | 24.8 | 13.1 | +12.4 [+9.3; +15.6] | 50.0 | 25.0 |
+| patch_removes_code | 65 | 50.8 [38.5; 63.1] | 52.3 | 3.1 | 0.0 | 4.6 / 53.8 / 40.0 / 1.5 | +3.1 [-3.1; +9.2] | 24.5 | 3.1 | +1.5 [-3.1; +6.2] | 50.0 | 25.0 |
+
+### probe_len_balanced — cặp PrimeVul
+| tập cặp | n | xếp đúng cặp [CI] | sau trừ độ dài (hòa=0.5) | hòa % | luật độ dài | P-C / P-V / P-B / P-R (ngưỡng 0) | net [CI] | null P-C | P-C @med | net @med [CI] | flag @med % | null P-C @med |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| all | 564 | 77.8 [74.4; 81.0] | 75.7 | 5.7 | 87.0 | 6.4 / 42.7 / 50.5 / 0.4 | +6.0 [+4.1; +8.2] | 24.8 | 6.9 | +6.7 [+4.6; +8.9] | 50.0 | 25.0 |
+| length_matched_5pct | 337 | 71.5 [67.1; 75.8] | 69.7 | 9.5 | 83.8 | 2.7 / 43.9 / 52.8 / 0.6 | +2.1 [+0.3; +4.2] | 24.8 | 2.1 | +2.1 [+0.6; +3.9] | 50.0 | 25.0 |
+| patch_adds_code | 482 | 80.4 [77.1; 83.7] | 77.7 | 6.0 | 100.0 | 7.3 / 42.1 / 50.2 / 0.4 | +6.8 [+4.6; +9.3] | 24.8 | 7.7 | +7.5 [+5.2; +10.0] | 50.0 | 25.0 |
+| patch_removes_code | 65 | 63.1 [51.5; 74.6] | 63.1 | 3.1 | 0.0 | 1.5 / 41.5 / 56.9 / 0.0 | +1.5 [+0.0; +4.6] | 24.4 | 4.6 | +4.6 [+0.0; +10.8] | 50.0 | 25.0 |
+
+### probe_len_orth — cặp PrimeVul
+| tập cặp | n | xếp đúng cặp [CI] | sau trừ độ dài (hòa=0.5) | hòa % | luật độ dài | P-C / P-V / P-B / P-R (ngưỡng 0) | net [CI] | null P-C | P-C @med | net @med [CI] | flag @med % | null P-C @med |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| all | 564 | 77.2 [73.7; 80.7] | 78.8 | 0.2 | 87.0 | 6.9 / 41.1 / 51.8 / 0.2 | +6.7 [+4.6; +8.9] | 24.7 | 6.9 | +6.7 [+4.6; +8.9] | 50.0 | 25.0 |
+| length_matched_5pct | 337 | 71.1 [66.5; 75.7] | 74.6 | 0.3 | 83.8 | 2.7 / 44.5 / 52.5 / 0.3 | +2.4 [+0.6; +4.5] | 24.8 | 3.0 | +2.7 [+0.9; +4.7] | 50.0 | 25.0 |
+| patch_adds_code | 482 | 79.3 [75.5; 83.0] | 80.7 | 0.0 | 100.0 | 7.7 / 41.3 / 50.8 / 0.2 | +7.5 [+5.2; +10.0] | 24.8 | 7.9 | +7.9 [+5.4; +10.4] | 50.0 | 25.0 |
+| patch_removes_code | 65 | 64.6 [53.8; 75.4] | 63.1 | 0.0 | 0.0 | 1.5 / 36.9 / 61.5 / 0.0 | +1.5 [+0.0; +4.6] | 23.5 | 1.5 | +1.5 [+0.0; +4.6] | 50.0 | 25.0 |
+
+### probe_mixed_benign — cặp PrimeVul
+| tập cặp | n | xếp đúng cặp [CI] | sau trừ độ dài (hòa=0.5) | hòa % | luật độ dài | P-C / P-V / P-B / P-R (ngưỡng 0) | net [CI] | null P-C | P-C @med | net @med [CI] | flag @med % | null P-C @med |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| all | 564 | 60.3 [56.2; 64.0] | 65.2 | 5.7 | 87.0 | 3.0 / 24.6 / 70.7 / 1.6 | +1.4 [-0.4; +3.2] | 19.7 | 3.5 | +1.8 [+0.0; +3.7] | 50.0 | 25.0 |
+| length_matched_5pct | 337 | 59.6 [54.9; 64.7] | 59.9 | 9.5 | 83.8 | 1.5 / 26.7 / 71.5 / 0.3 | +1.2 [+0.0; +2.7] | 20.0 | 3.6 | +3.3 [+1.2; +5.3] | 50.0 | 25.0 |
+| patch_adds_code | 482 | 60.3 [56.0; 64.5] | 67.1 | 6.0 | 100.0 | 3.3 / 25.1 / 69.9 / 1.7 | +1.7 [-0.4; +3.7] | 20.0 | 3.3 | +2.1 [+0.2; +4.1] | 50.0 | 25.0 |
+| patch_removes_code | 65 | 64.6 [53.1; 76.2] | 56.9 | 3.1 | 0.0 | 1.5 / 21.5 / 75.4 / 1.5 | +0.0 [-4.6; +4.6] | 17.8 | 1.5 | -1.5 [-7.7; +3.1] | 50.0 | 25.0 |
+
+### mlp_len_orth — cặp PrimeVul
+| tập cặp | n | xếp đúng cặp [CI] | sau trừ độ dài (hòa=0.5) | hòa % | luật độ dài | P-C / P-V / P-B / P-R (ngưỡng 0) | net [CI] | null P-C | P-C @med | net @med [CI] | flag @med % | null P-C @med |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| all | 564 | 72.3 [68.8; 75.9] | 75.3 | 0.2 | 87.0 | 5.7 / 48.2 / 45.4 / 0.7 | +5.0 [+3.0; +7.1] | 25.0 | 5.7 | +5.0 [+3.0; +7.1] | 50.0 | 25.0 |
+| length_matched_5pct | 337 | 67.2 [62.5; 72.1] | 68.1 | 0.3 | 83.8 | 3.6 / 51.9 / 44.2 / 0.3 | +3.3 [+1.2; +5.3] | 24.9 | 3.9 | +3.3 [+1.2; +5.6] | 50.0 | 25.0 |
+| patch_adds_code | 482 | 72.8 [68.7; 76.8] | 76.8 | 0.0 | 100.0 | 6.6 / 48.1 / 44.8 / 0.4 | +6.2 [+4.1; +8.5] | 25.0 | 6.6 | +6.2 [+3.9; +8.5] | 50.0 | 25.0 |
+| patch_removes_code | 65 | 69.2 [58.5; 80.0] | 64.6 | 0.0 | 0.0 | 0.0 / 49.2 / 47.7 / 3.1 | -3.1 [-7.7; +0.0] | 25.0 | 1.5 | -1.5 [-7.7; +3.1] | 50.0 | 25.0 |
+wrote /content/exp5/gd3_1_probe_qwen25_7b/pair_protocol_t1.json
+== 2026-11-20 10:49:03 UTC exit 0

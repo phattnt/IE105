@@ -10,12 +10,32 @@ import numpy as np
 from pair_protocol import load_jsonl, debias
 
 B = 2000
-ARMS = ["plain", "audit", "audit_hint", "audit_rand", "audit_hint_nt"]
+ARMS = [
+    "plain",
+    "plain_hint",
+    "plain_hint_nms",
+    "plain_rand",
+    "audit",
+    "audit_hint",
+    "audit_rand",
+    "audit_hint_nt",
+    "debate_nms",
+    "debate_rand",
+    "debate_none",
+]
 CONTRASTS = [("audit_hint", "audit_rand", "effect of the line model's lines vs random lines"),
              ("audit_hint", "audit", "hint vs no hint"),
              ("audit", "plain", "guard-audit prompt vs plain question"),
              ("audit_hint", "plain", "full method vs plain question"),
              ("audit_hint", "audit_hint_nt", "thinking vs no thinking"),
+             ("plain_hint_nms", "plain_rand", "NMS line hints vs random lines (plain prompt)"),
+             ("plain_hint_nms", "plain", "NMS line hints vs no hint (plain prompt)"),
+             ("plain_rand", "plain", "random hints vs no hint (prompt effect)"),
+             ("debate_nms", "debate_rand", "2-stage NMS hints vs 2-stage random lines"),
+             ("debate_nms", "debate_none", "2-stage NMS hints vs 2-stage no hint"),
+             ("debate_rand", "debate_none", "2-stage random lines vs 2-stage no hint"),
+             ("debate_nms", "plain", "2-stage NMS vs plain baseline"),
+             ("debate_none", "plain", "2-stage no-hint vs plain baseline"),
              ("llm_mean", "plain", "mean of thinking arms vs plain (exploratory)"),
              ("plain", "line_model", "plain LLM vs line model (rank only; line model is not thresholded at 0)")]
 
@@ -46,6 +66,7 @@ def main():
     ap.add_argument("--llm", required=True, help="pulled LLM run dir with scores/<arm>/primevul_test_scores.jsonl")
     ap.add_argument("--out", default=None)
     ap.add_argument("--paired", default="primevul_test_paired.jsonl", help="pair file under --primevul (valid: primevul_valid_paired.jsonl)")
+    ap.add_argument("--clean_json", default=None, help="Optional leak-audit JSON with clean_pair_indices")
     ap.add_argument("--extra", nargs="*", default=[], help="name=<primevul_test_scores.jsonl> of another run, e.g. audit_8k=...")
     ap.add_argument("--contrast", nargs="*", default=[], help="x:y pairs to add to the contrasts, e.g. audit_8k:audit")
     a = ap.parse_args()
@@ -65,6 +86,13 @@ def main():
         changed = np.array([bool(flaw.get(p[0])) for p in pairs])
         subsets.update(changed=changed, add_only=~changed)
     subsets["length_matched"] = np.abs(cv - cf) / np.maximum(cv, cf) < 0.05
+    if a.clean_json:
+        lj = json.load(open(a.clean_json, encoding="utf-8"))
+        raw_clean = lj.get("clean_pair_indices", [])
+        clean_v = {item[0] if isinstance(item, (list, tuple)) else item for item in raw_clean}
+        clean_mask = np.array([p[0] in clean_v for p in pairs])
+        subsets["clean"] = clean_mask
+        subsets["leaked"] = ~clean_mask
 
     scores = {}
     if a.line != "none":

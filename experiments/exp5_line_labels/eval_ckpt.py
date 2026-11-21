@@ -21,6 +21,7 @@ def main():
     ap.add_argument("--data", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--model", default="answerdotai/ModernBERT-base")
+    ap.add_argument("--arch", choices=["linear", "norm_maxmean"], default="linear")
     ap.add_argument("--max_len", type=int, default=2048)
     ap.add_argument("--strategy", choices=["head", "slide"], default="slide")
     ap.add_argument("--eval_tokens", type=int, default=16384)
@@ -37,7 +38,7 @@ def main():
     if a.bf16:
         tl.AMP_DTYPE = torch.bfloat16
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = tl.make_model(a.model).to(device)
+    model = tl.make_model(a.model, a.arch).to(device)
     st = torch.load(a.ckpt, map_location="cpu")
     st = st["model"] if "model" in st else st
     model.load_state_dict({k: v.float() for k, v in st.items()})

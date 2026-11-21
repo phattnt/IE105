@@ -30,6 +30,10 @@ LABELS = {
     "slide_ModernBERT-base_2048_s0": "ModernBERT plain (pilot)",
     "slide_ModernBERT-base_2048_s0_contrast": "ModernBERT contrastive (pilot)",
     "slide_ModernBERT-base_2048_s0_conv": "ModernBERT plain",
+    "slide_ModernBERT-base_2048_s0_base2": "ModernBERT baseline v2 (seed 0)",
+    "slide_ModernBERT-base_2048_s1_base2": "ModernBERT baseline v2 (seed 1)",
+    "slide_ModernBERT-base_2048_s0_lw": "ModernBERT listwise + 0.3 BCE",
+    "slide_ModernBERT-base_2048_s0_pv1": "ModernBERT PrimeVul-only (in-domain)",
     "slide_ModernBERT-base_2048_s0_contrast_conv": "ModernBERT contrastive λ=1",
     "slide_ModernBERT-base_2048_s0_contrast03_conv": "ModernBERT contrastive λ_line=0.3",
     "slide_ModernBERT-base_2048_s0_synth1": "ModernBERT synthetic guards only",
@@ -84,6 +88,8 @@ def run_kind(name: str) -> str:
         return "pilot"
     if name.endswith("_s0_synth1"):
         return "synthetic_pretrain_only"
+    if "_pv" in name:
+        return "in_domain_primevul"
     return "comparable_converged"
 
 
@@ -196,15 +202,17 @@ def report_markdown(report: dict) -> str:
         s, p = r["secvuleval"], r["primevul"]
         au_s = "n.a." if s["auprc_lift_pp"] is None else f"{s['auprc_lift_pp']:+.2f}"
         au_p = "n.a." if p["auprc_lift_pp"] is None else f"{p['auprc_lift_pp']:+.2f}"
+        sec_col = "n.a. (PrimeVul)" if r["kind"] == "in_domain_primevul" else f"{s['top10']:.2f}"
+        delta_col = "n.a." if r["kind"] == "in_domain_primevul" else f"{p['top10'] - s['top10']:+.2f}"
         lines.append(
-            f"| `{r['run']}` | {r['kind']} | {s['top10']:.2f} | {p['top10']:.2f} | "
-            f"{p['top10'] - s['top10']:+.2f} | {s['top10_lift_over_random']:+.2f} / {p['top10_lift_over_random']:+.2f} | "
+            f"| `{r['run']}` | {r['kind']} | {sec_col} | {p['top10']:.2f} | "
+            f"{delta_col} | {s['top10_lift_over_random']:+.2f} / {p['top10_lift_over_random']:+.2f} | "
             f"{s['pair_rank']:.2f} / {p['pair_rank']:.2f} | {au_s} / {au_p} |"
         )
 
     bds = best_sec["delta_vs_plain"]
     bdp = best_prime["delta_vs_plain"]
-    complete_prime = [r for r in runs if r["primevul"]["auprc_lift_pp"] is not None]
+    complete_prime = [r for r in runs if r["primevul"]["auprc_lift_pp"] is not None and r["kind"] != "in_domain_primevul"]
     below_random = sum(r["primevul"]["auprc_lift_pp"] < 0 for r in complete_prime)
     lines += [
         "",

@@ -1,7 +1,7 @@
 {
   "analysis": "Exp5 cross-dataset transfer audit",
   "baseline_run": "slide_ModernBERT-base_2048_s0_conv",
-  "n_runs": 9,
+  "n_runs": 13,
   "runs": [
     {
       "run": "slide_ModernBERT-base_2048_s0",
@@ -32,6 +32,37 @@
         "primevul_top10": -5.04,
         "secvuleval_pair_rank": -4.19,
         "primevul_pair_rank": -3.54
+      }
+    },
+    {
+      "run": "slide_ModernBERT-base_2048_s0_base2",
+      "label": "ModernBERT baseline v2 (seed 0)",
+      "kind": "comparable_converged",
+      "model": "answerdotai/ModernBERT-base",
+      "best_epoch": 1.7500793902826293,
+      "secvuleval": {
+        "top10": 69.62,
+        "random_top10": 48.67,
+        "top10_lift_over_random": 20.96,
+        "pair_rank": 58.53,
+        "function_auprc": 0.431451,
+        "function_prevalence": 0.407137,
+        "auprc_lift_pp": 2.43
+      },
+      "primevul": {
+        "top10": 58.54,
+        "random_top10": 36.69,
+        "top10_lift_over_random": 21.85,
+        "pair_rank": 62.68,
+        "function_auprc": 0.017174,
+        "function_prevalence": 0.026823,
+        "auprc_lift_pp": -0.96
+      },
+      "delta_vs_plain": {
+        "secvuleval_top10": 0.86,
+        "primevul_top10": -0.84,
+        "secvuleval_pair_rank": 0.56,
+        "primevul_pair_rank": 0.27
       }
     },
     {
@@ -159,6 +190,68 @@
       }
     },
     {
+      "run": "slide_ModernBERT-base_2048_s0_lw",
+      "label": "ModernBERT listwise + 0.3 BCE",
+      "kind": "comparable_converged",
+      "model": "answerdotai/ModernBERT-base",
+      "best_epoch": 1.7500793902826293,
+      "secvuleval": {
+        "top10": 70.78,
+        "random_top10": 48.67,
+        "top10_lift_over_random": 22.11,
+        "pair_rank": 53.68,
+        "function_auprc": 0.427419,
+        "function_prevalence": 0.407137,
+        "auprc_lift_pp": 2.03
+      },
+      "primevul": {
+        "top10": 61.62,
+        "random_top10": 36.69,
+        "top10_lift_over_random": 24.93,
+        "pair_rank": 54.88,
+        "function_auprc": 0.021722,
+        "function_prevalence": 0.026823,
+        "auprc_lift_pp": -0.51
+      },
+      "delta_vs_plain": {
+        "secvuleval_top10": 2.02,
+        "primevul_top10": 2.24,
+        "secvuleval_pair_rank": -4.29,
+        "primevul_pair_rank": -7.53
+      }
+    },
+    {
+      "run": "slide_ModernBERT-base_2048_s0_pv1",
+      "label": "ModernBERT PrimeVul-only (in-domain)",
+      "kind": "in_domain_primevul",
+      "model": "answerdotai/ModernBERT-base",
+      "best_epoch": 1.0,
+      "secvuleval": {
+        "top10": 61.62,
+        "random_top10": 36.69,
+        "top10_lift_over_random": 24.93,
+        "pair_rank": 47.61,
+        "function_auprc": 0.499942,
+        "function_prevalence": 0.5,
+        "auprc_lift_pp": -0.01
+      },
+      "primevul": {
+        "top10": 61.62,
+        "random_top10": 36.69,
+        "top10_lift_over_random": 24.93,
+        "pair_rank": 47.61,
+        "function_auprc": 0.084482,
+        "function_prevalence": 0.026823,
+        "auprc_lift_pp": 5.77
+      },
+      "delta_vs_plain": {
+        "secvuleval_top10": -7.14,
+        "primevul_top10": 2.24,
+        "secvuleval_pair_rank": -10.36,
+        "primevul_pair_rank": -14.8
+      }
+    },
+    {
       "run": "slide_ModernBERT-base_2048_s0_s13_conv",
       "label": "ModernBERT synthetic→SecVulEval",
       "kind": "comparable_converged",
@@ -252,6 +345,37 @@
       }
     },
     {
+      "run": "slide_ModernBERT-base_2048_s1_base2",
+      "label": "ModernBERT baseline v2 (seed 1)",
+      "kind": "comparable_converged",
+      "model": "answerdotai/ModernBERT-base",
+      "best_epoch": 1.7499206601079023,
+      "secvuleval": {
+        "top10": 68.95,
+        "random_top10": 48.67,
+        "top10_lift_over_random": 20.28,
+        "pair_rank": 57.97,
+        "function_auprc": 0.434888,
+        "function_prevalence": 0.407137,
+        "auprc_lift_pp": 2.78
+      },
+      "primevul": {
+        "top10": 57.7,
+        "random_top10": 36.69,
+        "top10_lift_over_random": 21.01,
+        "pair_rank": 59.84,
+        "function_auprc": 0.017196,
+        "function_prevalence": 0.026823,
+        "auprc_lift_pp": -0.96
+      },
+      "delta_vs_plain": {
+        "secvuleval_top10": 0.19,
+        "primevul_top10": -1.68,
+        "secvuleval_pair_rank": 0.0,
+        "primevul_pair_rank": -2.57
+      }
+    },
+    {
       "run": "slide_unixcoder-base_1024_s0_conv",
       "label": "UniXcoder plain",
       "kind": "comparable_converged",
@@ -286,27 +410,27 @@
   "cross_run_correlations": {
     "all_runs": {
       "top10": {
-        "n": 9,
-        "pearson": 0.885,
-        "spearman": 0.887
+        "n": 13,
+        "pearson": 0.614,
+        "spearman": 0.584
       },
       "pair_rank": {
-        "n": 9,
-        "pearson": 0.929,
-        "spearman": 0.8
+        "n": 13,
+        "pearson": 0.949,
+        "spearman": 0.886
       }
     },
     "comparable_converged": {
       "definition": "completed SecVulEval fine-tuning runs; pilots and synthetic-only pretraining excluded",
       "top10": {
-        "n": 6,
-        "pearson": 0.884,
-        "spearman": 0.771
+        "n": 9,
+        "pearson": 0.905,
+        "spearman": 0.8
       },
       "pair_rank": {
-        "n": 6,
-        "pearson": 0.809,
-        "spearman": 0.771
+        "n": 9,
+        "pearson": 0.833,
+        "spearman": 0.803
       }
     }
   }

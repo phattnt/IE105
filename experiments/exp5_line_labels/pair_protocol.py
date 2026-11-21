@@ -54,7 +54,10 @@ def pair_metrics(pv, pf, cv, cf, rng):
     allc = np.concatenate([cv, cf]); alls = np.concatenate([pv, pf])
     d = debias(allc, alls)
     dv, df = d[:n], d[n:]
-    out["rank_acc_debiased"] = float(np.where(dv > df, 1.0, np.where(dv == df, 0.5, 0.0)).mean() * 100)
+    rank_tb = np.where(dv > df, 1.0, np.where(dv == df, 0.5, 0.0))
+    out["rank_acc_debiased"] = float(np.where(pv == pf, 0.5, rank_tb).mean() * 100)
+    out["rank_acc_debiased_tiebreak"] = float(rank_tb.mean() * 100)
+    out["ties_pct"] = float((pv == pf).mean() * 100)
     out["length_rule_longer_is_fixed"] = float(np.where(cf > cv, 1.0, np.where(cf == cv, 0.5, 0.0)).mean() * 100)
     for name, t in (("t0", 0.0), ("t_median", float(np.median(alls)))):
         fv, ff = pv > t, pf > t
@@ -117,6 +120,7 @@ def main():
     ap.add_argument("--primevul", required=True)
     ap.add_argument("--runs", nargs="+", required=True)
     ap.add_argument("--out", default=None)
+    ap.add_argument("--clean_json", default=None, help="Optional leak-audit JSON with clean_pair_indices")
     a = ap.parse_args()
     paired = load_jsonl(os.path.join(a.primevul, "primevul_test_paired.jsonl"))
     pairs = []
@@ -129,6 +133,13 @@ def main():
     subsets = {"all": np.ones(len(pairs), bool),
                "length_matched_5pct": np.abs(cv - cf) / np.maximum(cv, cf) < 0.05,
                "patch_adds_code": cf > cv, "patch_removes_code": cv > cf}
+    if a.clean_json:
+        lj = json.load(open(a.clean_json, encoding="utf-8"))
+        raw_clean = lj.get("clean_pair_indices", [])
+        clean_v = {item[0] if isinstance(item, (list, tuple)) else item for item in raw_clean}
+        clean_mask = np.array([p[0] in clean_v for p in pairs])
+        subsets["clean"] = clean_mask
+        subsets["leaked"] = ~clean_mask
     print(f"pairs {len(pairs)}: " + ", ".join(f"{k} {int(m.sum())}" for k, m in subsets.items()))
 
     report = {}
@@ -142,8 +153,8 @@ def main():
         print(f"\n### {name} — cặp PrimeVul")
         if not have.all():
             print(f"WARNING: {name} has scores for {int(have.sum())}/{len(pairs)} pairs; the other pairs are left out of every row below")
-        print("| tập cặp | n | xếp đúng cặp [CI] | sau trừ độ dài | luật độ dài | P-C / P-V / P-B / P-R (ngưỡng 0) | net [CI] | null P-C | P-C @50% gắn cờ | net @50% [CI] | null P-C @50% |")
-        print("|---|---|---|---|---|---|---|---|---|---|---|")
+        print("| tập cặp | n | xếp đúng cặp [CI] | sau trừ độ dài (hòa=0.5) | hòa % | luật độ dài | P-C / P-V / P-B / P-R (ngưỡng 0) | net [CI] | null P-C | P-C @med | net @med [CI] | flag @med % | null P-C @med |")
+        print("|---|---|---|---|---|---|---|---|---|---|---|---|---|")
         for sname, m in subsets.items():
             m = m & have
             if not m.any():
@@ -152,9 +163,9 @@ def main():
             rep["pairs"][sname] = r
             t0, tm = r["t0"], r["t_median"]
             print(f"| {sname} | {r['n']} | {r['rank_acc']:.1f} [{r['rank_acc_ci'][0]:.1f}; {r['rank_acc_ci'][1]:.1f}] | {r['rank_acc_debiased']:.1f} | "
-                  f"{r['length_rule_longer_is_fixed']:.1f} | {t0['P-C']:.1f} / {t0['P-V']:.1f} / {t0['P-B']:.1f} / {t0['P-R']:.1f} | "
+                  f"{r['ties_pct']:.1f} | {r['length_rule_longer_is_fixed']:.1f} | {t0['P-C']:.1f} / {t0['P-V']:.1f} / {t0['P-B']:.1f} / {t0['P-R']:.1f} | "
                   f"{t0['net']:+.1f} [{t0['net_ci'][0]:+.1f}; {t0['net_ci'][1]:+.1f}] | {t0['null_P-C']:.1f} | {tm['P-C']:.1f} | "
-                  f"{tm['net']:+.1f} [{tm['net_ci'][0]:+.1f}; {tm['net_ci'][1]:+.1f}] | {tm['null_P-C']:.1f} |")
+                  f"{tm['net']:+.1f} [{tm['net_ci'][0]:+.1f}; {tm['net_ci'][1]:+.1f}] | {tm['flag_rate']:.1f} | {tm['null_P-C']:.1f} |")
         lp = os.path.join(run, "primevul_pair_lines.jsonl")
         if os.path.exists(lp):
             lm = line_metrics(load_jsonl(lp), rng)

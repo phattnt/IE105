@@ -68,3 +68,25 @@ Mirror targets: `results/<run>/` (train.log, curve.json, train_log.jsonl, plots,
   "Terminate batch job (Y/N)?").
 * Never `colab new` a name the backend still lists (a second billed VM); `colabctl new` checks and aborts if it cannot list.
 * `colab upload` fails above ~100 MB: `push` sends 40 MB chunks and checks the sha256 on the VM.
+
+## Linux & Colab Pro Workflow (20/11/2026)
+
+Trên máy Linux local có giới hạn RAM (~7.4 GiB, không có NVIDIA GPU), không chạy các tác vụ xử lý dữ liệu lớn hoặc inference/training tại chỗ — dùng `colabctl.py` (đã vá POSIX `start_new_session=True` và `os.kill(pid, 0)`):
+
+1. **Cài đặt `google-colab-cli` (v0.8.0):**
+   ```bash
+   uv tool install --python 3.12 google-colab-cli
+   export PATH="$HOME/.local/bin:$PATH"
+   colab login
+   ```
+2. **Phân luồng CPU vs GPU:**
+   - **Audit / Rescore / Chuẩn bị dữ liệu (CPU trên Colab):** `python3 -u colabctl.py -s exp5cpu new --gpu none` (phiên `exp5cpu` GĐ 0 tiêu hao `0.02 CU`; tắt ngay bằng `--down`).
+   - **LLM / Training (GPU trên Colab):** `python3 -u colabctl.py -s exp5llm new --gpu L4` (hoặc `--gpu A100` / `--gpu G4` khi pool khả dụng; tốc độ tiêu hao đo thực tế ngày 20/11/2026 trên `L4` là **`1.94 CU/h`**). Trên A100, vLLM đạt tới `1.625 gen tok/s` (`llm_full.log`).
+3. **Quy tắc an toàn cho gói Colab Pro (không có Background Execution):**
+   - Tài khoản Colab **Pro** (khác Pro+) **không duy trì VM khi gập/tắt máy local** vì không có Background Execution; `mirror` giữ phiên bằng keepalive 5 phút/lần trong lúc máy bật.
+   - Luôn chạy kèm `--down` (`mirror <job> --down` hoặc `keep --down`) để tự động tải kết quả và giải phóng VM ngay khi xong.
+   - Sau mỗi phiên luôn xác nhận 0 VM đang chạy và ghi lại số dư CU:
+     ```bash
+     colab sessions   # Phải hiện: No active sessions found on server.
+     colab usage      # Kiểm tra Current balance & Active assignments: 0
+     ```

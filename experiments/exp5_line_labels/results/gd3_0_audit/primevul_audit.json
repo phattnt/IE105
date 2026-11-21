@@ -1,0 +1,218 @@
+{
+ "split_stats": {
+  "skipped_misaligned": {
+   "train": 0,
+   "valid": 0,
+   "test": 0
+  },
+  "train_filter": {
+   "raw": 4354,
+   "clean": 4347,
+   "dropped_commit": 6,
+   "dropped_hash": 1
+  },
+  "valid_filter": {
+   "raw": 562,
+   "clean": 562,
+   "dropped_commit": 0,
+   "dropped_hash": 0
+  },
+  "extra_benign_pool": 173561,
+  "extra_benign_sampled": 2000,
+  "test_pairs": 564,
+  "test_seen_projects": 455,
+  "test_unseen_projects": 109
+ },
+ "raw_overlap_before_filter": {
+  "train": {
+   "commit_overlap_with_test": 6,
+   "hash_overlap_with_test": 1
+  },
+  "valid": {
+   "commit_overlap_with_test": 0,
+   "hash_overlap_with_test": 0
+  }
+ },
+ "pair_stats": {
+  "train_clean": {
+   "n_pairs": 4347,
+   "n_changed": 2923,
+   "n_add_only": 1424,
+   "n_cf_gt_cv": 3574,
+   "n_cv_gt_cf": 637,
+   "n_equal_len": 136,
+   "shorter_is_vul_pct": 83.78,
+   "length_matched_5pct_count": 2596,
+   "length_matched_5pct_cf_gt_cv": 2073,
+   "length_matched_5pct_cv_gt_cf": 387,
+   "length_matched_5pct_shorter_is_vul_pct": 82.47
+  },
+  "valid_clean": {
+   "n_pairs": 562,
+   "n_changed": 372,
+   "n_add_only": 190,
+   "n_cf_gt_cv": 474,
+   "n_cv_gt_cf": 67,
+   "n_equal_len": 21,
+   "shorter_is_vul_pct": 86.21,
+   "length_matched_5pct_count": 315,
+   "length_matched_5pct_cf_gt_cv": 251,
+   "length_matched_5pct_cv_gt_cf": 43,
+   "length_matched_5pct_shorter_is_vul_pct": 83.02
+  },
+  "test": {
+   "n_pairs": 564,
+   "n_changed": 357,
+   "n_add_only": 207,
+   "n_cf_gt_cv": 482,
+   "n_cv_gt_cf": 65,
+   "n_equal_len": 17,
+   "shorter_is_vul_pct": 86.97,
+   "length_matched_5pct_count": 337,
+   "length_matched_5pct_cf_gt_cv": 274,
+   "length_matched_5pct_cv_gt_cf": 46,
+   "length_matched_5pct_shorter_is_vul_pct": 83.83
+  }
+ },
+ "token_stats": {
+  "train_clean": {
+   "n_functions": 8694,
+   "median_tokens": 695,
+   "p90_tokens": 3286,
+   "p95_tokens": 5406,
+   "max_tokens": 219136,
+   "gt_2048_pct": 17.37,
+   "gt_3072_pct": 10.88,
+   "gt_4096_pct": 7.35
+  },
+  "valid_clean": {
+   "n_functions": 1124,
+   "median_tokens": 655,
+   "p90_tokens": 2451,
+   "p95_tokens": 4483,
+   "max_tokens": 23413,
+   "gt_2048_pct": 15.04,
+   "gt_3072_pct": 7.92,
+   "gt_4096_pct": 6.14
+  },
+  "test": {
+   "n_functions": 1128,
+   "median_tokens": 724,
+   "p90_tokens": 3325,
+   "p95_tokens": 6438,
+   "max_tokens": 30202,
+   "gt_2048_pct": 18.26,
+   "gt_3072_pct": 10.82,
+   "gt_4096_pct": 8.33
+  }
+ },
+ "project_overlap": {
+  "n_train_projects": 592,
+  "n_test_projects": 200,
+  "n_shared_projects": 119,
+  "test_pairs_seen_projects": 455,
+  "test_pairs_unseen_projects": 109,
+  "top_shared_projects": [
+   {
+    "project": "linux",
+    "train_pairs": 818,
+    "test_pairs": 75
+   },
+   {
+    "project": "Chrome",
+    "train_pairs": 344,
+    "test_pairs": 7
+   },
+   {
+    "project": "ImageMagick",
+    "train_pairs": 243,
+    "test_pairs": 10
+   },
+   {
+    "project": "qemu",
+    "train_pairs": 133,
+    "test_pairs": 9
+   },
+   {
+    "project": "openssl",
+    "train_pairs": 126,
+    "test_pairs": 6
+   },
+   {
+    "project": "php-src",
+    "train_pairs": 115,
+    "test_pairs": 15
+   },
+   {
+    "project": "tensorflow",
+    "train_pairs": 51,
+    "test_pairs": 72
+   },
+   {
+    "project": "linux-2.6",
+    "train_pairs": 91,
+    "test_pairs": 7
+   },
+   {
+    "project": "FFmpeg",
+    "train_pairs": 93,
+    "test_pairs": 3
+   },
+   {
+    "project": "ImageMagick6",
+    "train_pairs": 59,
+    "test_pairs": 7
+   },
+   {
+    "project": "vim",
+    "train_pairs": 25,
+    "test_pairs": 38
+   },
+   {
+    "project": "radare2",
+    "train_pairs": 40,
+    "test_pairs": 13
+   },
+   {
+    "project": "samba",
+    "train_pairs": 44,
+    "test_pairs": 3
+   },
+   {
+    "project": "gpac",
+    "train_pairs": 28,
+    "test_pairs": 19
+   },
+   {
+    "project": "ghostpdl",
+    "train_pairs": 25,
+    "test_pairs": 7
+   }
+  ]
+ },
+ "manifest_integrity": {
+  "n_full_jsonl": 25911,
+  "n_full_vulnerable_jsonl": 695,
+  "manifest_P_present": 1126,
+  "manifest_V_present": 131,
+  "manifest_B_present": 2000,
+  "strata": {
+   "P": {
+    "n": 1126,
+    "sampled": 1126,
+    "weight": 1.0,
+    "note": "test pairs, scored in the pair run"
+   },
+   "V": {
+    "n": 131,
+    "sampled": 131,
+    "weight": 1.0
+   },
+   "B": {
+    "n": 24654,
+    "sampled": 2000,
+    "weight": 12.327
+   }
+  }
+ }
+}

@@ -65,9 +65,11 @@ def say(*a):
 def colab(*args, stdin=None, wall=600, quiet=False):
     """run `colab ARGS`, print its output as it arrives (unless quiet), return (rc, text)"""
     # own process group: a console Ctrl+C reaches only colabctl, which then ends the client itself (finally below)
+    popen_kw = ({"creationflags": subprocess.CREATE_NEW_PROCESS_GROUP}
+                if sys.platform == "win32" else {"start_new_session": True})
     p = subprocess.Popen([COLAB, *args], stdin=subprocess.PIPE if stdin is not None else subprocess.DEVNULL,
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=ENV, text=True, encoding="utf-8",
-                         errors="replace", bufsize=1, creationflags=subprocess.CREATE_NEW_PROCESS_GROUP)
+                         errors="replace", bufsize=1, **popen_kw)
     timer = threading.Timer(wall, p.kill)
     timer.daemon = True                           # a pending timer must not keep this process alive after Ctrl+C
     timer.start()
@@ -91,6 +93,16 @@ def colab(*args, stdin=None, wall=600, quiet=False):
 
 
 def _pid_alive(pid):
+    if not pid or pid <= 0:
+        return False
+    if sys.platform != "win32":
+        try:
+            os.kill(pid, 0)
+            return True
+        except ProcessLookupError:
+            return False
+        except PermissionError:
+            return True
     h = ctypes.windll.kernel32.OpenProcess(0x1000, False, pid)        # PROCESS_QUERY_LIMITED_INFORMATION
     if not h:
         return False

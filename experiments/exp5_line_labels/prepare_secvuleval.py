@@ -91,6 +91,10 @@ def main():
     ap.add_argument("--drop_trivial_flaw", action="store_true", help="train/valid: remove flaw labels of trivial lines")
     ap.add_argument("--max_flaw_density", type=float, default=None,
                     help="train/valid: drop vulnerable functions whose flaw-line density exceeds this, with their pair")
+    ap.add_argument("--diff_clean", action="store_true",
+                    help="train/valid: fix flat.find duplicate-stealing and compound-block spillover using pair diff")
+    ap.add_argument("--diff_clean_test", action="store_true",
+                    help="also apply --diff_clean to test.jsonl (use only in a dedicated eval dir)")
     a = ap.parse_args()
     os.makedirs(a.out, exist_ok=True)
     subprocess.run(f"{sys.executable} -m pip install -q datasets gdown", shell=True)
@@ -98,12 +102,16 @@ def main():
 
     rows = load_dataset("arag0rn/SecVulEval", split="train").to_list()
     by_idx = {r["idx"]: r for r in rows}
+    stmts_by_idx = {}
     stats = Counter()
     recs = []
     for r in rows:
         func = r["func_body"] or ""
         vul = bool(r["is_vulnerable"])
-        fl, missed = flaw_lines(func, statement_texts(r["changed_statements"])) if vul else ([], 0)
+        stmts = statement_texts(r["changed_statements"]) if vul else []
+        if vul:
+            stmts_by_idx[r["idx"]] = stmts
+        fl, missed = flaw_lines(func, stmts) if vul else ([], 0)
         stats["statements_missed"] += missed
         pair = None
         if vul and r.get("fixed_func_idx") == r.get("fixed_func_idx") and r.get("fixed_func_idx") is not None:
@@ -158,6 +166,25 @@ def main():
 
     for s in ("train", "valid", "test"):
         part = [x for x in recs if x["split"] == s]
+        if a.diff_clean and (s != "test" or a.diff_clean_test):
+            from clean_diff_labels import secvul_flaw_lines_fixed
+            dc_st = Counter()
+            cleaned = []
+            for x in part:
+                if x["target"] == 1 and x["flaw_lines"]:
+                    fix_row = rec_by_idx.get(x["pair_idx"]) if x["pair_idx"] is not None else None
+                    new_fl, _ = secvul_flaw_lines_fixed(
+                        x["func"], stmts_by_idx.get(x["idx"], []),
+                        fix_func=fix_row["func"] if fix_row else None, drop_trivial=True,
+                    )
+                    if new_fl != x["flaw_lines"]:
+                        dc_st["functions_relabeled"] += 1
+                        dc_st["labels_before"] += len(x["flaw_lines"])
+                        dc_st["labels_after"] += len(new_fl)
+                        x = dict(x, flaw_lines=new_fl)
+                cleaned.append(x)
+            part = cleaned
+            stats[f"{s}_diff_clean"] = dict(dc_st)
         if s != "test" and (a.drop_trivial_flaw or a.max_flaw_density is not None):
             from label_noise import filter_labels
             part, fst = filter_labels(part, a.drop_trivial_flaw, a.max_flaw_density)

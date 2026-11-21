@@ -141,6 +141,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--ckpt", required=True)
     ap.add_argument("--model", required=True)
+    ap.add_argument("--arch", choices=["linear", "norm_maxmean"], default="linear")
     ap.add_argument("--max_len", type=int, required=True)
     ap.add_argument("--data", required=True)
     ap.add_argument("--n", type=int, default=250)
@@ -164,7 +165,7 @@ def main():
     tok = transformers.AutoTokenizer.from_pretrained(a.model)
     tl.PAD_ID = tok.pad_token_id
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = tl.make_model(a.model)
+    model = tl.make_model(a.model, a.arch)
     state = torch.load(a.ckpt, map_location="cpu", weights_only=True)
     if "model" in state:
         state = state["model"]

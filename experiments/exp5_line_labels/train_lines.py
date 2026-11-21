@@ -65,14 +65,21 @@ def expected_random_topk(n, f, k):
     return 1.0 - math.comb(n - f, k) / math.comb(n, k)
 
 
-def rank_metrics(scores, flaws, n_lines):
+def rank_metrics(scores, flaws, n_lines, func=None):
     order = sorted(range(n_lines), key=lambda i: (-scores[i], i))
     rank_of = {li: r for r, li in enumerate(order)}
     first = min(rank_of[i] for i in flaws if i < n_lines)
+    flaw_set = [i for i in flaws if i < n_lines]
     out = {"ifa": first}
     for k in (1, 5, 10):
         out[f"top{k}"] = first < k
         out[f"rand_top{k}"] = expected_random_topk(n_lines, len(flaws), k)
+    out["top1_hunk2"] = min(abs(order[0] - f) for f in flaw_set) <= 2
+    out["top5_hunk2"] = any(abs(p - f) <= 2 for p in order[:5] for f in flaw_set)
+    if func is not None:
+        from clean_diff_labels import diverse_topk_order
+        d_order = diverse_topk_order(func, list(scores[:n_lines]), radius=3, mask_trivial=True)
+        out["diverse_top5_hunk2"] = any(abs(p - f) <= 2 for p in d_order[:5] for f in flaw_set)
     return out
 
 
@@ -87,16 +94,21 @@ def evaluate(rows, line_scores, fn_scores, head_visible, n_tokens):
         fl = [i for i in r["flaw_lines"] if i < len(sc)]
         if not fl:
             continue
-        m = rank_metrics(sc, fl, len(sc))
+        m = rank_metrics(sc, fl, len(sc), func=r.get("func"))
         m["group"] = "A" if nt <= 510 else ("B" if any(hv[i] for i in fl) else "C")
         recs.append(m)
     for g in ("ALL", "A", "B", "C"):
         rs = [x for x in recs if g == "ALL" or x["group"] == g]
         if not rs:
             continue
+        extra_h = {}
+        for hk in ("top1_hunk2", "top5_hunk2", "diverse_top5_hunk2"):
+            if all(hk in x for x in rs):
+                extra_h[hk] = float(np.mean([x[hk] for x in rs]) * 100)
         res[f"lines_{g}"] = {"n": len(rs), "median_ifa": float(np.median([x["ifa"] for x in rs])),
                              **{f"top{k}": float(np.mean([x[f"top{k}"] for x in rs]) * 100) for k in (1, 5, 10)},
-                             **{f"rand_top{k}": float(np.mean([x[f"rand_top{k}"] for x in rs]) * 100) for k in (1, 5, 10)}}
+                             **{f"rand_top{k}": float(np.mean([x[f"rand_top{k}"] for x in rs]) * 100) for k in (1, 5, 10)},
+                             **extra_h}
     y = np.array([r["target"] for r in rows])
     p = np.array(fn_scores, dtype=float)
     nt = np.array(n_tokens)
@@ -271,7 +283,7 @@ def listwise_loss(z, y, lens, bce_each, C):
     return lw, bce, chance
 
 
-def make_model(model_name):
+def make_model(model_name, arch="linear"):
     import torch
     from transformers import AutoModel
 
@@ -283,8 +295,15 @@ def make_model(model_name):
             except TypeError:          # ModernBERT and other non-RoBERTa encoders
                 self.enc = AutoModel.from_pretrained(model_name)
             h = self.enc.config.hidden_size
+            self.arch = arch
             self.drop = torch.nn.Dropout(0.1)
-            self.head = torch.nn.Sequential(torch.nn.Linear(h, h), torch.nn.Tanh(), torch.nn.Dropout(0.1), torch.nn.Linear(h, 1))
+            if arch == "norm_maxmean":
+                self.ln_mean = torch.nn.LayerNorm(h)
+                self.ln_max = torch.nn.LayerNorm(h)
+                in_dim = 2 * h
+            else:
+                in_dim = h
+            self.head = torch.nn.Sequential(torch.nn.Linear(in_dim, h), torch.nn.Tanh(), torch.nn.Dropout(0.1), torch.nn.Linear(h, 1))
 
         def forward(self, ids, seg, n_seg, pad_id):
             """seg: [B, L] global line-segment id per token (-1 = ignore). Returns one logit per segment."""
@@ -292,11 +311,22 @@ def make_model(model_name):
             hs = self.drop(hs).reshape(-1, hs.size(-1))
             seg = seg.reshape(-1)
             keep = seg >= 0
-            pooled = torch.zeros(n_seg, hs.size(-1), device=hs.device, dtype=hs.dtype)
-            pooled.index_add_(0, seg[keep], hs[keep])
-            cnt = torch.zeros(n_seg, device=hs.device, dtype=hs.dtype).index_add_(0, seg[keep], torch.ones_like(seg[keep], dtype=hs.dtype))
-            pooled = pooled / cnt.clamp(min=1).unsqueeze(1)
-            return self.head(pooled.float()).squeeze(-1)
+            seg_k = seg[keep]
+            hs_k = hs[keep]
+            h = hs.size(-1)
+            pooled = torch.zeros(n_seg, h, device=hs.device, dtype=hs.dtype)
+            pooled.index_add_(0, seg_k, hs_k)
+            cnt = torch.zeros(n_seg, device=hs.device, dtype=hs.dtype).index_add_(0, seg_k, torch.ones_like(seg_k, dtype=hs.dtype))
+            mean_p = (pooled / cnt.clamp(min=1).unsqueeze(1)).float()
+            if self.arch == "norm_maxmean":
+                mx = torch.full((n_seg, h), -1e4, device=hs.device, dtype=torch.float32)
+                if seg_k.numel():
+                    mx.scatter_reduce_(0, seg_k.unsqueeze(1).expand(-1, h), hs_k.float(), reduce="amax", include_self=False)
+                mx = torch.where(cnt.unsqueeze(1) > 0, mx, torch.zeros_like(mx))
+                feat = torch.cat([self.ln_mean(mean_p), self.ln_max(mx)], dim=-1)
+            else:
+                feat = mean_p
+            return self.head(feat).squeeze(-1)
 
     return LineModel()
 
@@ -466,10 +496,11 @@ def pick_views(views, keep_lines, k):
     return (hit + rest)[:k]
 
 
-def make_items(train_rows, tok, args):
+def make_items(train_rows, tok, args, ign=None):
     """Items = [vulnerable, fixed] pairs (both kept together in one batch) or single functions.
     Each member: {"views", "flaws", "bce" (whether its line labels are known)}; pairs also carry
     "match" = [(flaw line in vul, counterpart line in fix)]."""
+    ign = ign or {}
     by = {r["idx"]: r for r in train_rows}
     used, items = set(), []
     for r in train_rows:
@@ -478,8 +509,8 @@ def make_items(train_rows, tok, args):
         f = by[r["pair_idx"]]
         al = align_lines(r["func"], f["func"])
         match = [(l, al[l]) for l in r["flaw_lines"] if l in al]
-        vv = build_views(tok, r["func"], r["flaw_lines"], args.strategy, args.max_len)
-        fv = build_views(tok, f["func"], [], args.strategy, args.max_len)
+        vv = build_views(tok, r["func"], r["flaw_lines"], args.strategy, args.max_len, ign.get(r["idx"], ()))
+        fv = build_views(tok, f["func"], [], args.strategy, args.max_len, ign.get(f["idx"], ()))
         vv = pick_views(vv, {l for l, _ in match} | set(r["flaw_lines"]), args.max_pair_views)
         fv = pick_views(fv, {j for _, j in match}, args.max_pair_views)
         items.append({"members": [{"views": vv, "bce": bool(r["flaw_lines"])}, {"views": fv, "bce": True}], "match": match})
@@ -487,7 +518,7 @@ def make_items(train_rows, tok, args):
     for r in train_rows:
         if r["idx"] in used or (r["target"] == 1 and not r["flaw_lines"]):
             continue
-        for v in build_views(tok, r["func"], r["flaw_lines"], args.strategy, args.max_len):
+        for v in build_views(tok, r["func"], r["flaw_lines"], args.strategy, args.max_len, ign.get(r["idx"], ())):
             items.append({"members": [{"views": [v], "bce": True}], "match": []})
     return items
 
@@ -602,7 +633,8 @@ def train(data, out, args):
     import pickle
     key = hashlib.md5(json.dumps([os.path.abspath(f"{data}/train.jsonl"), os.path.getsize(f"{data}/train.jsonl"), args.model, args.max_len,
                                   args.strategy, args.max_pair_views, pair_mode, sorted(r["idx"] for r in train_rows)]
-                                 + ([True] if args.mask_contradict else []), default=str).encode()).hexdigest()
+                                 + ([True] if args.mask_contradict else [])
+                                 + ([f"collar:{args.collar_radius}"] if args.collar_radius else []), default=str).encode()).hexdigest()
     cache = f"{out}/train_cache.pkl"
     cached = None
     if os.path.exists(cache):
@@ -614,17 +646,28 @@ def train(data, out, args):
         except Exception as e:
             log(f"train cache unreadable ({e!r}) - rebuilding"); cached = None
     t_build = time.time()
+    ign = contradicting_lines(train_rows) if args.mask_contradict else {}
+    if args.mask_contradict:
+        log(f"mask_contradict: {sum(map(len, ign.values()))} lines in {len(ign)} fixed versions left out of the loss "
+            f"(same text as a flaw line of the vulnerable partner)")
+    if args.collar_radius > 0:
+        from clean_diff_labels import variable_collar_lines
+        n_col, n_fn_col = 0, 0
+        for r in train_rows:
+            if r["target"] == 1 and r["flaw_lines"]:
+                cl = variable_collar_lines(r["func"], r["flaw_lines"], args.collar_radius)
+                if cl:
+                    ign.setdefault(r["idx"], set()).update(cl)
+                    n_col += len(cl)
+                    n_fn_col += 1
+        log(f"collar_radius={args.collar_radius}: masked {n_col} guard/sink partner lines across {n_fn_col} functions (y=-1)")
     if pair_mode:
-        items = cached["items"] if cached else make_items(train_rows, tok, args)
+        items = cached["items"] if cached else make_items(train_rows, tok, args, ign)
         views = [v for it in items for m in it["members"] if m["bce"] for v in m["views"]]
         log(f"pair mode: {sum(len(it['members']) == 2 for it in items)} vulnerable/fixed pairs, "
             f"{sum(len(it['match']) for it in items)} aligned flaw lines, {sum(len(it['members']) == 1 for it in items)} single views | "
             f"lam_line {args.lam_line} lam_fn {args.lam_fn} margin {args.margin}")
     else:
-        ign = contradicting_lines(train_rows) if args.mask_contradict else {}
-        if args.mask_contradict:
-            log(f"mask_contradict: {sum(map(len, ign.values()))} lines in {len(ign)} fixed versions left out of the loss "
-                f"(same text as a flaw line of the vulnerable partner)")
         views = cached["views"] if cached else [v for r in train_rows for v in build_views(tok, r["func"], r["flaw_lines"], args.strategy,
                                                                                             args.max_len, ign.get(r["idx"], ()))]
     log(f"training views {'loaded from cache' if cached else 'built'} in {time.time() - t_build:.0f}s")
@@ -641,7 +684,7 @@ def train(data, out, args):
     log(f"{len(views)} training views | lines: {n_pos} flaw / {n_neg} clean / {sum(v[3].count(-1) for v in views)} masked | "
         f"pos_weight {pos_weight:.1f} | loss {args.loss}" + (f" + {args.lam_bce} x bce" if args.loss == "listwise" else ""))
     valid_groups = group_info(valid)
-    model = make_model(args.model).to(device)
+    model = make_model(args.model, args.arch).to(device)
     opt = torch.optim.AdamW(model.parameters(), lr=args.lr, eps=1e-8)
     n_batches = len(item_batches(items, args.train_tokens, 0)) if pair_mode else len(token_batches(views, args.train_tokens, 0))
     steps = n_batches * args.epochs
@@ -741,7 +784,8 @@ def train(data, out, args):
                 logits = model(ids, seg, n_seg, tok.pad_token_id)
             if pair_mode:
                 z = logits.float()
-                bce = (lossf_each(z, y) * mask).sum() / mask.sum().clamp(min=1)
+                eff_mask = mask * (y >= 0).float()
+                bce = (lossf_each(z, y.clamp(min=0)) * eff_mask).sum() / eff_mask.sum().clamp(min=1)
                 l_line, l_fn = pair_losses(z, seg_u, n_u, u_func, n_func, lv, lf, fv, ff, args.margin)
                 loss = bce + args.lam_line * l_line + args.lam_fn * l_fn
                 run_parts += [bce.item(), l_line.item(), l_fn.item(), 0.0]
@@ -836,6 +880,10 @@ if __name__ == "__main__":
     ap.add_argument("--lam_bce", type=float, default=0.3, help="weight of the line BCE next to the listwise loss")
     ap.add_argument("--mask_contradict", action="store_true",
                     help="leave fixed-version lines with the same text as a flaw line of the pair out of the loss")
+    ap.add_argument("--collar_radius", type=int, default=0,
+                    help="mask non-flaw lines within +-R sharing variables/control with flaw lines (y=-1) during training")
+    ap.add_argument("--arch", choices=["linear", "norm_maxmean"], default="linear",
+                    help="line pooling & readout head: linear (mean-pool) or norm_maxmean (LayerNorm mean+max pool)")
     ap.add_argument("--max_pair_views", type=int, default=4, help="max windows per function inside a pair item")
     ap.add_argument("--tag", default="", help="suffix for the run name")
     ap.add_argument("--patience", type=int, default=0, help="stop after this many epochs without a better valid score (0 = off)")

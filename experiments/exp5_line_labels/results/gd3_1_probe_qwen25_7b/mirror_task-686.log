@@ -1,0 +1,114 @@
+[16:33:13] mirror job gd3_1_probe_qwen25_7b on exp5llm every 120 s: runs -, output dirs ['gd3_1_probe_qwen25_7b']
+[16:33:13] keepalive cell every 300 s; ckpt_last pulled every 3600 s (0 = never)
+[16:33:15] log: == 2026-11-20 09:33:05 UTC start gd3_1_probe_qwen25_7b
+[16:35:17] log: Loading weights:  83%|████████▎ | 282/339 [00:03<00:00, 103.27it/s]
+[16:35:17] log: Loading weights:  87%|████████▋ | 294/339 [00:03<00:00, 102.92it/s]
+[16:35:17] log: Loading weights:  90%|█████████ | 306/339 [00:03<00:00, 102.83it/s]
+[16:35:17] log: Loading weights:  94%|█████████▍| 318/339 [00:03<00:00, 102.90it/s]
+[16:35:17] log: Loading weights:  97%|█████████▋| 330/339 [00:03<00:00, 102.48it/s]
+[16:35:17] log: Loading weights: 100%|██████████| 339/339 [00:03<00:00, 89.05it/s] 
+[16:35:17] log: [extract] Model loaded: num_layers=28, d=3584, hooks=[13, 19, 23, 27]
+[16:35:17] log: [transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (44400 > 32768). Running this sequence through the model will result in indexing errors
+[16:37:18] log: [extract] Head equivalence max_diff=3.12e-02 | sample0 top5=[(' No', 19.5), (' Yes', 15.88), (' **', 15.06), (' N', 12.56), (' The', 12.44)]
+[16:37:18] log: [extract] 500/15066 | 29.3 fn/s | 2865 tok/s | peakVRAM 15.30 GB | ETA 8.3 min
+[16:37:18] log: [extract] 1000/15066 | 28.1 fn/s | 3011 tok/s | peakVRAM 15.31 GB | ETA 8.3 min
+[16:37:18] log: [extract] 1500/15066 | 26.0 fn/s | 3026 tok/s | peakVRAM 15.32 GB | ETA 8.7 min
+[16:37:18] log: [extract] 2000/15066 | 24.5 fn/s | 3088 tok/s | peakVRAM 15.34 GB | ETA 8.9 min
+[16:37:18] log: [extract] 2500/15066 | 23.0 fn/s | 3139 tok/s | peakVRAM 15.35 GB | ETA 9.1 min
+[16:39:21] ping: 09:39:20 UTC | running: gd3_1_probe_qwen25_7b | GPU 99 %, 15850 MiB
+[16:39:22] log: [extract] 3000/15066 | 21.6 fn/s | 3170 tok/s | peakVRAM 15.36 GB | ETA 9.3 min
+[16:39:22] log: [extract] 3500/15066 | 20.4 fn/s | 3209 tok/s | peakVRAM 15.37 GB | ETA 9.5 min
+[16:39:22] log: [extract] 4000/15066 | 19.4 fn/s | 3270 tok/s | peakVRAM 15.39 GB | ETA 9.5 min
+[16:41:23] log: [extract] 4500/15066 | 18.4 fn/s | 3300 tok/s | peakVRAM 15.41 GB | ETA 9.6 min
+[16:41:23] log: [extract] 5000/15066 | 17.4 fn/s | 3327 tok/s | peakVRAM 15.42 GB | ETA 9.7 min
+[16:41:23] log: [extract] 5500/15066 | 16.5 fn/s | 3356 tok/s | peakVRAM 15.44 GB | ETA 9.7 min
+[16:43:26] log: [extract] 6000/15066 | 15.6 fn/s | 3391 tok/s | peakVRAM 15.46 GB | ETA 9.7 min
+[16:43:26] log: [extract] 6500/15066 | 14.8 fn/s | 3416 tok/s | peakVRAM 15.48 GB | ETA 9.7 min
+[16:45:28] ping: 09:45:28 UTC | running: gd3_1_probe_qwen25_7b | GPU 99 %, 18808 MiB
+[16:45:29] log: [extract] 7000/15066 | 14.0 fn/s | 3433 tok/s | peakVRAM 15.50 GB | ETA 9.6 min
+[16:45:29] log: [extract] 7500/15066 | 13.2 fn/s | 3451 tok/s | peakVRAM 15.53 GB | ETA 9.6 min
+[16:47:31] log: [extract] 8000/15066 | 12.4 fn/s | 3451 tok/s | peakVRAM 15.53 GB | ETA 9.5 min
+[16:49:32] log: [extract] 8500/15066 | 11.7 fn/s | 3453 tok/s | peakVRAM 15.53 GB | ETA 9.4 min
+[16:49:32] log: [extract] 9000/15066 | 11.0 fn/s | 3460 tok/s | peakVRAM 15.53 GB | ETA 9.2 min
+[16:52:13] ping: 09:52:13 UTC | running: gd3_1_probe_qwen25_7b | GPU 100 %, 18808 MiB
+[16:52:36] log: [extract] 9500/15066 | 10.3 fn/s | 3476 tok/s | peakVRAM 15.53 GB | ETA 9.0 min
+[16:54:38] log: [extract] 10000/15066 | 9.7 fn/s | 3483 tok/s | peakVRAM 15.53 GB | ETA 8.7 min
+[16:56:39] log: [extract] 10500/15066 | 9.0 fn/s | 3489 tok/s | peakVRAM 15.53 GB | ETA 8.4 min
+[16:58:41] ping: 09:58:41 UTC | running: gd3_1_probe_qwen25_7b | GPU 98 %, 18808 MiB
+[16:58:42] log: [extract] 11000/15066 | 8.4 fn/s | 3486 tok/s | peakVRAM 15.53 GB | ETA 8.1 min
+[17:01:37] log: [extract] 11500/15066 | 7.7 fn/s | 3483 tok/s | peakVRAM 15.53 GB | ETA 7.7 min
+[17:03:38] log: [extract] 12000/15066 | 7.2 fn/s | 3488 tok/s | peakVRAM 15.53 GB | ETA 7.1 min
+[17:05:40] ping: 10:05:40 UTC | running: gd3_1_probe_qwen25_7b | GPU 100 %, 18808 MiB
+[17:07:43] log: [extract] 12500/15066 | 6.6 fn/s | 3496 tok/s | peakVRAM 15.53 GB | ETA 6.5 min
+[17:11:59] ping: 10:11:58 UTC | running: gd3_1_probe_qwen25_7b | GPU 99 %, 18808 MiB
+[17:12:00] log: [extract] 13000/15066 | 6.0 fn/s | 3501 tok/s | peakVRAM 15.53 GB | ETA 5.7 min
+[17:17:01] log: [extract] 13500/15066 | 5.6 fn/s | 3518 tok/s | peakVRAM 15.53 GB | ETA 4.7 min
+[17:19:12] kernel connection lost (try 1/3); retrying in 10 s
+[17:19:24] ping: 10:19:23 UTC | running: gd3_1_probe_qwen25_7b | GPU 100 %, 18808 MiB
+[17:22:04] log: [extract] 14000/15066 | 5.2 fn/s | 3533 tok/s | peakVRAM 15.53 GB | ETA 3.4 min
+[17:26:18] ping: 10:26:18 UTC | running: gd3_1_probe_qwen25_7b | GPU 100 %, 18808 MiB
+[17:26:19] log: [extract] 14500/15066 | 4.8 fn/s | 3544 tok/s | peakVRAM 15.53 GB | ETA 1.9 min
+[17:30:22] log: [extract] 15000/15066 | 4.6 fn/s | 3554 tok/s | peakVRAM 15.53 GB | ETA 0.2 min
+[17:32:26] ping: 10:32:26 UTC | running: gd3_1_probe_qwen25_7b | GPU 0 %, 262 MiB
+[17:32:27] log: [eval] Skipping manual40 breakdown (project match 29/40)
+[17:32:27] log: /usr/local/lib/python3.13/dist-packages/sklearn/linear_model/_logistic.py:465: ConvergenceWarning: lbfgs failed to converge (status=1):
+[17:32:27] log: STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT.
+[17:32:27] log: Increase the number of iterations (max_iter) or scale the data as shown in:
+[17:32:27] log:     https://scikit-learn.org/stable/modules/preprocessing.html
+[17:32:27] log: Please also refer to the documentation for alternative solver options:
+[17:32:27] log:     https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+[17:32:27] log:   n_iter_i = _check_optimize_result(
+[17:34:29] log: /usr/local/lib/python3.13/dist-packages/sklearn/linear_model/_logistic.py:465: ConvergenceWarning: lbfgs failed to converge (status=1):
+[17:34:29] log: STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT.
+[17:34:29] log: Increase the number of iterations (max_iter) or scale the data as shown in:
+[17:34:29] log:     https://scikit-learn.org/stable/modules/preprocessing.html
+[17:34:29] log: Please also refer to the documentation for alternative solver options:
+[17:34:29] log:     https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+[17:34:29] log:   n_iter_i = _check_optimize_result(
+[17:36:35] log:   n_iter_i = _check_optimize_result(
+[17:36:35] log: /usr/local/lib/python3.13/dist-packages/sklearn/linear_model/_logistic.py:465: ConvergenceWarning: lbfgs failed to converge (status=1):
+[17:36:35] log: STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT.
+[17:36:35] log: Increase the number of iterations (max_iter) or scale the data as shown in:
+[17:36:35] log:     https://scikit-learn.org/stable/modules/preprocessing.html
+[17:36:35] log: Please also refer to the documentation for alternative solver options:
+[17:36:35] log:     https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+[17:36:35] log:   n_iter_i = _check_optimize_result(
+[17:38:37] ping: 10:38:37 UTC | running: gd3_1_probe_qwen25_7b | GPU 0 %, 262 MiB
+[17:38:38] log: /usr/local/lib/python3.13/dist-packages/sklearn/linear_model/_logistic.py:465: ConvergenceWarning: lbfgs failed to converge (status=1):
+[17:38:38] log: STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT.
+[17:38:38] log: Increase the number of iterations (max_iter) or scale the data as shown in:
+[17:38:38] log:     https://scikit-learn.org/stable/modules/preprocessing.html
+[17:38:38] log: Please also refer to the documentation for alternative solver options:
+[17:38:38] log:     https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+[17:38:38] log:   n_iter_i = _check_optimize_result(
+[17:40:39] log:   n_iter_i = _check_optimize_result(
+[17:40:39] log: /usr/local/lib/python3.13/dist-packages/sklearn/linear_model/_logistic.py:465: ConvergenceWarning: lbfgs failed to converge (status=1):
+[17:40:39] log: STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT.
+[17:40:39] log: Increase the number of iterations (max_iter) or scale the data as shown in:
+[17:40:39] log:     https://scikit-learn.org/stable/modules/preprocessing.html
+[17:40:39] log: Please also refer to the documentation for alternative solver options:
+[17:40:39] log:     https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+[17:40:39] log:   n_iter_i = _check_optimize_result(
+[17:42:42] log: /usr/local/lib/python3.13/dist-packages/sklearn/linear_model/_logistic.py:465: ConvergenceWarning: lbfgs failed to converge (status=1):
+[17:42:42] log: STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT.
+[17:42:42] log: Increase the number of iterations (max_iter) or scale the data as shown in:
+[17:42:42] log:     https://scikit-learn.org/stable/modules/preprocessing.html
+[17:42:42] log: Please also refer to the documentation for alternative solver options:
+[17:42:42] log:     https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+[17:42:42] log:   n_iter_i = _check_optimize_result(
+[17:45:00] ping: 10:44:59 UTC | running: gd3_1_probe_qwen25_7b | GPU 0 %, 262 MiB
+[17:47:02] log: /usr/local/lib/python3.13/dist-packages/sklearn/linear_model/_logistic.py:465: ConvergenceWarning: lbfgs failed to converge (status=1):
+[17:47:02] log: STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT.
+[17:47:02] log: Increase the number of iterations (max_iter) or scale the data as shown in:
+[17:47:02] log:     https://scikit-learn.org/stable/modules/preprocessing.html
+[17:47:02] log: Please also refer to the documentation for alternative solver options:
+[17:47:02] log:     https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+[17:47:02] log:   n_iter_i = _check_optimize_result(
+[17:49:03] log: | tập cặp | n | xếp đúng cặp [CI] | sau trừ độ dài (hòa=0.5) | hòa % | luật độ dài | P-C / P-V / P-B / P-R (ngưỡng 0) | net [CI] | null P-C | P-C @med | net @med [CI] | flag @med % | null P-C @med |
+[17:49:03] log: |---|---|---|---|---|---|---|---|---|---|---|---|---|
+[17:49:03] log: | all | 564 | 72.3 [68.8; 75.9] | 75.3 | 0.2 | 87.0 | 5.7 / 48.2 / 45.4 / 0.7 | +5.0 [+3.0; +7.1] | 25.0 | 5.7 | +5.0 [+3.0; +7.1] | 50.0 | 25.0 |
+[17:49:03] log: | length_matched_5pct | 337 | 67.2 [62.5; 72.1] | 68.1 | 0.3 | 83.8 | 3.6 / 51.9 / 44.2 / 0.3 | +3.3 [+1.2; +5.3] | 24.9 | 3.9 | +3.3 [+1.2; +5.6] | 50.0 | 25.0 |
+[17:49:03] log: | patch_adds_code | 482 | 72.8 [68.7; 76.8] | 76.8 | 0.0 | 100.0 | 6.6 / 48.1 / 44.8 / 0.4 | +6.2 [+4.1; +8.5] | 25.0 | 6.6 | +6.2 [+3.9; +8.5] | 50.0 | 25.0 |
+[17:49:03] log: | patch_removes_code | 65 | 69.2 [58.5; 80.0] | 64.6 | 0.0 | 0.0 | 0.0 / 49.2 / 47.7 / 3.1 | -3.1 [-7.7; +0.0] | 25.0 | 1.5 | -1.5 [-7.7; +3.1] | 50.0 | 25.0 |
+[17:49:03] log: wrote /content/exp5/gd3_1_probe_qwen25_7b/pair_protocol_t1.json
+[17:49:03] log: == 2026-11-20 10:49:03 UTC exit 0

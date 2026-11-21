@@ -1,0 +1,309 @@
+{
+ "grpo_partial_stats": {
+  "n_functions": 51,
+  "n_ok": 51,
+  "n_rollouts": 153,
+  "n_complete_pairs": 25,
+  "modes": {
+   "think_complete": 79,
+   "think_reanswer": 20,
+   "think_forced": 54
+  },
+  "think_complete_pct": 51.63,
+  "think_reanswer_pct": 13.07,
+  "think_forced_pct": 35.29,
+  "parses": {
+   "tag": 153
+  },
+  "mean_tok_per_rollout": 3508.4,
+  "median_tok_per_rollout": 3805,
+  "max_tok_per_rollout": 5323,
+  "flag_rate_pct": 86.27,
+  "vote_rate_dist": {
+   "0.0": 3,
+   "0.3333": 4,
+   "0.6667": 7,
+   "1.0": 37
+  },
+  "by_target_counts": {
+   "target=0_flagged=False": 4,
+   "target=0_flagged=True": 21,
+   "target=1_flagged=False": 3,
+   "target=1_flagged=True": 23
+  }
+ },
+ "apples_to_apples_complete_pairs": {
+  "n_pairs": 25,
+  "pair_indices": [
+   [
+    196894,
+    247755
+   ],
+   [
+    195405,
+    225566
+   ],
+   [
+    196687,
+    242586
+   ],
+   [
+    195471,
+    227022
+   ],
+   [
+    195340,
+    224862
+   ],
+   [
+    198435,
+    274683
+   ],
+   [
+    195023,
+    220021
+   ],
+   [
+    195385,
+    224964
+   ],
+   [
+    196322,
+    238620
+   ],
+   [
+    196882,
+    247124
+   ],
+   [
+    200680,
+    307862
+   ],
+   [
+    196587,
+    240595
+   ],
+   [
+    196844,
+    246457
+   ],
+   [
+    198317,
+    272369
+   ],
+   [
+    196705,
+    242926
+   ],
+   [
+    195334,
+    224728
+   ],
+   [
+    194989,
+    218785
+   ],
+   [
+    197149,
+    254062
+   ],
+   [
+    197741,
+    263312
+   ],
+   [
+    197611,
+    262031
+   ],
+   [
+    198798,
+    283751
+   ],
+   [
+    195022,
+    219947
+   ],
+   [
+    5194,
+    162322
+   ],
+   [
+    197010,
+    249958
+   ],
+   [
+    195741,
+    232287
+   ]
+  ],
+  "models": {
+   "OpenVul-GRPO plain (n=3)": {
+    "n_pairs": 25,
+    "P-C_count": 2,
+    "P-V_count": 20,
+    "P-B_count": 2,
+    "P-R_count": 1,
+    "P-C": 8.0,
+    "P-V": 80.0,
+    "P-B": 8.0,
+    "P-R": 4.0,
+    "net": 4.0,
+    "rank_acc": 48.0,
+    "ties_pct": 72.0,
+    "flag_rate": 86.0
+   },
+   "OpenVul-GRPO plain (n=1, s0)": {
+    "n_pairs": 25,
+    "P-C_count": 2,
+    "P-V_count": 19,
+    "P-B_count": 2,
+    "P-R_count": 2,
+    "P-C": 8.0,
+    "P-V": 76.0,
+    "P-B": 8.0,
+    "P-R": 8.0,
+    "net": 0.0,
+    "rank_acc": 50.0,
+    "ties_pct": 84.0,
+    "flag_rate": 84.0
+   },
+   "OpenVul-SFT plain": {
+    "n_pairs": 25,
+    "P-C_count": 5,
+    "P-V_count": 15,
+    "P-B_count": 4,
+    "P-R_count": 1,
+    "P-C": 20.0,
+    "P-V": 60.0,
+    "P-B": 16.0,
+    "P-R": 4.0,
+    "net": 16.0,
+    "rank_acc": 66.0,
+    "ties_pct": 36.0,
+    "flag_rate": 72.0
+   },
+   "Qwen3.5-9B plain": {
+    "n_pairs": 25,
+    "P-C_count": 1,
+    "P-V_count": 17,
+    "P-B_count": 6,
+    "P-R_count": 1,
+    "P-C": 4.0,
+    "P-V": 68.0,
+    "P-B": 24.0,
+    "P-R": 4.0,
+    "net": 0.0,
+    "rank_acc": 58.0,
+    "ties_pct": 20.0,
+    "flag_rate": 72.0
+   },
+   "Qwen3.5-9B audit_ctx": {
+    "n_pairs": 25,
+    "P-C_count": 4,
+    "P-V_count": 16,
+    "P-B_count": 3,
+    "P-R_count": 2,
+    "P-C": 16.0,
+    "P-V": 64.0,
+    "P-B": 12.0,
+    "P-R": 8.0,
+    "net": 8.0,
+    "rank_acc": 58.0,
+    "ties_pct": 36.0,
+    "flag_rate": 76.0
+   }
+  }
+ },
+ "smoke50_full_baselines": {
+  "OpenVul-SFT plain": {
+   "n_pairs": 50,
+   "P-C_count": 14,
+   "P-V_count": 27,
+   "P-B_count": 7,
+   "P-R_count": 2,
+   "P-C": 28.0,
+   "P-V": 54.0,
+   "P-B": 14.0,
+   "P-R": 4.0,
+   "net": 24.0,
+   "rank_acc": 68.0,
+   "ties_pct": 32.0,
+   "flag_rate": 70.0
+  },
+  "OpenVul-SFT audit_hint": {
+   "n_pairs": 50,
+   "P-C_count": 10,
+   "P-V_count": 27,
+   "P-B_count": 8,
+   "P-R_count": 5,
+   "P-C": 20.0,
+   "P-V": 54.0,
+   "P-B": 16.0,
+   "P-R": 10.0,
+   "net": 10.0,
+   "rank_acc": 53.0,
+   "ties_pct": 26.0,
+   "flag_rate": 69.0
+  },
+  "Qwen3.5-9B plain": {
+   "n_pairs": 50,
+   "P-C_count": 5,
+   "P-V_count": 33,
+   "P-B_count": 7,
+   "P-R_count": 5,
+   "P-C": 10.0,
+   "P-V": 66.0,
+   "P-B": 14.0,
+   "P-R": 10.0,
+   "net": 0.0,
+   "rank_acc": 58.0,
+   "ties_pct": 28.0,
+   "flag_rate": 76.0
+  },
+  "Qwen3.5-9B audit": {
+   "n_pairs": 50,
+   "P-C_count": 8,
+   "P-V_count": 29,
+   "P-B_count": 6,
+   "P-R_count": 7,
+   "P-C": 16.0,
+   "P-V": 58.0,
+   "P-B": 12.0,
+   "P-R": 14.0,
+   "net": 2.0,
+   "rank_acc": 60.0,
+   "ties_pct": 36.0,
+   "flag_rate": 73.0
+  },
+  "Qwen3.5-9B audit_hint": {
+   "n_pairs": 50,
+   "P-C_count": 9,
+   "P-V_count": 26,
+   "P-B_count": 6,
+   "P-R_count": 9,
+   "P-C": 18.0,
+   "P-V": 52.0,
+   "P-B": 12.0,
+   "P-R": 18.0,
+   "net": 0.0,
+   "rank_acc": 52.0,
+   "ties_pct": 40.0,
+   "flag_rate": 70.0
+  },
+  "Qwen3.5-9B audit_ctx": {
+   "n_pairs": 50,
+   "P-C_count": 10,
+   "P-V_count": 31,
+   "P-B_count": 4,
+   "P-R_count": 5,
+   "P-C": 20.0,
+   "P-V": 62.0,
+   "P-B": 8.0,
+   "P-R": 10.0,
+   "net": 10.0,
+   "rank_acc": 54.0,
+   "ties_pct": 32.0,
+   "flag_rate": 77.0
+  }
+ }
+}

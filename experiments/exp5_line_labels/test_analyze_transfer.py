@@ -9,11 +9,13 @@ class TransferAnalysisTest(unittest.TestCase):
 
     def test_committed_results_build_complete_report(self):
         report = transfer.build_report(transfer.DEFAULT_RESULTS)
-        self.assertEqual(report["n_runs"], 9)
+        self.assertEqual(report["n_runs"], 13)
         baseline = next(r for r in report["runs"] if r["run"] == transfer.BASELINE_RUN)
         self.assertEqual(baseline["delta_vs_plain"]["secvuleval_top10"], 0.0)
         self.assertEqual(baseline["delta_vs_plain"]["primevul_top10"], 0.0)
-        self.assertEqual(report["cross_run_correlations"]["comparable_converged"]["top10"]["n"], 6)
+        self.assertEqual(report["cross_run_correlations"]["comparable_converged"]["top10"]["n"], 9)
+        pv1 = next(r for r in report["runs"] if r["run"] == "slide_ModernBERT-base_2048_s0_pv1")
+        self.assertEqual(pv1["kind"], "in_domain_primevul")
 
     def test_markdown_contains_research_caveat(self):
         text = transfer.report_markdown(transfer.build_report(transfer.DEFAULT_RESULTS))

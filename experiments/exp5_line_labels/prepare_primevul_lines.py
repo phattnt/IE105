@@ -43,9 +43,13 @@ def benign_rows(primevul, split, n, used_idx, banned_hash, seed):
     return rows, len(pool)
 
 
-def pair_rows(paired, split, anchor_add_only=False):
+def pair_rows(paired, split, anchor_add_only=False, diff_clean=False):
     out, st = [], Counter()
-    diff_fn = diff_flaw_lines_anchored if anchor_add_only else diff_flaw_lines
+    if diff_clean and not anchor_add_only:
+        from clean_diff_labels import diff_flaw_lines_clean
+        diff_fn = diff_flaw_lines_clean
+    else:
+        diff_fn = diff_flaw_lines_anchored if anchor_add_only else diff_flaw_lines
     for k in range(0, len(paired) - 1, 2):
         v, f = paired[k], paired[k + 1]
         if v["commit_id"] != f["commit_id"] or {v["target"], f["target"]} != {0, 1}:
@@ -73,11 +77,17 @@ def main():
     ap.add_argument("--extra_benign_valid", type=int, default=0)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--anchor_add_only", action="store_true", help="anchor missing validation lines for add_only patches")
+    ap.add_argument("--diff_clean", action="store_true", help="use label_noise-aware trivial filtering on diff lines")
     a = ap.parse_args()
     os.makedirs(a.out, exist_ok=True)
     stats, rows_by, st_by = {}, {}, {}
     for split in ("train", "valid", "test"):
-        rows_by[split], st_by[split] = pair_rows(load_jsonl(os.path.join(a.primevul, f"primevul_{split}_paired.jsonl")), split, anchor_add_only=a.anchor_add_only)
+        rows_by[split], st_by[split] = pair_rows(
+            load_jsonl(os.path.join(a.primevul, f"primevul_{split}_paired.jsonl")),
+            split,
+            anchor_add_only=a.anchor_add_only,
+            diff_clean=a.diff_clean and split != "test",
+        )
     test_hash = {text_hash(r["func"]) for r in rows_by["test"]}
     test_hash |= {text_hash(r["func"]) for r in load_jsonl(os.path.join(a.primevul, "primevul_test.jsonl"))}
     for split, n in (("train", a.extra_benign), ("valid", a.extra_benign_valid)):

@@ -47,7 +47,22 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 COMMENT = ("//", "/*", "*", "*/")
 MAX_CHARS = 24000          # ~7k tokens; longer functions are cut (counted in the summary)
-ARMS = ("plain", "plain_hint", "plain_rand", "audit", "audit_hint", "audit_rand", "audit_hint_nt", "audit_ctx", "audit_ctxfake")
+ARMS = (
+    "plain",
+    "plain_hint",
+    "plain_hint_nms",
+    "plain_rand",
+    "audit",
+    "audit_hint",
+    "audit_rand",
+    "audit_hint_nt",
+    "audit_ctx",
+    "audit_ctxfake",
+    "debate_nms",
+    "debate_rand",
+    "debate_none",
+)
+DEBATE_ARMS = frozenset({"debate_nms", "debate_rand", "debate_none"})
 CTX_ARMS = {"audit_ctx": "context", "audit_ctxfake": "context_fake"}
 MAX_CTX_CHARS = 9000       # build_context.py --budget 8000 plus headers
 SAMPLING = {True: {"temperature": 0.6, "top_p": 0.95, "top_k": 20, "presence_penalty": 0.0},
@@ -97,6 +112,50 @@ HINT_RULE = " Audit the flagged lines first; you may add or drop candidates."
 HINT_NEUTRAL = "\nA static analysis pass identified candidate lines performing sensitive/critical operations: {lines}.\n"
 HINT_RULE_NEUTRAL = " Check whether operations on these lines are properly guarded; you may add or drop candidates."
 
+HINT_PLAIN_NEUTRAL = (
+    "\nNote: A lightweight static pass flagged these candidate lines for closer inspection: {lines}. "
+    "They may already be properly guarded or completely harmless; judge the entire function independently.\n"
+)
+
+PROSECUTOR_PROMPT = """Analyze this C/C++ function for a real, self-contained security vulnerability (memory safety, bounds error, integer overflow/underflow, null/dangling dereference, uninitialized use, double-free/use-after-free, command/format injection, race condition).
+Lines are numbered.
+
+```c
+{code}
+```
+{hint}
+Rules:
+1. Check whether any operation in this function can trigger a security bug through flawed logic or missing validation in THIS function itself.
+2. Do NOT flag a function solely because caller arguments are unchecked unless the function's own logic shows a concrete exploitable defect.
+3. If vulnerable, state the single most concrete claim (`line`, `cwe`, `variable`, `trigger` condition). If safe or properly guarded, set `"vulnerable": false` and `"claim": null`.
+
+Answer with JSON only: {{"vulnerable": true or false, "probability": <integer 0-100, probability the function is vulnerable>, "claim": {{"line": <int>, "cwe": "<short>", "variable": "<name>", "trigger": "<concrete condition causing crash/UB/exploit>"}} or null}}"""
+
+DEFENSE_SYSTEM = (
+    "You are an independent, skeptical C/C++ security reviewer verifying whether a vulnerability claim is real or a false positive. "
+    "You see only this function: no caller, no patch, no commit message. Be precise about line numbers. "
+    "Answer with a single JSON object and nothing after it."
+)
+
+DEFENSE_PROMPT = """Another auditor flagged a potential vulnerability in this C/C++ function. Independently verify whether the claim is actually exploitable or a false positive.
+Lines are numbered.
+
+```c
+{code}
+```
+
+Reported claim:
+```json
+{claim}
+```
+
+Check strictly:
+1. Does any check, guard, bounds clamp, early return, or safe API on the control path BEFORE the claimed line already prevent the trigger? If so, list the exact `guard_lines`.
+2. Does the claim rely on an unproven assumption about external callers, invariants, or dead/unreachable paths rather than a concrete defect in this function?
+Judge `"confirmed": true` ONLY if the trigger is genuinely reachable and unguarded in this function; otherwise `"confirmed": false`.
+
+Answer with JSON only: {{"confirmed": true or false, "probability": <integer 0-100, probability the vulnerability is genuinely real and unguarded>, "guard_lines": [<int>, ...], "reason": "<one sentence>"}}"""
+
 SYSTEM_CTX = ("You are a careful C/C++ security auditor. You audit exactly one function. You also get some related code from "
               "the same repository (definitions of functions it calls, places where it is called); it may or may not be "
               "relevant. There is no patch and no commit message. Be precise about line numbers. Answer with a single JSON "
@@ -138,32 +197,67 @@ def numbered(func):
     return "\n".join(f"{i + 1:{w}d}| {l}" for i, l in enumerate(lines)), len(lines), cut
 
 
-def hint_lines(r, arm, k, n_kept):
+def hint_lines(r, arm, k, n_kept, nms_radius=0):
     lines = r["func"].split("\n")
     code = [i for i in range(min(len(lines), len(r["line_scores"]), n_kept)) if is_code(lines[i])]
-    if arm in ("audit_rand", "plain_rand"):
+    if arm in ("audit_rand", "plain_rand", "debate_rand"):
         rng = random.Random(f"{r['idx']}")
         pick = sorted(rng.sample(code, min(k, len(code))))
     else:
-        pick = sorted(sorted(code, key=lambda i: -r["line_scores"][i])[:k])
+        eff_r = nms_radius if nms_radius > 0 else (3 if arm.endswith("_nms") else 0)
+        pick = None
+        if eff_r > 0 and code:
+            try:
+                from clean_diff_labels import diverse_topk_order
+                sub_func = "\n".join(lines[:n_kept])
+                ordered = diverse_topk_order(sub_func, list(r["line_scores"][:n_kept]), radius=eff_r, mask_trivial=True)
+                code_set = set(code)
+                filtered = [i for i in ordered if i in code_set]
+                if len(filtered) >= min(k, len(code)):
+                    pick = sorted(filtered[:k])
+            except Exception:
+                pick = None
+        if pick is None:
+            pick = sorted(sorted(code, key=lambda i: (-r["line_scores"][i], i))[:k])
     return [i + 1 for i in pick]          # 1-based in the prompt
 
 
-def build(r, arm, k, hint_style="neutral"):
+def build_defense(r, claim):
+    """Build stage-2 independent defense/falsifier messages (never sees stage-1 reasoning)."""
+    code, _, _ = numbered(r["func"])
+    claim_str = json.dumps(claim, ensure_ascii=False, indent=1)
+    user = DEFENSE_PROMPT.format(code=code, claim=claim_str)
+    return [{"role": "system", "content": DEFENSE_SYSTEM}, {"role": "user", "content": user}]
+
+
+def build(r, arm, k, hint_style="neutral", nms_radius=0, plain_templates=None, system_override=None):
     """-> (messages, meta, thinking)"""
     code, n_kept, cut = numbered(r["func"])
     meta = {"idx": r["idx"], "arm": arm, "cut": cut, "n_lines": n_kept}
+    tpls = plain_templates or {}
+    sys_msg = system_override or tpls.get("system") or SYSTEM
     if arm == "plain":
-        user = PLAIN.format(code=code)
-    elif arm in ("plain_hint", "plain_rand"):
-        meta["hint_lines"] = hint_lines(r, arm, k, n_kept)
-        h_tmpl = HINT_NEUTRAL if hint_style == "neutral" else HINT
+        user = (tpls.get("plain") or PLAIN).format(code=code)
+    elif arm in ("plain_hint", "plain_hint_nms", "plain_rand"):
+        meta["hint_lines"] = hint_lines(r, arm, k, n_kept, nms_radius=nms_radius)
+        if arm in ("plain_hint_nms", "plain_rand"):
+            h_tmpl = tpls.get("hint_plain_neutral") or HINT_PLAIN_NEUTRAL
+        else:
+            h_tmpl = HINT_NEUTRAL if hint_style == "neutral" else HINT
         hint = h_tmpl.format(lines=", ".join(map(str, meta["hint_lines"])))
-        user = PLAIN_HINT.format(code=code, hint=hint)
+        user = (tpls.get("plain_hint") or PLAIN_HINT).format(code=code, hint=hint)
+    elif arm in DEBATE_ARMS:
+        hint = ""
+        if arm in ("debate_nms", "debate_rand"):
+            meta["hint_lines"] = hint_lines(r, arm, k, n_kept, nms_radius=nms_radius)
+            h_tmpl = tpls.get("hint_plain_neutral") or HINT_PLAIN_NEUTRAL
+            hint = h_tmpl.format(lines=", ".join(map(str, meta["hint_lines"])))
+        user = PROSECUTOR_PROMPT.format(code=code, hint=hint)
+        return [{"role": "system", "content": SYSTEM}, {"role": "user", "content": user}], meta, True
     else:
         hint, rule = "", ""
         if arm in ("audit_hint", "audit_rand", "audit_hint_nt"):
-            meta["hint_lines"] = hint_lines(r, arm, k, n_kept)
+            meta["hint_lines"] = hint_lines(r, arm, k, n_kept, nms_radius=nms_radius)
             h_tmpl = HINT_NEUTRAL if hint_style == "neutral" else HINT
             r_tmpl = HINT_RULE_NEUTRAL if hint_style == "neutral" else HINT_RULE
             hint, rule = h_tmpl.format(lines=", ".join(map(str, meta["hint_lines"]))), r_tmpl
@@ -177,7 +271,7 @@ def build(r, arm, k, hint_style="neutral"):
             user = user[:step2.start()] + AUDIT_CTX_STEP2 + user[step2.end():]
             user = user.replace('"guards": [<int>, ...]', '"guards": [<int or "quote">, ...]')
             return [{"role": "system", "content": SYSTEM_CTX}, {"role": "user", "content": user}], meta, True
-    return [{"role": "system", "content": SYSTEM}, {"role": "user", "content": user}], meta, arm != "audit_hint_nt"
+    return [{"role": "system", "content": sys_msg}, {"role": "user", "content": user}], meta, arm != "audit_hint_nt"
 
 
 def parse_json(text):
@@ -198,20 +292,54 @@ def parse_json(text):
     return None
 
 
-def parse_answer(text):
-    """-> (dict with "vulnerable", how) where how is "json" or "lenient"; (None, None) when no verdict can be read."""
+def parse_answer(text, allow_tag=True):
+    """-> (dict with "vulnerable", how) where how is "json", "lenient", or "tag"; (None, None) when no verdict can be read."""
     js = parse_json(text)
     if isinstance(js, dict) and "vulnerable" in js:
         return js, "json"
     t = text or ""
     v = re.findall(r'"?vulnerable"?\s*[:=]\s*"?(true|false)', t, flags=re.I)
-    if not v:
+    if v:
+        out = {"vulnerable": v[-1].lower() == "true"}
+        p = re.findall(r'"?probability"?\s*[:=]\s*"?(\d+(?:\.\d+)?)', t, flags=re.I)
+        if p:
+            out["probability"] = float(p[-1])
+        return out, "lenient"
+    if allow_tag:
+        tags = re.findall(r"\b(HAS_VUL|NO_VUL)\b", t)
+        if tags:
+            vul = tags[-1] == "HAS_VUL"
+            return {"vulnerable": vul, "probability": 100.0 if vul else 0.0}, "tag"
+    return None, None
+
+
+def parse_answer_json(text):
+    return parse_answer(text, allow_tag=False)
+
+
+def parse_defense(text):
+    """-> (dict with "confirmed", how) where how is "json" or "lenient" (or *_vul_fallback); (None, None) on failure."""
+    js = parse_json(text)
+    if isinstance(js, dict):
+        if "confirmed" in js:
+            return js, "json"
+        if "vulnerable" in js:
+            out = dict(js)
+            out["confirmed"] = bool(js["vulnerable"])
+            return out, "json_vul_fallback"
+    t = text or ""
+    c = re.findall(r'"?confirmed"?\s*[:=]\s*"?(true|false)', t, flags=re.I)
+    how = "lenient"
+    if not c:
+        c = re.findall(r'"?vulnerable"?\s*[:=]\s*"?(true|false)', t, flags=re.I)
+        how = "lenient_vul_fallback"
+    if not c:
         return None, None
-    out = {"vulnerable": v[-1].lower() == "true"}
+    out = {"confirmed": c[-1].lower() == "true"}
     p = re.findall(r'"?probability"?\s*[:=]\s*"?(\d+(?:\.\d+)?)', t, flags=re.I)
     if p:
         out["probability"] = float(p[-1])
-    return out, "lenient"
+    return out, how
 
 
 class Client:
@@ -281,7 +409,7 @@ class Client:
         j = self.post("completions", body)
         return {"content": j["choices"][0].get("text") or "", "finish": j["choices"][0].get("finish_reason"), "usage": j.get("usage") or {}}
 
-    def judge(self, messages, thinking, seed):
+    def judge(self, messages, thinking, seed, parser=parse_answer):
         """-> (answer text, record of every call incl. the full reasoning). Never mixes modes silently."""
         t = time.time()
         if not thinking:
@@ -290,12 +418,12 @@ class Client:
                                   "secs": round(time.time() - t, 1), "reasoning": ""}
         c = self.chat(messages, True, self.think_budget + self.answer_tokens, seed)
         calls = [{"kind": "chat_think", "finish": c["finish"], "usage": c["usage"], "reasoning_chars": len(c["reasoning"])}]
-        if c["finish"] == "stop" and parse_answer(c["content"])[0] is not None:
+        if c["finish"] == "stop" and parser(c["content"])[0] is not None:
             return c["content"], {"mode": "think_complete", "calls": calls, "secs": round(time.time() - t, 1), "reasoning": c["reasoning"]}
         finished = bool(c["content"].strip())          # text after </think> exists: the reasoning had ended
         f = self.forced_answer(messages, c["reasoning"], finished, seed)
         calls.append({"kind": "forced_answer", "finish": f["finish"], "usage": f["usage"]})
-        if parse_answer(f["content"])[0] is None:          # one retry of the answer only, with another seed
+        if parser(f["content"])[0] is None:          # one retry of the answer only, with another seed
             f = self.forced_answer(messages, c["reasoning"], finished, seed + 1)
             calls.append({"kind": "forced_answer_retry", "finish": f["finish"], "usage": f["usage"]})
         return f["content"], {"mode": "think_reanswer" if finished else "think_forced", "calls": calls,
@@ -310,12 +438,147 @@ def load_rows(path):
     return [json.loads(l) for l in open(path, encoding="utf-8")]
 
 
+def _clamp_prob(val, default=50.0):
+    try:
+        p = float(val)
+    except Exception:
+        p = float(default)
+    return min(max(p, 0.0), 100.0)
+
+
+def _load_subset_ids(path):
+    obj = json.load(open(path, encoding="utf-8"))
+    if isinstance(obj, dict):
+        items = obj.get("pair_indices") or obj.get("clean_pair_indices") or obj.get("indices") or []
+    else:
+        items = obj
+    ids = set()
+    for it in items:
+        if isinstance(it, (list, tuple)):
+            ids.update(it)
+        else:
+            ids.add(it)
+    return ids
+
+
+def _load_plain_templates(path):
+    if not path:
+        return None
+    return json.load(open(path, encoding="utf-8"))
+
+
+def _resolve_system_override(val):
+    if not val:
+        return None
+    if os.path.isfile(val):
+        return open(val, encoding="utf-8").read().strip()
+    return val
+
+
+def _run_one_sample(cl, r, arm, k, hint_style, nms_radius, plain_templates, system_override, sample_seed):
+    messages, meta, thinking = build(
+        r, arm, k, hint_style=hint_style, nms_radius=nms_radius,
+        plain_templates=plain_templates, system_override=system_override,
+    )
+    if arm not in DEBATE_ARMS:
+        text, rec = cl.judge(messages, thinking, sample_seed, parser=parse_answer)
+        js, how = parse_answer(text)
+        return meta, {
+            **rec, "seed": sample_seed, "status": "ok" if js else "unparsed",
+            "parse": how, "parsed": js, "raw": text,
+        }
+
+    text1, rec1 = cl.judge(messages, thinking, sample_seed, parser=parse_answer_json)
+    pros_js, pros_how = parse_answer(text1, allow_tag=True)
+    st1 = {
+        "mode": rec1["mode"], "calls": rec1["calls"], "secs": rec1["secs"],
+        "parse": pros_how, "parsed": pros_js, "raw": text1, "reasoning": rec1["reasoning"],
+    }
+    if pros_js is None:
+        return meta, {
+            "mode": rec1["mode"], "calls": rec1["calls"], "secs": rec1["secs"], "seed": sample_seed,
+            "status": "unparsed", "parse": None, "parsed": None, "raw": text1,
+            "reasoning": rec1["reasoning"], "stage1": st1, "stage2": None,
+        }
+
+    pros_vul = bool(pros_js.get("vulnerable"))
+    pros_prob = _clamp_prob(pros_js.get("probability", 50.0))
+    claim_obj = pros_js.get("claim")
+    if not pros_vul:
+        sinks = (
+            [{"line": int(claim_obj["line"]), "verdict": "sufficient"}]
+            if isinstance(claim_obj, dict) and isinstance(claim_obj.get("line"), (int, float))
+            else []
+        )
+        final_js = {
+            "vulnerable": False, "probability": pros_prob, "defense_skipped": True,
+            "prosecutor_vulnerable": False, "claim": claim_obj, "sinks": sinks,
+        }
+        return meta, {
+            "mode": rec1["mode"], "calls": rec1["calls"], "secs": rec1["secs"], "seed": sample_seed,
+            "status": "ok", "parse": pros_how, "parsed": final_js, "raw": text1,
+            "reasoning": rec1["reasoning"], "stage1": st1, "stage2": None,
+        }
+
+    claim_dict = (
+        claim_obj if isinstance(claim_obj, dict)
+        else {"line": None, "summary": pros_js.get("reason") or (text1 or "")[:300]}
+    )
+    def_msgs = build_defense(r, claim_dict)
+    text2, rec2 = cl.judge(def_msgs, True, sample_seed + 17, parser=parse_defense)
+    def_js, def_how = parse_defense(text2)
+    st2 = {
+        "mode": rec2["mode"], "calls": rec2["calls"], "secs": rec2["secs"],
+        "parse": def_how, "parsed": def_js, "raw": text2, "reasoning": rec2["reasoning"],
+    }
+    calls = rec1["calls"] + rec2["calls"]
+    secs = round(rec1["secs"] + rec2["secs"], 1)
+    if "think_forced" in (rec1["mode"], rec2["mode"]):
+        mode = "think_forced"
+    elif "think_reanswer" in (rec1["mode"], rec2["mode"]):
+        mode = "think_reanswer"
+    else:
+        mode = "think_complete"
+    if def_js is None:
+        return meta, {
+            "mode": mode, "calls": calls, "secs": secs, "seed": sample_seed,
+            "status": "unparsed", "parse": None, "parsed": None, "raw": text2,
+            "reasoning": rec1["reasoning"], "stage1": st1, "stage2": st2,
+        }
+
+    confirmed = bool(def_js.get("confirmed"))
+    def_prob = _clamp_prob(def_js.get("probability", 50.0))
+    sinks = (
+        [{"line": int(claim_dict["line"]), "verdict": "missing" if confirmed else "sufficient"}]
+        if isinstance(claim_dict.get("line"), (int, float))
+        else []
+    )
+    final_js = {
+        "vulnerable": confirmed, "probability": def_prob, "defense_skipped": False,
+        "prosecutor_vulnerable": True, "prosecutor_probability": pros_prob,
+        "claim": claim_dict, "guard_lines": def_js.get("guard_lines", []),
+        "reason": def_js.get("reason", ""), "sinks": sinks,
+    }
+    return meta, {
+        "mode": mode, "calls": calls, "secs": secs, "seed": sample_seed,
+        "status": "ok", "parse": f"{pros_how}+{def_how}", "parsed": final_js, "raw": text2,
+        "reasoning": rec1["reasoning"], "stage1": st1, "stage2": st2,
+    }
+
+
 def run(a):
     rows = load_rows(a.scores)
+    if getattr(a, "subset_json", None):
+        ids = _load_subset_ids(a.subset_json)
+        rows = [r for r in rows if r["idx"] in ids]
     if a.limit:
         vul = [r for r in rows if r["target"] == 1][:a.limit]
         ids = {r["idx"] for r in vul} | {r.get("pair_idx") for r in vul}
         rows = [r for r in rows if r["idx"] in ids]
+    plain_templates = _load_plain_templates(getattr(a, "plain_template_file", None))
+    system_override = _resolve_system_override(getattr(a, "system_override", None))
+    n_samples = max(1, int(getattr(a, "n_samples", 1)))
+    nms_radius = int(getattr(a, "nms_radius", 0))
     os.makedirs(a.out, exist_ok=True)
     cl = Client(a)
     for arm in a.arms:
@@ -324,16 +587,54 @@ def run(a):
         path, epath = f"{a.out}/{arm}.jsonl", f"{a.out}/{arm}.errors.jsonl"
         done = {json.loads(l)["idx"] for l in open(path, encoding="utf-8")} if os.path.exists(path) else set()
         todo = [r for r in rows if r["idx"] not in done]
-        print(f"[{arm}] {len(done)} done, {len(todo)} to do", flush=True)
+        print(f"[{arm}] {len(done)} done, {len(todo)} to do (n_samples={n_samples}, nms_radius={nms_radius})", flush=True)
         fh, eh = open(path, "a", encoding="utf-8"), open(epath, "a", encoding="utf-8")
         T = time.time(); n = n_err = 0; toks = 0
 
         def work(r):
-            messages, meta, thinking = build(r, arm, a.k, hint_style=getattr(a, "hint_style", "neutral"))
-            text, rec = cl.judge(messages, thinking, seed_of(r["idx"]))
-            js, how = parse_answer(text)
-            return {**meta, **rec, "target": r["target"], "pair_idx": r.get("pair_idx"), "status": "ok" if js else "unparsed",
-                    "parse": how, "parsed": js, "raw": text}
+            base_seed = seed_of(r["idx"])
+            hint_style = getattr(a, "hint_style", "neutral")
+            if n_samples == 1:
+                meta, rec = _run_one_sample(
+                    cl, r, arm, a.k, hint_style, nms_radius, plain_templates, system_override, base_seed
+                )
+                return {**meta, **rec, "target": r["target"], "pair_idx": r.get("pair_idx")}
+            samples = []
+            meta = None
+            for s_idx in range(n_samples):
+                m, s_rec = _run_one_sample(
+                    cl, r, arm, a.k, hint_style, nms_radius, plain_templates, system_override, base_seed + 1009 * s_idx
+                )
+                meta = m
+                samples.append(s_rec)
+            valid = [x for x in samples if x["status"] == "ok" and x["parsed"]]
+            all_calls = [c for x in samples for c in x["calls"]]
+            total_secs = round(sum(x["secs"] for x in samples), 1)
+            uniq_modes = {x["mode"] for x in samples}
+            agg_mode = next(iter(uniq_modes)) if len(uniq_modes) == 1 else "mixed"
+            if valid:
+                vr = sum(bool(x["parsed"]["vulnerable"]) for x in valid) / len(valid)
+                mean_p = sum(_clamp_prob(x["parsed"].get("probability", 50.0)) for x in valid) / len(valid)
+                sinks = [s for x in valid for s in (x["parsed"].get("sinks") or [])]
+                agg_parsed = {
+                    "vulnerable": vr > 0.5,
+                    "probability": round(mean_p, 1),
+                    "vote_rate": round(vr, 4),
+                    "n_valid": len(valid),
+                    "n_samples": n_samples,
+                }
+                if sinks:
+                    agg_parsed["sinks"] = sinks
+                status = "ok"
+                parse = "multi"
+            else:
+                agg_parsed, status, parse = None, "unparsed", None
+            return {
+                **meta, "mode": agg_mode, "calls": all_calls, "secs": total_secs,
+                "target": r["target"], "pair_idx": r.get("pair_idx"),
+                "status": status, "parse": parse, "parsed": agg_parsed,
+                "n_samples": n_samples, "samples": samples,
+            }
 
         with ThreadPoolExecutor(a.workers) as ex:
             futs = {ex.submit(work, r): r for r in todo}
@@ -358,12 +659,13 @@ def run(a):
 
 
 def to_score(js):
+    if "vote_rate" in js:
+        vr = float(js["vote_rate"])
+        p = _clamp_prob(js.get("probability", 50.0))
+        v = bool(js.get("vulnerable"))
+        return (2.0 * vr - 1.0) + 0.1 * (p - 50.0) / 100.0, v, p
     v = bool(js.get("vulnerable"))
-    try:
-        p = float(js.get("probability", 50))
-    except Exception:
-        p = 50.0
-    p = min(max(p, 0.0), 100.0)
+    p = _clamp_prob(js.get("probability", 50.0))
     return (1.0 if v else -1.0) + (p - 50.0) / 100.0, v, p
 
 
@@ -382,9 +684,28 @@ def score(a):
         modes, n_ok, n_vul, n_cut, consistent, n_len = {}, 0, 0, 0, 0, 0
         n_fl = hit_missing = hit_sink = hit_hint = n_miss_total = 0
         gen = []
+        s1_modes, s2_modes = {}, {}
+        n_rollouts = n_pros_vul = n_def_called = n_def_rej = 0
         with open(f"{d}/primevul_test_scores.jsonl", "w", encoding="utf-8") as fh:
             for x in recs:
-                modes[x.get("mode", "?")] = modes.get(x.get("mode", "?"), 0) + 1
+                rollouts = x.get("samples") if isinstance(x.get("samples"), list) else [x]
+                for sr in rollouts:
+                    m = sr.get("mode", "?")
+                    modes[m] = modes.get(m, 0) + 1
+                    if "stage1" in sr:
+                        n_rollouts += 1
+                        st1 = sr.get("stage1") or {}
+                        st2 = sr.get("stage2")
+                        m1 = st1.get("mode", "?")
+                        s1_modes[m1] = s1_modes.get(m1, 0) + 1
+                        if st1.get("parsed") and bool(st1["parsed"].get("vulnerable")):
+                            n_pros_vul += 1
+                        if st2:
+                            n_def_called += 1
+                            m2 = st2.get("mode", "?")
+                            s2_modes[m2] = s2_modes.get(m2, 0) + 1
+                            if st2.get("parsed") and not bool(st2["parsed"].get("confirmed")):
+                                n_def_rej += 1
                 n_cut += bool(x.get("cut"))
                 gen.append(sum((c.get("usage") or {}).get("completion_tokens") or 0 for c in x.get("calls", [])))
                 js = x.get("parsed")
@@ -410,7 +731,9 @@ def score(a):
         err_ids = {json.loads(l)["idx"] for l in open(f"{a.out}/{arm}.errors.jsonl")} if os.path.exists(f"{a.out}/{arm}.errors.jsonl") else set()
         errors = {"logged": len(err_ids), "still_unanswered": len(err_ids - answered_ids)}
         gen.sort()
-        summary[arm] = {"n": n, "answered": n_ok, "answer_rate": round(n_ok / max(n, 1) * 100, 1), "parsed_leniently": n_len, "modes": modes,
+        n_samp_max = max((x.get("n_samples", 1) for x in recs), default=1)
+        summary[arm] = {"n": n, "n_samples": n_samp_max, "answered": n_ok, "answer_rate": round(n_ok / max(n, 1) * 100, 1),
+                        "parsed_leniently": n_len, "modes": modes,
                         "transport_errors": errors, "cut_functions": n_cut,
                         "flag_rate": round(n_vul / max(n_ok, 1) * 100, 1),
                         "verdict_probability_consistent": round(consistent / max(n_ok, 1) * 100, 1),
@@ -420,6 +743,15 @@ def score(a):
                                   "any_sink_is_a_flaw_line": round(hit_sink / max(n_fl, 1) * 100, 1),
                                   "a_missing_sink_is_a_hint_line": round(hit_hint / max(n_fl, 1) * 100, 1),
                                   "missing_sinks_per_function": round(n_miss_total / max(n_fl, 1), 2)}}
+        if n_rollouts:
+            summary[arm]["debate_stats"] = {
+                "n_rollouts": n_rollouts,
+                "prosecutor_flag_rate": round(n_pros_vul / max(n_rollouts, 1) * 100, 1),
+                "defense_called": n_def_called,
+                "defense_rejected_rate": round(n_def_rej / max(n_def_called, 1) * 100, 1),
+                "stage1_modes": s1_modes,
+                "stage2_modes": s2_modes,
+            }
         print(arm, json.dumps(summary[arm]))
     json.dump(summary, open(f"{a.out}/scores/summary.json", "w"), indent=1)
 
@@ -431,8 +763,13 @@ if __name__ == "__main__":
     ap.add_argument("--out", required=True)
     ap.add_argument("--arms", nargs="*", default=["audit_hint"])
     ap.add_argument("--limit", type=int, default=None, help="smoke: this many vulnerable functions (with flaw lines) + their pairs")
+    ap.add_argument("--subset_json", default=None, help="JSON file with pair_indices / clean_pair_indices / idx list to filter rows")
     ap.add_argument("--k", type=int, default=3, help="top-k hint lines (default: 3 to avoid OR-gate false alarm explosion)")
+    ap.add_argument("--nms_radius", type=int, default=0, help="1D NMS radius for hint selection (0=raw top-k; *_nms arms default to 3)")
+    ap.add_argument("--n_samples", type=int, default=1, help="number of rollouts per function for self-consistency")
     ap.add_argument("--hint_style", choices=["neutral", "asymmetric"], default="neutral", help="symmetric neutral hints vs asymmetric priming")
+    ap.add_argument("--system_override", default=None, help="override SYSTEM prompt (string or path to text file)")
+    ap.add_argument("--plain_template_file", default=None, help="JSON file overriding plain/plain_hint/hint_plain_neutral/system templates")
     ap.add_argument("--url", default="http://127.0.0.1:8000/v1")
     ap.add_argument("--model", default="llm")
     ap.add_argument("--workers", type=int, default=16, help="keep <= the server's --max-num-seqs so requests do not queue")

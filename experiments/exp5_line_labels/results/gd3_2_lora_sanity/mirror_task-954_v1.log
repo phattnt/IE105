@@ -1,0 +1,33 @@
+[15:00:11] mirror job gd3_2_lora_sanity on exp5llm every 120 s: runs -, output dirs ['gd3_2_lora_sanity']
+[15:00:11] keepalive cell every 300 s; ckpt_last pulled every 3600 s (0 = never)
+[15:00:47] log: == 2026-11-21 08:00:00 UTC start gd3_2_lora_sanity
+[15:03:22] log: Loading weights: 100%|██████████| 338/338 [00:03<00:00, 84.92it/s]
+[15:03:22] log: [transformers] Qwen2Model LOAD REPORT from: Qwen/Qwen2.5-Coder-7B-Instruct
+[15:03:22] log: Key            | Status     |  | 
+[15:03:22] log: ---------------+------------+--+-
+[15:03:22] log: lm_head.weight | UNEXPECTED |  | 
+[15:03:22] log: Notes:
+[15:03:22] log: - UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[15:03:22] log: [model] layers=28 d=3584 hook=13+27 trainable=40,409,607
+[15:05:49] ping: 08:05:48 UTC | running: gd3_2_lora_sanity | GPU 100 %, 10564 MiB
+[15:07:54] log: [train] ep 0.25/1 (50/200) | loss=2.1836 gnorm=7.98 | 0.17 pair/s 508 tok/s | peakVRAM 10.09 GB | ETA 14.5 min
+[15:12:12] ping: 08:12:11 UTC | running: gd3_2_lora_sanity | GPU 100 %, 10564 MiB
+[15:12:40] log: [train] ep 0.50/1 (100/200) | loss=2.2027 gnorm=7.54 | 0.17 pair/s 509 tok/s | peakVRAM 10.15 GB | ETA 9.7 min
+[15:16:44] log: [train] ep 0.75/1 (150/200) | loss=2.2168 gnorm=9.29 | 0.18 pair/s 505 tok/s | peakVRAM 10.15 GB | ETA 4.6 min
+[15:19:25] ping: 08:19:24 UTC | running: gd3_2_lora_sanity | GPU 95 %, 10564 MiB
+[15:21:40] log: [train] ep 1.00/1 (200/200) | loss=2.2753 gnorm=11.99 | 0.18 pair/s 506 tok/s | peakVRAM 10.15 GB | ETA 0.0 min
+[15:23:43] log: - **Telemetry:** trainable params `40409607`, peak VRAM `10.15 GB`, train time `1239.6s`, OOM fallbacks `0`
+[15:23:43] log: - **Clean Splits & Anti-Shortcut Sampling:** train `200` pairs (`cf>cv=182`, `cv>cf=13`), extra benign `200` (`matched=160`, `random=40`, median chars pair=`2472.0` vs benign=`1633.0`), valid `100` pairs + `200` benign
+[15:23:43] log: ## 1. Training & Validation Curve
+[15:23:43] log: | Epoch | Pairs Done | Train Loss | Valid Bal Rank | Valid `PatchRemoves` | Valid Debias ROC | Valid Net@med | Composite |
+[15:23:43] log: |---:|---:|---:|---:|---:|---:|---:|---:|
+[15:23:43] log: | 1.00 | 200 | 2.2753 | 45.8% | 46.1% | 0.5208 | -3.0% | 0.4895 |
+[15:23:43] log: T2_LORA_DONE
+[15:23:43] log: == 2026-11-21 08:22:41 UTC exit 0
+[15:23:47] pulled 2 files of gd3_2_lora_sanity -> experiments/exp5_line_labels/results/gd3_2_lora_sanity
+[15:23:47] job gd3_2_lora_sanity ended: ok - final pass done
+[15:23:50] NOTHING_RUNNING on exp5llm: 08:23:50 UTC | running: none | GPU 0 %, 0 MiB
+[15:23:50] releasing session exp5llm: --down given, all jobs ended and their results are pulled
+[colab] Stopping session 'exp5llm'...
+[colab] Session terminated.
+[15:23:54] session exp5llm released

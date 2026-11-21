@@ -141,12 +141,13 @@ def main():
     tl.PAD_ID = tok.pad_token_id
     if cfg.get("bf16"):
         tl.AMP_DTYPE = torch.bfloat16
-    model = tl.make_model(cfg["model"]).to(device)
+    model = tl.make_model(cfg["model"], cfg.get("arch", "linear")).to(device)
     model.load_state_dict({k: v.float() for k, v in torch.load(f"{a.run}/ckpt_best.pt", map_location="cpu").items()})
 
     class A:  # score_rows reads these attributes
         max_len, eval_tokens = cfg["max_len"], a.eval_tokens
-    res = {"trained_on": "SecVulEval (exp5)", "model": cfg["model"], "strategy": cfg["strategy"], "max_len": cfg["max_len"]}
+    res = {"trained_on": "SecVulEval (exp5)", "model": cfg["model"], "arch": cfg.get("arch", "linear"),
+           "strategy": cfg["strategy"], "max_len": cfg["max_len"]}
     ls, fs = tl.score_rows(model, tok, pair_rows, cfg["strategy"], A, device)
     res["pairs_and_lines"] = tl.evaluate(pair_rows, ls, fs, *tl.group_info(pair_rows))
     tl.log("paired:", json.dumps(res["pairs_and_lines"]))

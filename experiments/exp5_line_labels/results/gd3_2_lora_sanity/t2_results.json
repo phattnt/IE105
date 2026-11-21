@@ -1,0 +1,48 @@
+{
+ "telemetry": {
+  "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+  "max_len": 2048,
+  "lora_r": 16,
+  "lora_alpha": 16,
+  "mid_layer": 13,
+  "last_layer": 27,
+  "trainable_params": 40409607,
+  "peak_vram_gb": 12.49,
+  "train_secs": 1013.9,
+  "oom_fallbacks": 0
+ },
+ "split_stats": {
+  "train_pairs": 200,
+  "train_add": 182,
+  "train_rem": 13,
+  "valid_pairs": 100,
+  "valid_benign": 200,
+  "test_pairs": 564,
+  "test_seen_projects": 266,
+  "test_unseen_projects": 298
+ },
+ "benign_stats": {
+  "requested": 200,
+  "selected": 200,
+  "matched": 170,
+  "random": 30,
+  "pair_median_chars": 2472.0,
+  "benign_median_chars": 1864.0
+ },
+ "curve": [
+  {
+   "epoch": 1.0,
+   "pairs_done": 200,
+   "train_loss": 2.318,
+   "val_bal_rank": 55.97,
+   "val_rem_rank": 46.15,
+   "val_debias_roc": 0.5411,
+   "val_net_med": 1.0,
+   "val_composite": 0.5504
+  }
+ ],
+ "best_composite": 0.5504,
+ "test_pairs": null,
+ "test_fulltest": null,
+ "gate": null
+}

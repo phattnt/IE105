@@ -11,21 +11,25 @@ Một cấu hình định vị dòng tốt hơn trên SecVulEval có tiếp tụ
 | Run | Loại | Top-10 SecVulEval | Top-10 PrimeVul | Δ Prime − Sec | Lift trên ngẫu nhiên Sec / Prime | Cặp Sec / Prime | AUPRC − prevalence Sec / Prime (điểm %) |
 |---|---|---:|---:|---:|---:|---:|---:|
 | `slide_ModernBERT-base_2048_s0_s13_conv` | comparable_converged | 71.46 | 58.82 | -12.64 | +22.79 / +22.13 | 62.87 / 64.80 | +2.46 / -0.97 |
+| `slide_ModernBERT-base_2048_s0_lw` | comparable_converged | 70.78 | 61.62 | -9.16 | +22.11 / +24.93 | 53.68 / 54.88 | +2.03 / -0.51 |
 | `slide_unixcoder-base_1024_s0_conv` | comparable_converged | 70.01 | 60.78 | -9.23 | +21.34 / +24.09 | 57.46 / 59.93 | +1.49 / -1.02 |
+| `slide_ModernBERT-base_2048_s0_base2` | comparable_converged | 69.62 | 58.54 | -11.08 | +20.96 / +21.85 | 58.53 / 62.68 | +2.43 / -0.96 |
+| `slide_ModernBERT-base_2048_s1_base2` | comparable_converged | 68.95 | 57.70 | -11.25 | +20.28 / +21.01 | 57.97 / 59.84 | +2.78 / -0.96 |
 | `slide_ModernBERT-base_2048_s0_conv` | comparable_converged | 68.76 | 59.38 | -9.38 | +20.09 / +22.69 | 57.97 / 62.41 | +2.04 / -0.99 |
 | `slide_ModernBERT-base_2048_s0` | pilot | 67.60 | 54.34 | -13.26 | +18.93 / +17.65 | 53.78 / 58.87 | +2.16 / -0.99 |
 | `slide_ModernBERT-base_2048_s0_contrast03_conv` | comparable_converged | 66.15 | 50.42 | -15.73 | +17.49 / +13.73 | 55.16 / 60.64 | +2.93 / -0.65 |
 | `slide_ModernBERT-base_2048_s0_s13bal_conv` | comparable_converged | 65.77 | 54.34 | -11.43 | +17.10 / +17.65 | 56.03 / 58.33 | +2.89 / -1.03 |
 | `slide_ModernBERT-base_2048_s0_synth1` | synthetic_pretrain_only | 64.32 | 51.82 | -12.50 | +15.65 / +15.13 | 56.28 / 58.78 | +2.70 / -0.55 |
 | `slide_ModernBERT-base_2048_s0_contrast_conv` | comparable_converged | 62.87 | 49.86 | -13.01 | +14.21 / +13.17 | 62.26 / 62.32 | +3.25 / -0.64 |
+| `slide_ModernBERT-base_2048_s0_pv1` | in_domain_primevul | n.a. (PrimeVul) | 61.62 | n.a. | +24.93 / +24.93 | 47.61 / 47.61 | -0.01 / +5.77 |
 | `slide_ModernBERT-base_2048_s0_contrast` | pilot | 59.88 | 49.30 | -10.58 | +11.22 / +12.61 | 68.28 / 71.90 | +3.76 / n.a. |
 
 ## Diễn giải
 
-1. Thứ hạng Top-10 giữa hai bộ dữ liệu có tương quan dương nhưng không hoàn toàn ổn định: Spearman = **0.771** trên 6 run hội tụ có thể so sánh. Đây là thống kê mô tả giữa các cấu hình, không phải kiểm định độc lập.
+1. Thứ hạng Top-10 giữa hai bộ dữ liệu có tương quan dương nhưng không hoàn toàn ổn định: Spearman = **0.800** trên 9 run hội tụ có thể so sánh. Đây là thống kê mô tả giữa các cấu hình, không phải kiểm định độc lập.
 2. Run tốt nhất trên SecVulEval là `slide_ModernBERT-base_2048_s0_s13_conv` (71.46%). So với plain, nó **+2.70 điểm** trên SecVulEval nhưng **-0.56 điểm** trên PrimeVul. Mức tăng quan sát được trong miền không tự động chuyển sang bộ dữ liệu khác.
-3. Run tốt nhất trên PrimeVul là `slide_unixcoder-base_1024_s0_conv` (60.78%). So với plain: +1.25 điểm SecVulEval và +1.40 điểm PrimeVul.
-4. Phân loại mức hàm không chuyển miền: **8/8** run có AUPRC PrimeVul thấp hơn prevalence 695/25.911, dù AUPRC SecVulEval cao hơn prevalence. Vì vậy kết luận chính nên tiếp tục tập trung vào định vị dòng, không tuyên bố đã giải được phát hiện hàm lỗi ngoài miền.
+3. Run tốt nhất trên PrimeVul là `slide_ModernBERT-base_2048_s0_lw` (61.62%). So với plain: +2.02 điểm SecVulEval và +2.24 điểm PrimeVul.
+4. Phân loại mức hàm không chuyển miền: **11/11** run có AUPRC PrimeVul thấp hơn prevalence 695/25.911, dù AUPRC SecVulEval cao hơn prevalence. Vì vậy kết luận chính nên tiếp tục tập trung vào định vị dòng, không tuyên bố đã giải được phát hiện hàm lỗi ngoài miền.
 
 ## Kết luận sử dụng trong báo cáo
 
